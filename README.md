@@ -1,5 +1,8 @@
 # SINUS (Selenium In .Net Ui Solutions)
 
+[![Main-Branch-Flow](https://github.com/webnativedev/SINUS/actions/workflows/dotnet_main.yml/badge.svg)](https://github.com/webnativedev/SINUS/actions/workflows/dotnet_main.yml)
+[![CodeQL](https://github.com/webnativedev/SINUS/actions/workflows/codeql.yml/badge.svg)](https://github.com/webnativedev/SINUS/actions/workflows/codeql.yml)
+
 Main idea of this package is to provide a readable and easy way to perform UI tests.
 Hereby the package is opinionated and makes some decisions that need to be accepted for the usage of this package.
 It defines a way (one of hundreds) how tests should be written and defines also a technology to use.
@@ -10,7 +13,7 @@ Accessing objects in the UI is preferred by IDs.
 
 Example:
 
-```
+```csharp
     [TestMethod]
     public void Given_ABrowserOpensGoogle_When_ReadingTheTitle_Then_TitleShouldBeSet()
         => this.UITest()
@@ -23,7 +26,56 @@ Example:
 By reducing the complexity you are not able to use all of the features Selenium has.
 Nevertheless, the most common features are supported and covered by SINUS in a nicely shaped API that guides you through the test case.
 
-## Best Practice
+## Strategy
+
+Creating automated tests makes a lot of sense, because it enables you to get feedback
+about your development process even before you hand over the application to the
+quality assurance and later your customers. In software engineering we refer here to
+the term "shift-left" or "fail-fast", what is an ultimately good thing and improvement
+in the industry of software development.
+
+* Create a lot of unit tests.
+  * Opinionated: SINUS can be your one-stop-shop library for testing
+    based on MS-Test in a nice BDT API, but consider that you will introduce also
+    some dependencies to libraries that need to considered (e.g.: Selenium).
+* create some service tests.
+  * Opinionated: SINUS will help you with that task as well, but it might be
+    beneficial for the overall process to create a small UI to test. A lot
+    of applications have these capabilities via Swagger/OpenAPI-Frontends.
+* create few UI tests.
+  * Opinionated: SINUS is primarily built for this task, but use the amount of
+    tests with caution. UIs are constantly changing, so keep your IDs to capture
+    to reduce the amount of test refactoring effort.
+
+Quality criterias are:
+
+* fully automated (including result interpretation)
+* has full control
+* isolated (preferred in-memory)
+  * parallelizable
+* stable (not flaky) in its result
+* running fast
+* testing a single concept in the system
+* readable
+* maintainable
+* trustworthy
+
+### Unit Tests
+
+Unit tests should be "FIRST" (fast, isolated/independent, repeatable, self-validating, thorough).
+
+* bootstrap code (container registration, initialization)
+* configuration (constants, enums, readonly fields)
+* model classes and data transfer objects (DTO)
+* language / framework features of the programming environment
+* functions that directly return variables
+* facades without any logic
+* private methods
+* exception messages and log messages
+
+To sum it up, we are testing execution logic that can be called from outside of the unit without depending on the internal setup and implementation.
+
+## Getting Started
 
 * Create a test project
 * install SINUS via nuget
@@ -40,6 +92,7 @@ Nevertheless, the most common features are supported and covered by SINUS in a n
 * Instead of Arrange-Act-Assert use an inherited method UITest() for browser-based testing OR Test() for testing without a UI.
 * With the Given part (use intelliSense) you can spin-up a browser and optionally a System-Under-Test (SUT) in-memory or public (meaning reachable via network outside the test).
   * use public SUT configuration for UI tests, because the web driver spawns outside the unit test in a separate process.
+  * consider to use components for mocking / test doubles
 * With the When part (use intelliSense) you can perform an action
 * With the Then part (use intelliSense) you can perform checks on the action.
   * Consider to install an Assertion Library helping you writing more meaningful assertions.

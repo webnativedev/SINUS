@@ -6,7 +6,8 @@
     <Nullable>enable</Nullable>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <SignAssembly>False</SignAssembly>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+	<IsPackable>true</IsPackable>
+	<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>SINUS Core Librray</Title>
     <Authors>Daniel Kienböck</Authors>
     <Description>Opinionated readable and easy way to use Selenium in .NET based on BDT (Behavior Driven Testing) and MSTest.</Description>
