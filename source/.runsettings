@@ -1,0 +1,10 @@
+<RunSettings> 
+  <RunConfiguration>
+    <!-- true or false -->
+    <!-- Value that specifies the exit code when no tests are discovered -->
+    <TreatNoTestsAsError>true</TreatNoTestsAsError>
+  </RunConfiguration>
+  <MSTest>  
+    <DeleteDeploymentDirectoryAfterTestRunIsComplete>False</DeleteDeploymentDirectoryAfterTestRunIsComplete>
+  </MSTest>
+</RunSettings>
