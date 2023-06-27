@@ -1,7 +1,8 @@
 # SINUS (Selenium In .Net Ui Solutions)
 
-[![Main-Branch-Flow](https://github.com/webnativedev/SINUS/actions/workflows/dotnet_main.yml/badge.svg)](https://github.com/webnativedev/SINUS/actions/workflows/dotnet_main.yml)
-[![CodeQL](https://github.com/webnativedev/SINUS/actions/workflows/codeql.yml/badge.svg)](https://github.com/webnativedev/SINUS/actions/workflows/codeql.yml)
+[![Main](https://github.com/webnativedev/SINUS/actions/workflows/dotnet_main.yml/badge.svg)](https://github.com/webnativedev/SINUS/actions/workflows/dotnet_main.yml) [![CodeQL](https://github.com/webnativedev/SINUS/actions/workflows/codeql.yml/badge.svg)](https://github.com/webnativedev/SINUS/actions/workflows/codeql.yml)
+
+![Example Video](/docs/demo-medium.gif "Example Video")
 
 Main idea of this package is to provide a readable and easy way to perform UI tests.
 Hereby the package is opinionated and makes some decisions that need to be accepted for the usage of this package.
@@ -21,6 +22,12 @@ Example:
             .When("Reading the title", (browser, data) => data["Title"] = browser.Title)
             .Then("Title should be set", (browser, data) => Assert.IsNotNull(data["Title"]))
             .Dispose();
+```
+
+Calling the test:
+
+```batch
+dotnet test --filter "FullyQualifiedName=WebNativeDEV.SINUS.Tests.BrowserTests.Given_ABrowserOpensGoogle_When_ReadingTheTitle_Then_TitleShouldBeSet"
 ```
 
 By reducing the complexity you are not able to use all of the features Selenium has.
@@ -80,7 +87,7 @@ To sum it up, we are testing execution logic that can be called from outside of 
 * Create a test project
 * install SINUS via nuget
   * SINUS can be used for UI-Tests and Unit Tests
-  * consider to not create any other integration test project 
+  * consider to not create any other integration test project
     (implementing small UI wrappers enables manual testing that is fully automatable).
 * (Optionally) Create a "TestInitializer" (or similar named class) that covers the startup of a test
   * AssemblyInitialize, ClassInitialize - usage example can be seen at (TestInitializer.cs in the demo test project).
@@ -93,7 +100,7 @@ To sum it up, we are testing execution logic that can be called from outside of 
 * With the Given part (use intelliSense) you can spin-up a browser and optionally a System-Under-Test (SUT) in-memory or public (meaning reachable via network outside the test).
   * use public SUT configuration for UI tests, because the web driver spawns outside the unit test in a separate process.
   * consider to use components for mocking / test doubles
-* With the When part (use intelliSense) you can perform an action
+* With the When part (use intelliSense) you can perform the main action and here no action means a prepared test, that can not yet be evaluated properly.
 * With the Then part (use intelliSense) you can perform checks on the action.
   * Consider to install an Assertion Library helping you writing more meaningful assertions.
   * Opinionated: It is not necessary to do so.

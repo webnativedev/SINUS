@@ -40,4 +40,4 @@ jobs:
       run: dotnet pack ${{ env.PROJECT_PATH }} --no-restore --no-build --configuration Release --include-symbols --output ${{ env.PACK_OUT_PATH }}
     
     - name: Publish nuget
-      run: dotnet nuget push ${{ env.PACK_OUT_PATH }}\*.nupkg --api-key ${{ secrets.NUGET_AUTH_TOKEN }} --source https://api.nuget.org/v3/index.json
+      run: dotnet nuget push ${{ env.PACK_OUT_PATH }}\*.symbols.nupkg --api-key ${{ secrets.NUGET_AUTH_TOKEN }} --source https://api.nuget.org/v3/index.json
