@@ -1,6 +1,7 @@
 # SINUS (Selenium In .Net Ui Solutions)
 
-[![Main](https://github.com/webnativedev/SINUS/actions/workflows/dotnet_main.yml/badge.svg)](https://github.com/webnativedev/SINUS/actions/workflows/dotnet_main.yml) [![CodeQL](https://github.com/webnativedev/SINUS/actions/workflows/codeql.yml/badge.svg)](https://github.com/webnativedev/SINUS/actions/workflows/codeql.yml)
+[![Main](https://github.com/webnativedev/SINUS/actions/workflows/dotnet_main.yml/badge.svg)](https://github.com/webnativedev/SINUS/actions/workflows/dotnet_main.yml) [![CodeQL](https://github.com/webnativedev/SINUS/actions/workflows/codeql.yml/badge.svg)](https://github.com/webnativedev/SINUS/actions/workflows/codeql.yml) ![Nuget](https://img.shields.io/nuget/v/WebNativeDEV.SINUS.Core) ![Nuget](https://img.shields.io/nuget/dt/WebNativeDEV.SINUS.Core?logo=nuget)
+
 
 ![Example Video](/docs/demo-medium.gif "Example Video")
 
