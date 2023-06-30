@@ -14,6 +14,10 @@ jobs:
         with:
           java-version: 11
           distribution: 'zulu' # Alternative distribution options are available.
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 7.0.x
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
@@ -43,7 +47,8 @@ jobs:
         shell: powershell
         run: |
           .\.sonar\scanner\dotnet-sonarscanner begin /k:"webnativedev_SINUS" /o:"webnativedev" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
-          Get-ChildItem . -r
+          Get-ChildItem .
           cd source
-          dotnet build --configuration DEBUG -v diagnostic --no-incremental
+          Get-ChildItem .
+          dotnet build --configuration DEBUG --no-incremental
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
