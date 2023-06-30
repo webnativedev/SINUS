@@ -4,6 +4,8 @@
 
 namespace WebNativeDEV.SINUS.SystemUnderTest;
 
+using System.Diagnostics.CodeAnalysis;
+
 /// <summary>
 /// This class is used to bootstrap the webapi project.
 /// </summary>
@@ -13,6 +15,7 @@ public partial class Program
     /// Entry point into the application.
     /// </summary>
     /// <param name="args">OS arguments.</param>
+    [ExcludeFromCodeCoverage(Justification = "framework bootstrap code, no logic included")]
     private static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);

@@ -34,6 +34,6 @@ public interface IRunner
     /// An object that will point to the runner.
     /// The interface helps to reduce the set of options to only the appropriate in the sequence.
     /// </returns>
-    IGiven GivenASystem<TProgram>(string description)
+    IGivenWithSUT GivenASystem<TProgram>(string description)
         where TProgram : class;
 }

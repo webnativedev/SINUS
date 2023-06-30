@@ -41,7 +41,14 @@ public abstract class TestBase
         get => defaultLoggerFactory ??= Microsoft.Extensions.Logging.LoggerFactory.Create(
                 builder =>
                 {
-                    builder.AddConsole(options => { });
+                    builder.AddSimpleConsole(options =>
+                    {
+                        options.ColorBehavior = Microsoft.Extensions.Logging.Console.LoggerColorBehavior.Enabled;
+                        options.SingleLine = false;
+                        options.TimestampFormat = "HH:mm:ss:fffffff ";
+                        options.IncludeScopes = true;
+                        options.UseUtcTimestamp = false;
+                    });
                 });
         set => defaultLoggerFactory = value;
     }
@@ -49,7 +56,7 @@ public abstract class TestBase
     /// <summary>
     /// Gets a logger factory to create a logger object.
     /// </summary>
-    public ILoggerFactory LoggerFactory => this.loggerFactory ??= CreateLoggerFactory();
+    public ILoggerFactory LoggerFactory => this.loggerFactory ??= DefaultLoggerFactory;
 
     /// <summary>
     /// Gets the run directory where tests are executed.
@@ -117,13 +124,6 @@ public abstract class TestBase
     /// </summary>
     /// <returns>An object of runner.</returns>
     protected IRunner Test() => new Runner(this.LoggerFactory);
-
-    /// <summary>
-    /// Defines how a logger factory should be setup.
-    /// </summary>
-    /// <returns>The default logger factory value (can be overwritten) or its standard logger factory.</returns>
-    private static ILoggerFactory CreateLoggerFactory()
-        => DefaultLoggerFactory;
 
     /// <summary>
     /// Creates a logger object.

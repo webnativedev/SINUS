@@ -18,7 +18,7 @@ public sealed class BrowserTests : ChromeTestBase
 {
     [TestMethod]
     public void Given_Browser_When_GotoAnyUrl_Then_NoExceptionOccursCallingDispose()
-        => this.UITest()
+        => this.Test()
             .GivenABrowserAt("some website", "http://www.google.at")
             .When("Navigation to page finished")
             .Then("no exception should occur", (browser, data) => Assert.IsNotNull(browser))
@@ -26,7 +26,7 @@ public sealed class BrowserTests : ChromeTestBase
 
     [TestMethod]
     public void Given_Browser_When_GotoAnyUrl_Then_NoExceptionOccursCallingDebugAndDispose()
-     => this.UITest()
+     => this.Test()
             .GivenABrowserAt("some website", "http://www.google.at")
             .When("Navigation to page finished")
             .Then("no exception should occur", (browser, data) => Assert.IsNotNull(browser))
@@ -36,7 +36,7 @@ public sealed class BrowserTests : ChromeTestBase
     [TestMethod]
     public void Given_Browser_When_GotoAnyUrl_Then_NoExceptionOccursDisposwByVarUsing()
     {
-        using var runner = this.UITest()
+        using var runner = this.Test()
             .GivenABrowserAt("some website", "http://www.google.at")
             .When("Navigation to page finished")
             .Then("no exception should occur", (browser, data) => Assert.IsNotNull(browser));
@@ -45,7 +45,7 @@ public sealed class BrowserTests : ChromeTestBase
     [TestMethod]
     public void Given_Browser_When_GotoAnyUrl_Then_NoExceptionOccursDisposwByVarUsingWithDebug()
     {
-        using var runner = this.UITest()
+        using var runner = this.Test()
             .GivenABrowserAt("some website", "http://www.google.at")
             .When("Navigation to page finished")
             .Then("no exception should occur", (browser, data) => Assert.IsNotNull(browser))
@@ -55,7 +55,7 @@ public sealed class BrowserTests : ChromeTestBase
     [TestMethod]
     public void Given_Browser_When_GotoAnyUrl_Then_NoExceptionOccursDisposeByUsingBlock()
     {
-        using (this.UITest()
+        using (this.Test()
             .GivenABrowserAt("some website", "http://www.google.at")
             .When("Navigation to page finished")
             .Then("no exception should occur", (browser, data) => Assert.IsNotNull(browser)))
@@ -65,7 +65,7 @@ public sealed class BrowserTests : ChromeTestBase
 
     [TestMethod]
     public void Given_ABrowser_When_GotoSomeWebsite_Then_TitleShouldBeSet()
-        => this.UITest()
+        => this.Test()
             .GivenABrowserAt("some website", "http://www.google.at")
             .When("Navigation to page finished")
             .Then("check tab name", (browser, data) => Assert.IsNotNull(browser.Title))
@@ -73,7 +73,7 @@ public sealed class BrowserTests : ChromeTestBase
 
     [TestMethod]
     public void Given_ABrowserOpensGoogle_When_ReadingTheTitle_Then_TitleShouldBeSet()
-        => this.UITest()
+        => this.Test()
             .GivenABrowserAt("Google", "http://www.google.at")
             .When("Reading the title", (browser, data) => data["Title"] = browser.Title)
             .Then("Title should be set", (browser, data) => Assert.IsNotNull(data["Title"]))
@@ -81,7 +81,7 @@ public sealed class BrowserTests : ChromeTestBase
 
     [TestMethod]
     public void Given_Browser_When_GotoGoogle_Then_TakeScreenshotShouldWork()
-        => this.UITest()
+        => this.Test()
             .GivenABrowserAt("some website", "http://www.google.at")
             .When("Taking a snapshot", (browser, data) => browser.TakeScreenshot())
             .Then("no exception should occur")

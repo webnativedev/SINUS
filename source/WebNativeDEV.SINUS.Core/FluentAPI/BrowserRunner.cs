@@ -5,15 +5,17 @@
 namespace WebNativeDEV.SINUS.Core.FluentAPI;
 
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 using WebNativeDEV.SINUS.Core.MsTest.SUT;
+using WebNativeDEV.SINUS.Core.UITesting;
 using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 
 /// <summary>
 /// Represents a class that manages the execution of a test based on a given-when-then sequence.
 /// </summary>
-internal sealed class BrowserRunner : BaseRunner, IBrowserRunner, IGivenBrowser, IWhenBrowser, IThenBrowser
+internal sealed class BrowserRunner : Runner, IBrowserRunner, IGivenBrowser, IWhenBrowser, IThenBrowser
 {
     private IBrowser? browser;
 
@@ -25,9 +27,7 @@ internal sealed class BrowserRunner : BaseRunner, IBrowserRunner, IGivenBrowser,
     public BrowserRunner(ILoggerFactory loggerFactory, IBrowserFactory factory)
         : base(loggerFactory)
     {
-        this.Logger = loggerFactory.CreateLogger<BrowserRunner>();
         this.Factory = factory;
-        this.browser = null;
     }
 
     /// <summary>
@@ -43,34 +43,41 @@ internal sealed class BrowserRunner : BaseRunner, IBrowserRunner, IGivenBrowser,
     /// </summary>
     private IBrowserFactory Factory { get; }
 
-    /// <summary>
-    /// Gets the logger that can be used to print information.
-    /// </summary>
-    private ILogger Logger { get; }
-
     /// <inheritdoc/>
     public IGivenBrowser GivenABrowserAt(string? humanReadablePageName, string url)
         => this.GivenABrowserAt(humanReadablePageName, new Uri(url));
 
     /// <inheritdoc/>
     public IGivenBrowser GivenABrowserAt(string? humanReadablePageName, Uri url)
-    {
-        this.Logger.LogInformation("Given: a Browser at {Url} - {Page}", url, humanReadablePageName ?? "null");
-        this.browser = this.Factory.CreateBrowser(url);
-        return this;
-    }
+    => (IGivenBrowser)this.Run(
+            "Given",
+            $"a Browser at {url} - {humanReadablePageName}",
+            () => this.browser = this.Factory.CreateBrowser(url));
 
     /// <inheritdoc/>
     public IWhenBrowser When(string description, Action<IBrowser, Dictionary<string, object?>>? action = null)
-        => this.Run("When", description, action);
+    {
+        if (action == null)
+        {
+            this.IsPreparedOnly = true;
+        }
+
+        return (IWhenBrowser)this.Run("When", description, () => action?.Invoke(
+            this.browser ?? throw new InvalidOperationException("no browser created"),
+            this.DataBag));
+    }
 
     /// <inheritdoc/>
     public IThenBrowser Then(string description, Action<IBrowser, Dictionary<string, object?>>? action = null)
-        => this.Run("Then", description, action);
+        => (IThenBrowser)this.Run("Then", description, () => action?.Invoke(
+            this.browser ?? throw new InvalidOperationException("no browser created"),
+            this.DataBag));
 
     /// <inheritdoc/>
     public IDisposable Debug(Action<IBrowser, Dictionary<string, object?>>? action = null)
-        => this.Run("Debug", string.Empty, action);
+        => (IDisposable)this.Run("Debug", string.Empty, () => action?.Invoke(
+            this.browser ?? throw new InvalidOperationException("no browser created"),
+            this.DataBag));
 
     /// <inheritdoc/>
     public IGivenBrowser GivenASystemAndABrowserAt<TProgram>(string? humanReadablePageName, string endpoint, string url)
@@ -80,51 +87,19 @@ internal sealed class BrowserRunner : BaseRunner, IBrowserRunner, IGivenBrowser,
     /// <inheritdoc/>
     public IGivenBrowser GivenASystemAndABrowserAt<TProgram>(string? humanReadablePageName, string endpoint, Uri url)
         where TProgram : class
-    {
-        this.Logger.LogInformation("Given: a SUT and a Browser at {Url} - desc: {Page}", endpoint, humanReadablePageName ?? "<none>");
-
-        SinusWebApplicationFactory<TProgram>? builder = null;
-        HttpClient? client = null;
-        for (int i = 0; i < 3; i++)
-        {
-            try
+        => (IGivenBrowser)this.Run(
+            "Given",
+            $"a SUT {endpoint} and a Browser",
+            () =>
             {
-                builder = new SinusWebApplicationFactory<TProgram>(endpoint);
-                client = builder.CreateClient();
-                break;
-            }
-            catch (IOException exception)
-            {
-                this.Logger.LogError(exception, "retry attempt {Attempt}", i + 1);
-                Thread.Sleep(TimeSpan.FromSeconds(10));
-            }
-        }
-
-        if (client != null && builder != null)
-        {
-            this.Disposables.Add(new SinusWebApplicationFactoryResult<TProgram>(builder, client));
-        }
-        else
-        {
-            client?.Dispose();
-            builder?.Dispose();
-        }
-
-        return this.GivenABrowserAt(humanReadablePageName, url);
-    }
+                this.CreateSUT<TProgram>(endpoint);
+                this.GivenABrowserAt(humanReadablePageName, url);
+            });
 
     /// <inheritdoc/>
-    protected override void Dispose(bool disposing)
+    protected override void DisposeChild()
     {
-        base.Dispose(disposing);
         this.browser?.Dispose();
         this.browser = null;
-    }
-
-    private BrowserRunner Run(string category, string description, Action<IBrowser, Dictionary<string, object?>>? action)
-    {
-        this.Logger.LogInformation("{Category}: {Description}", category, description);
-        action?.Invoke(this.browser ?? throw new InvalidOperationException("Browser not set"), this.DataBag);
-        return this;
     }
 }
