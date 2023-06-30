@@ -51,4 +51,5 @@ jobs:
           cd source
           Get-ChildItem .
           dotnet build --configuration DEBUG --no-incremental
+          cd ..
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
