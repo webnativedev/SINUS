@@ -56,5 +56,4 @@ jobs:
           args:
             -Dsonar.projectKey=webnativedev_SINUS
             -Dsonar.organization=webnativedev
-            -Dsonar.sources=source/
             -Dsonar.verbose=true
