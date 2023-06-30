@@ -1,6 +1,6 @@
 # SINUS (Selenium In .Net Ui Solutions)
 
-[![Main](https://github.com/webnativedev/SINUS/actions/workflows/dotnet_main.yml/badge.svg)](https://github.com/webnativedev/SINUS/actions/workflows/dotnet_main.yml) [![CodeQL](https://github.com/webnativedev/SINUS/actions/workflows/codeql.yml/badge.svg)](https://github.com/webnativedev/SINUS/actions/workflows/codeql.yml) ![Nuget](https://img.shields.io/nuget/v/WebNativeDEV.SINUS.Core) ![Nuget](https://img.shields.io/nuget/dt/WebNativeDEV.SINUS.Core?logo=nuget)
+[![Main](https://github.com/webnativedev/SINUS/actions/workflows/dotnet_main.yml/badge.svg)](https://github.com/webnativedev/SINUS/actions/workflows/dotnet_main.yml) [![CodeQL](https://github.com/webnativedev/SINUS/actions/workflows/codeql.yml/badge.svg)](https://github.com/webnativedev/SINUS/actions/workflows/codeql.yml) ![Nuget](https://img.shields.io/nuget/v/WebNativeDEV.SINUS.Core) ![Nuget](https://img.shields.io/nuget/dt/WebNativeDEV.SINUS.Core?logo=nuget) [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=webnativedev_SINUS&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=webnativedev_SINUS) [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=webnativedev_SINUS&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=webnativedev_SINUS) [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=webnativedev_SINUS&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=webnativedev_SINUS) [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=webnativedev_SINUS&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=webnativedev_SINUS) [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=webnativedev_SINUS&metric=bugs)](https://sonarcloud.io/summary/new_code?id=webnativedev_SINUS) [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=webnativedev_SINUS&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=webnativedev_SINUS)
 
 
 ![Example Video](/docs/demo-medium.gif "Example Video")
@@ -18,7 +18,7 @@ Example:
 ```csharp
     [TestMethod]
     public void Given_ABrowserOpensGoogle_When_ReadingTheTitle_Then_TitleShouldBeSet()
-        => this.UITest()
+        => this.Test()
             .GivenABrowserAt("Google", "http://www.google.at")
             .When("Reading the title", (browser, data) => data["Title"] = browser.Title)
             .Then("Title should be set", (browser, data) => Assert.IsNotNull(data["Title"]))
@@ -97,7 +97,7 @@ To sum it up, we are testing execution logic that can be called from outside of 
 * Create a class and attribute it with \[TestClass\]
 * inherit the class from ChromeTestBase
 * Create a method and attribute it with \[TestMethod\]
-* Instead of Arrange-Act-Assert use an inherited method UITest() for browser-based testing OR Test() for testing without a UI.
+* Instead of Arrange-Act-Assert use an inherited method Test() for browser-based testing or for testing without a UI.
 * With the Given part (use intelliSense) you can spin-up a browser and optionally a System-Under-Test (SUT) in-memory or public (meaning reachable via network outside the test).
   * use public SUT configuration for UI tests, because the web driver spawns outside the unit test in a separate process.
   * consider to use components for mocking / test doubles
