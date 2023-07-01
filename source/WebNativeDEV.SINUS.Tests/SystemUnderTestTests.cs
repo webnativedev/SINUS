@@ -17,14 +17,16 @@ using WebNativeDEV.SINUS.SystemUnderTest;
 [TestClass]
 public sealed partial class SystemUnderTestTests : ChromeTestBase
 {
+    private const string DefaultEndpoint = "https://localhost:10001";
+
     [TestMethod]
     [DoNotParallelize]
-    public void Given_SUT_When_CallingView_Then_SeleniumBrowsable_WithRunner()
+    public void Given_Sut_When_CallingView_Then_SeleniumBrowsable_WithRunner()
         => this.Test()
             .GivenASystemAndABrowserAt<Program>(
                 humanReadablePageName: "SimpleView",
-                endpoint: "https://localhost:10001",
-                url: new Uri("https://localhost:10001/simpleView"))
+                endpoint: DefaultEndpoint,
+                url: new Uri(DefaultEndpoint + "/simpleView"))
             .When(
                 "making a screenshot",
                 (browser, data) => browser.TakeScreenshot())
@@ -33,12 +35,12 @@ public sealed partial class SystemUnderTestTests : ChromeTestBase
 
     [TestMethod]
     [DoNotParallelize]
-    public void Given_SUT_When_CallingView_Then_TitleShouldBeRight()
+    public void Given_Sut_When_CallingView_Then_TitleShouldBeRight()
         => this.Test()
             .GivenASystemAndABrowserAt<Program>(
                 "SimpleView",
-                endpoint: "https://localhost:10001",
-                url: new Uri("https://localhost:10001/simpleView"))
+                endpoint: DefaultEndpoint,
+                url: new Uri(DefaultEndpoint + "/simpleView"))
             .When(
                 "checking the title",
                 (browser, data) => data.Add("Title", browser.Title))
@@ -49,7 +51,7 @@ public sealed partial class SystemUnderTestTests : ChromeTestBase
 
     [TestMethod]
     [DoNotParallelize]
-    public void Given_SUT_When_CallingCalcToSquareMyNumberWith2_Then_ResultShouldBe4()
+    public void Given_Sut_When_CallingCalcToSquareMyNumberWith2_Then_ResultShouldBe4()
         => this.Test()
             .GivenASystem<Program>("Calculation REST-Service")
             .When(

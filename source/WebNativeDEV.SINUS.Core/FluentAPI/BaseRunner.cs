@@ -7,22 +7,18 @@ namespace WebNativeDEV.SINUS.Core.FluentAPI;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenQA.Selenium.DevTools.V112.WebAuthn;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WebNativeDEV.SINUS.Core.MsTest.SUT;
-using WebNativeDEV.SINUS.Core.UITesting.Contracts;
+using WebNativeDEV.SINUS.Core.MsTest.Sut;
 
 /// <summary>
 /// Base Class for Runners.
 /// </summary>
 internal abstract class BaseRunner : IDisposable
 {
-    private const int RetryCountCreatingSUT = 6;
+    private const int RetryCountCreatingSut = 6;
 
     private readonly List<IDisposable> disposables;
     private bool disposedValue;
@@ -32,7 +28,7 @@ internal abstract class BaseRunner : IDisposable
     /// Initializes a new instance of the <see cref="BaseRunner"/> class.
     /// </summary>
     /// <param name="loggerFactory">LoggerFactory to create a logger instance for the test.</param>
-    public BaseRunner(ILoggerFactory loggerFactory)
+    protected BaseRunner(ILoggerFactory loggerFactory)
     {
         this.Logger = loggerFactory.CreateLogger<BrowserRunner>();
         this.Logger.LogDebug("Created a log for base-runner");
@@ -72,7 +68,7 @@ internal abstract class BaseRunner : IDisposable
     /// </summary>
     public void Dispose()
     {
-        this.Dispose(disposing: true);
+        this.Dispose(true);
         GC.SuppressFinalize(this);
     }
 
@@ -96,14 +92,14 @@ internal abstract class BaseRunner : IDisposable
     /// <summary>
     /// Creates a system under test.
     /// </summary>
-    /// <typeparam name="TProgram">The type to bootstrap the SUT.</typeparam>
-    /// <param name="endpoint">If set the public endpoint, else an in-memory SUT is created.</param>
-    protected void CreateSUT<TProgram>(string? endpoint = null)
+    /// <typeparam name="TProgram">The type to bootstrap the Sut.</typeparam>
+    /// <param name="endpoint">If set the public endpoint, else an in-memory Sut is created.</param>
+    protected void CreateSut<TProgram>(string? endpoint = null)
         where TProgram : class
     {
         IDisposable? builder = null;
         this.httpClient = null;
-        for (int i = 0; i < RetryCountCreatingSUT; i++)
+        for (int i = 0; i < RetryCountCreatingSut; i++)
         {
             try
             {
@@ -143,17 +139,10 @@ internal abstract class BaseRunner : IDisposable
     }
 
     /// <summary>
-    /// Overridable method that is called inside the disposal process.
-    /// </summary>
-    protected virtual void DisposeChild()
-    {
-    }
-
-    /// <summary>
     /// Implementation of the disposal as called by IDisposable.Dispose.
     /// </summary>
     /// <param name="disposing">True if called by Dispose; False if called by Destructor.</param>
-    protected void Dispose(bool disposing)
+    protected virtual void Dispose(bool disposing)
     {
         if (!this.disposedValue)
         {
@@ -175,8 +164,6 @@ internal abstract class BaseRunner : IDisposable
                     .OfType<IDisposable>()
                     .ToList()
                     .ForEach(d => d.Dispose());
-
-                this.DisposeChild();
 
                 if (this.IsPreparedOnly)
                 {

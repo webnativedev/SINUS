@@ -16,10 +16,12 @@ using WebNativeDEV.SINUS.MsTest.Chrome;
 [TestClass]
 public sealed class BrowserTests : ChromeTestBase
 {
+    private const string GoogleUrl = "https://www.google.at";
+
     [TestMethod]
     public void Given_Browser_When_GotoAnyUrl_Then_NoExceptionOccursCallingDispose()
         => this.Test()
-            .GivenABrowserAt("some website", "http://www.google.at")
+            .GivenABrowserAt("some website", GoogleUrl)
             .When("Navigation to page finished")
             .Then("no exception should occur", (browser, data) => Assert.IsNotNull(browser))
             .Dispose();
@@ -27,7 +29,7 @@ public sealed class BrowserTests : ChromeTestBase
     [TestMethod]
     public void Given_Browser_When_GotoAnyUrl_Then_NoExceptionOccursCallingDebugAndDispose()
      => this.Test()
-            .GivenABrowserAt("some website", "http://www.google.at")
+            .GivenABrowserAt("some website", GoogleUrl)
             .When("Navigation to page finished")
             .Then("no exception should occur", (browser, data) => Assert.IsNotNull(browser))
             .Debug((browser, data) => { })
@@ -37,7 +39,7 @@ public sealed class BrowserTests : ChromeTestBase
     public void Given_Browser_When_GotoAnyUrl_Then_NoExceptionOccursDisposwByVarUsing()
     {
         using var runner = this.Test()
-            .GivenABrowserAt("some website", "http://www.google.at")
+            .GivenABrowserAt("some website", GoogleUrl)
             .When("Navigation to page finished")
             .Then("no exception should occur", (browser, data) => Assert.IsNotNull(browser));
     }
@@ -46,7 +48,7 @@ public sealed class BrowserTests : ChromeTestBase
     public void Given_Browser_When_GotoAnyUrl_Then_NoExceptionOccursDisposwByVarUsingWithDebug()
     {
         using var runner = this.Test()
-            .GivenABrowserAt("some website", "http://www.google.at")
+            .GivenABrowserAt("some website", GoogleUrl)
             .When("Navigation to page finished")
             .Then("no exception should occur", (browser, data) => Assert.IsNotNull(browser))
             .Debug((_, _) => { });
@@ -56,7 +58,7 @@ public sealed class BrowserTests : ChromeTestBase
     public void Given_Browser_When_GotoAnyUrl_Then_NoExceptionOccursDisposeByUsingBlock()
     {
         using (this.Test()
-            .GivenABrowserAt("some website", "http://www.google.at")
+            .GivenABrowserAt("some website", GoogleUrl)
             .When("Navigation to page finished")
             .Then("no exception should occur", (browser, data) => Assert.IsNotNull(browser)))
         {
@@ -66,7 +68,7 @@ public sealed class BrowserTests : ChromeTestBase
     [TestMethod]
     public void Given_ABrowser_When_GotoSomeWebsite_Then_TitleShouldBeSet()
         => this.Test()
-            .GivenABrowserAt("some website", "http://www.google.at")
+            .GivenABrowserAt("some website", GoogleUrl)
             .When("Navigation to page finished")
             .Then("check tab name", (browser, data) => Assert.IsNotNull(browser.Title))
             .Dispose();
@@ -74,7 +76,7 @@ public sealed class BrowserTests : ChromeTestBase
     [TestMethod]
     public void Given_ABrowserOpensGoogle_When_ReadingTheTitle_Then_TitleShouldBeSet()
         => this.Test()
-            .GivenABrowserAt("Google", "http://www.google.at")
+            .GivenABrowserAt("Google", GoogleUrl)
             .When("Reading the title", (browser, data) => data["Title"] = browser.Title)
             .Then("Title should be set", (browser, data) => Assert.IsNotNull(data["Title"]))
             .Dispose();
@@ -82,7 +84,7 @@ public sealed class BrowserTests : ChromeTestBase
     [TestMethod]
     public void Given_Browser_When_GotoGoogle_Then_TakeScreenshotShouldWork()
         => this.Test()
-            .GivenABrowserAt("some website", "http://www.google.at")
+            .GivenABrowserAt("some website", GoogleUrl)
             .When("Taking a snapshot", (browser, data) => browser.TakeScreenshot())
             .Then("no exception should occur")
             .Dispose();

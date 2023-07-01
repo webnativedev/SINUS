@@ -17,7 +17,7 @@ using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 /// </summary>
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 #pragma warning disable CA1724 // ignoring conflicting name with "OpenQA.Selenium.DevTools.V112.Browser"
-internal sealed class Browser : IBrowser, IDisposable
+internal sealed class Browser : IBrowser
 #pragma warning restore CA1724
 {
     private readonly IWebDriver driver;

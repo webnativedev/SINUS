@@ -1,4 +1,4 @@
-﻿// <copyright file="IGivenWithSUT.cs" company="WebNativeDEV">
+﻿// <copyright file="IGivenWithSut.cs" company="WebNativeDEV">
 // Copyright (c) Daniel Kienböck. All Rights Reserved. Licensed under the MIT License. See LICENSE in the project root for license information.
 // </copyright>
 
@@ -12,7 +12,7 @@ using System.Collections.Generic;
 /// This interface allows to create a proper Fluent API.
 /// </summary>
 [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1716", Justification = "Required by pattern")]
-public interface IGivenWithSUT
+public interface IGivenWithSut
 {
     /// <summary>
     /// Allows to define the When-Action in a Given-When-Then sequence.

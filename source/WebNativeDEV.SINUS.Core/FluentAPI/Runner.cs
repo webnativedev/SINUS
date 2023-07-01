@@ -9,13 +9,13 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Logging;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
-using WebNativeDEV.SINUS.Core.MsTest.SUT;
+using WebNativeDEV.SINUS.Core.MsTest.Sut;
 
 /// <summary>
 /// Represents a class that manages the execution of a test based on a given-when-then sequence.
 /// This interface allows to create a proper Fluent API.
 /// </summary>
-internal class Runner : BaseRunner, IRunner, IGiven, IGivenWithSUT, IWhen, IThen
+internal class Runner : BaseRunner, IRunner, IGiven, IGivenWithSut, IWhen, IThen
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="Runner"/> class.
@@ -39,14 +39,14 @@ internal class Runner : BaseRunner, IRunner, IGiven, IGivenWithSUT, IWhen, IThen
         => (IGiven)this.Run("Given", description, () => action?.Invoke(this.DataBag));
 
     /// <inheritdoc/>
-    public IGivenWithSUT GivenASystem<TProgram>(string description)
+    public IGivenWithSut GivenASystem<TProgram>(string description)
             where TProgram : class
-        => (IGivenWithSUT)this.Run(
+        => (IGivenWithSut)this.Run(
                 "Given",
                 $"Given: a SUT in memory",
                 () =>
                 {
-                    this.CreateSUT<TProgram>();
+                    this.CreateSut<TProgram>();
                     this.Given(description);
                 });
 

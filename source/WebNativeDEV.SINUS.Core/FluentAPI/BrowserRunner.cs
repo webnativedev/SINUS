@@ -5,11 +5,8 @@
 namespace WebNativeDEV.SINUS.Core.FluentAPI;
 
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
-using WebNativeDEV.SINUS.Core.MsTest.SUT;
-using WebNativeDEV.SINUS.Core.UITesting;
 using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 
 /// <summary>
@@ -18,6 +15,7 @@ using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 internal sealed class BrowserRunner : Runner, IBrowserRunner, IGivenBrowser, IWhenBrowser, IThenBrowser
 {
     private IBrowser? browser;
+    private bool disposedValue;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BrowserRunner"/> class.
@@ -92,14 +90,23 @@ internal sealed class BrowserRunner : Runner, IBrowserRunner, IGivenBrowser, IWh
             $"a SUT {endpoint} and a Browser",
             () =>
             {
-                this.CreateSUT<TProgram>(endpoint);
+                this.CreateSut<TProgram>(endpoint);
                 this.GivenABrowserAt(humanReadablePageName, url);
             });
 
     /// <inheritdoc/>
-    protected override void DisposeChild()
+    protected override void Dispose(bool disposing)
     {
-        this.browser?.Dispose();
-        this.browser = null;
+        base.Dispose(disposing);
+        if (!this.disposedValue)
+        {
+            if (disposing)
+            {
+                this.browser?.Dispose();
+                this.browser = null;
+            }
+
+            this.disposedValue = true;
+        }
     }
 }

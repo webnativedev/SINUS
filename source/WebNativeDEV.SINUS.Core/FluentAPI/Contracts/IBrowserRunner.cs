@@ -39,7 +39,7 @@ public interface IBrowserRunner : IRunner
     /// <summary>
     /// Allows to define the Browser-based Given-Action in a Given-When-Then sequence.
     /// </summary>
-    /// <typeparam name="TProgram">Generic pointing to the class that bootstraps the SUT.</typeparam>
+    /// <typeparam name="TProgram">Generic pointing to the class that bootstraps the Sut.</typeparam>
     /// <param name="humanReadablePageName">The logical information about the page.</param>
     /// <param name="endpoint">Url that should be loaded by the browser initially.</param>
     /// <param name="url">Initial url to load.</param>

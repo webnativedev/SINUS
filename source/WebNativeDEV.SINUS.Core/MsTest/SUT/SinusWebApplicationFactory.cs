@@ -2,7 +2,7 @@
 // Copyright (c) Daniel Kienböck. All Rights Reserved. Licensed under the MIT License. See LICENSE in the project root for license information.
 // </copyright>
 
-namespace WebNativeDEV.SINUS.Core.MsTest.SUT;
+namespace WebNativeDEV.SINUS.Core.MsTest.Sut;
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -21,7 +21,7 @@ using WebNativeDEV.SINUS.Core.MsTest;
 ///
 /// ... these links helped me to find a solution to spawn a WebApplication (and not only in-memory).
 /// </remarks>
-internal sealed class SinusWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPoint>, IDisposable
+internal sealed class SinusWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPoint>
     where TEntryPoint : class
 {
     private IHost? kestrelHost;
