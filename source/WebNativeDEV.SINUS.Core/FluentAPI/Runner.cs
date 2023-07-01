@@ -15,7 +15,7 @@ using WebNativeDEV.SINUS.Core.MsTest.SUT;
 /// Represents a class that manages the execution of a test based on a given-when-then sequence.
 /// This interface allows to create a proper Fluent API.
 /// </summary>
-internal sealed class Runner : BaseRunner, IRunner, IGiven, IWhen, IThen
+internal class Runner : BaseRunner, IRunner, IGiven, IGivenWithSUT, IWhen, IThen
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="Runner"/> class.
@@ -24,7 +24,6 @@ internal sealed class Runner : BaseRunner, IRunner, IGiven, IWhen, IThen
     public Runner(ILoggerFactory loggerFactory)
         : base(loggerFactory)
     {
-        this.Logger = loggerFactory.CreateLogger<Runner>();
     }
 
     /// <summary>
@@ -35,81 +34,57 @@ internal sealed class Runner : BaseRunner, IRunner, IGiven, IWhen, IThen
         this.Dispose(disposing: false);
     }
 
-    /// <summary>
-    /// Gets the logger that can be used to print information.
-    /// </summary>
-    private ILogger Logger { get; }
-
     /// <inheritdoc/>
     public IGiven Given(string description, Action<Dictionary<string, object?>>? action = null)
-        => this.Run("Given", description, action);
+        => (IGiven)this.Run("Given", description, () => action?.Invoke(this.DataBag));
 
     /// <inheritdoc/>
-    public IGiven GivenASystem<TProgram>(string description)
+    public IGivenWithSUT GivenASystem<TProgram>(string description)
             where TProgram : class
-    {
-        this.Logger.LogInformation("Given: a SUT - desc: {Page}", description);
-
-        WebApplicationFactory<TProgram>? builder = null;
-        HttpClient? client = null;
-        for (int i = 0; i < 3; i++)
-        {
-            try
-            {
-                builder = new WebApplicationFactory<TProgram>();
-                client = builder.CreateClient();
-                break;
-            }
-            catch (IOException exception)
-            {
-                this.Logger.LogError(exception, "retry attempt {Attempt}", i + 1);
-                Thread.Sleep(TimeSpan.FromSeconds(10));
-            }
-        }
-
-        if (client != null && builder != null)
-        {
-            this.Disposables.Add(new SinusWebApplicationFactoryResult<TProgram>(builder, client));
-        }
-        else
-        {
-            client?.Dispose();
-            builder?.Dispose();
-        }
-
-        return this.Given(description, null);
-    }
+        => (IGivenWithSUT)this.Run(
+                "Given",
+                $"Given: a SUT in memory",
+                () =>
+                {
+                    this.CreateSUT<TProgram>();
+                    this.Given(description);
+                });
 
     /// <inheritdoc/>
     public IWhen When(string description, Action<Dictionary<string, object?>>? action = null)
-        => this.Run("When", description, action);
+    {
+        if (action == null)
+        {
+            this.IsPreparedOnly = true;
+        }
+
+        return (IWhen)this.Run("When", description, () => action?.Invoke(this.DataBag));
+    }
 
     /// <inheritdoc/>
     public IWhen When(string description, Action<HttpClient, Dictionary<string, object?>>? action)
-        => this.Run("When", description, action);
+    {
+        if (action == null)
+        {
+            this.IsPreparedOnly = true;
+        }
+
+        return (IWhen)this.Run(
+            "When",
+            description,
+            () => action?.Invoke(
+                this.HttpClient,
+                this.DataBag));
+    }
 
     /// <inheritdoc/>
     public IThen Then(string description, Action<Dictionary<string, object?>>? action = null)
-        => this.Run("Then", description, action);
+        => (IThen)this.Run(
+            "Then",
+            description,
+            () => action?.Invoke(this.DataBag));
 
     /// <inheritdoc/>
     public IDisposable Debug(Action<Dictionary<string, object?>>? action = null)
-        => this.Run("Debug", string.Empty, action);
-
-    private Runner Run(string category, string description, Action<Dictionary<string, object?>>? action)
-    {
-        this.Logger.LogInformation("{Category}: {Description}", category, description);
-        action?.Invoke(this.DataBag);
-        return this;
-    }
-
-    private Runner Run(string category, string description, Action<HttpClient, Dictionary<string, object?>>? action)
-    {
-        this.Logger.LogInformation("{Category}: {Description}", category, description);
-        var client = this.Disposables?.OfType<ISinusWebApplicationFactoryResult>()?.FirstOrDefault()?.HttpClient;
-        action?.Invoke(
-            client ?? throw new InvalidOperationException("no client found"),
-            this.DataBag);
-        return this;
-    }
+        => this.Run("Debug", string.Empty, () => action?.Invoke(this.DataBag));
 }

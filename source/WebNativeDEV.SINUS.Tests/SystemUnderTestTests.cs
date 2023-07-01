@@ -20,7 +20,7 @@ public sealed partial class SystemUnderTestTests : ChromeTestBase
     [TestMethod]
     [DoNotParallelize]
     public void Given_SUT_When_CallingView_Then_SeleniumBrowsable_WithRunner()
-        => this.UITest()
+        => this.Test()
             .GivenASystemAndABrowserAt<Program>(
                 humanReadablePageName: "SimpleView",
                 endpoint: "https://localhost:10001",
@@ -34,7 +34,7 @@ public sealed partial class SystemUnderTestTests : ChromeTestBase
     [TestMethod]
     [DoNotParallelize]
     public void Given_SUT_When_CallingView_Then_TitleShouldBeRight()
-        => this.UITest()
+        => this.Test()
             .GivenASystemAndABrowserAt<Program>(
                 "SimpleView",
                 endpoint: "https://localhost:10001",

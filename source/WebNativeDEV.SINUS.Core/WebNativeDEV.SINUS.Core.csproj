@@ -21,14 +21,19 @@
     <Copyright>Daniel Kienböck</Copyright>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+    <AssemblyVersion>1.0.2.1</AssemblyVersion>
+    <Version>1.0.2</Version>
+    <SonarQubeTestProject>false</SonarQubeTestProject>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <WarningLevel>9999</WarningLevel>
+    <NoWarn>1701;1702;NU5100</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <WarningLevel>9999</WarningLevel>
+    <NoWarn>1701;1702;NU5100</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
