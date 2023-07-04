@@ -17,16 +17,13 @@ using WebNativeDEV.SINUS.SystemUnderTest;
 [TestClass]
 public sealed partial class SystemUnderTestTests : ChromeTestBase
 {
-    private const string DefaultEndpoint = "https://localhost:10001";
+    private readonly (string?, string?) simpleView = ("SimpleView", "/simpleView");
 
     [TestMethod]
     [DoNotParallelize]
     public void Given_Sut_When_CallingView_Then_SeleniumBrowsable_WithRunner()
         => this.Test()
-            .GivenASystemAndABrowserAt<Program>(
-                humanReadablePageName: "SimpleView",
-                endpoint: DefaultEndpoint,
-                url: new Uri(DefaultEndpoint + "/simpleView"))
+            .GivenASystemAndABrowserAtDefaultEndpoint<Program>(this.simpleView)
             .When(
                 "making a screenshot",
                 (browser, data) => browser.TakeScreenshot())
@@ -37,10 +34,7 @@ public sealed partial class SystemUnderTestTests : ChromeTestBase
     [DoNotParallelize]
     public void Given_Sut_When_CallingView_Then_TitleShouldBeRight()
         => this.Test()
-            .GivenASystemAndABrowserAt<Program>(
-                "SimpleView",
-                endpoint: DefaultEndpoint,
-                url: new Uri(DefaultEndpoint + "/simpleView"))
+            .GivenASystemAndABrowserAtDefaultEndpoint<Program>(this.simpleView)
             .When(
                 "checking the title",
                 (browser, data) => data.Add("Title", browser.Title))

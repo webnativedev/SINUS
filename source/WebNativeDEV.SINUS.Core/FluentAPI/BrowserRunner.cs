@@ -14,6 +14,8 @@ using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 /// </summary>
 internal sealed class BrowserRunner : Runner, IBrowserRunner, IGivenBrowser, IWhenBrowser, IThenBrowser
 {
+    private const string DefaultEndpoint = "https://localhost:10001";
+
     private IBrowser? browser;
     private bool disposedValue;
 
@@ -44,6 +46,10 @@ internal sealed class BrowserRunner : Runner, IBrowserRunner, IGivenBrowser, IWh
     /// <inheritdoc/>
     public IGivenBrowser GivenABrowserAt(string? humanReadablePageName, string url)
         => this.GivenABrowserAt(humanReadablePageName, new Uri(url));
+
+    /// <inheritdoc/>
+    public IGivenBrowser GivenABrowserAt((string? humanReadablePageName, string url) website)
+        => this.GivenABrowserAt(website.humanReadablePageName, website.url);
 
     /// <inheritdoc/>
     public IGivenBrowser GivenABrowserAt(string? humanReadablePageName, Uri url)
@@ -83,6 +89,16 @@ internal sealed class BrowserRunner : Runner, IBrowserRunner, IGivenBrowser, IWh
         => this.GivenASystemAndABrowserAt<TProgram>(humanReadablePageName, endpoint, new Uri(url));
 
     /// <inheritdoc/>
+    public IGivenBrowser GivenASystemAndABrowserAtDefaultEndpoint<TProgram>((string? humanReadablePageName, string? browserPageToStart) page)
+        where TProgram : class
+        => this.GivenASystemAndABrowserAtDefaultEndpoint<TProgram>(page.humanReadablePageName, page.browserPageToStart);
+
+    /// <inheritdoc/>
+    public IGivenBrowser GivenASystemAndABrowserAtDefaultEndpoint<TProgram>(string? humanReadablePageName, string? browserPageToStart = null)
+        where TProgram : class
+        => this.GivenASystemAndABrowserAt<TProgram>(humanReadablePageName, DefaultEndpoint, DefaultEndpoint + (browserPageToStart ?? string.Empty));
+
+    /// <inheritdoc/>
     public IGivenBrowser GivenASystemAndABrowserAt<TProgram>(string? humanReadablePageName, string endpoint, Uri url)
         where TProgram : class
         => (IGivenBrowser)this.Run(
@@ -97,7 +113,6 @@ internal sealed class BrowserRunner : Runner, IBrowserRunner, IGivenBrowser, IWh
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
-        base.Dispose(disposing);
         if (!this.disposedValue)
         {
             if (disposing)
@@ -108,5 +123,7 @@ internal sealed class BrowserRunner : Runner, IBrowserRunner, IGivenBrowser, IWh
 
             this.disposedValue = true;
         }
+
+        base.Dispose(disposing);
     }
 }
