@@ -59,6 +59,33 @@ internal sealed class BrowserRunner : Runner, IBrowserRunner, IGivenBrowser, IWh
             () => this.browser = this.Factory.CreateBrowser(url));
 
     /// <inheritdoc/>
+    public IGivenBrowser GivenASystemAndABrowserAt<TProgram>(string? humanReadablePageName, string endpoint, string url)
+        where TProgram : class
+        => this.GivenASystemAndABrowserAt<TProgram>(humanReadablePageName, endpoint, new Uri(url));
+
+    /// <inheritdoc/>
+    public IGivenBrowser GivenASystemAndABrowserAt<TProgram>(string? humanReadablePageName, string endpoint, Uri url)
+        where TProgram : class
+        => (IGivenBrowser)this.Run(
+            "Given",
+            $"a SUT {endpoint} and a Browser",
+            () =>
+            {
+                this.CreateSut<TProgram>(endpoint);
+                this.GivenABrowserAt(humanReadablePageName, url);
+            });
+
+    /// <inheritdoc/>
+    public IGivenBrowser GivenASystemAndABrowserAtDefaultEndpoint<TProgram>((string? humanReadablePageName, string? browserPageToStart) page)
+        where TProgram : class
+        => this.GivenASystemAndABrowserAtDefaultEndpoint<TProgram>(page.humanReadablePageName, page.browserPageToStart);
+
+    /// <inheritdoc/>
+    public IGivenBrowser GivenASystemAndABrowserAtDefaultEndpoint<TProgram>(string? humanReadablePageName, string? browserPageToStart = null)
+        where TProgram : class
+        => this.GivenASystemAndABrowserAt<TProgram>(humanReadablePageName, DefaultEndpoint, DefaultEndpoint + (browserPageToStart ?? string.Empty));
+
+    /// <inheritdoc/>
     public IWhenBrowser When(string description, Action<IBrowser, Dictionary<string, object?>>? action = null)
     {
         if (action == null)
@@ -82,33 +109,6 @@ internal sealed class BrowserRunner : Runner, IBrowserRunner, IGivenBrowser, IWh
         => (IDisposable)this.Run("Debug", string.Empty, () => action?.Invoke(
             this.browser ?? throw new InvalidOperationException("no browser created"),
             this.DataBag));
-
-    /// <inheritdoc/>
-    public IGivenBrowser GivenASystemAndABrowserAt<TProgram>(string? humanReadablePageName, string endpoint, string url)
-        where TProgram : class
-        => this.GivenASystemAndABrowserAt<TProgram>(humanReadablePageName, endpoint, new Uri(url));
-
-    /// <inheritdoc/>
-    public IGivenBrowser GivenASystemAndABrowserAtDefaultEndpoint<TProgram>((string? humanReadablePageName, string? browserPageToStart) page)
-        where TProgram : class
-        => this.GivenASystemAndABrowserAtDefaultEndpoint<TProgram>(page.humanReadablePageName, page.browserPageToStart);
-
-    /// <inheritdoc/>
-    public IGivenBrowser GivenASystemAndABrowserAtDefaultEndpoint<TProgram>(string? humanReadablePageName, string? browserPageToStart = null)
-        where TProgram : class
-        => this.GivenASystemAndABrowserAt<TProgram>(humanReadablePageName, DefaultEndpoint, DefaultEndpoint + (browserPageToStart ?? string.Empty));
-
-    /// <inheritdoc/>
-    public IGivenBrowser GivenASystemAndABrowserAt<TProgram>(string? humanReadablePageName, string endpoint, Uri url)
-        where TProgram : class
-        => (IGivenBrowser)this.Run(
-            "Given",
-            $"a SUT {endpoint} and a Browser",
-            () =>
-            {
-                this.CreateSut<TProgram>(endpoint);
-                this.GivenABrowserAt(humanReadablePageName, url);
-            });
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
