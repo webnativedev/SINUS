@@ -24,7 +24,7 @@ internal sealed class BrowserRunner : Runner, IBrowserRunner, IGivenBrowser, IWh
     /// <summary>
     /// Initializes a new instance of the <see cref="BrowserRunner"/> class.
     /// </summary>
-    /// <param name="loggerFactory">LoggerFactory to create a logger instance for the test.</param>
+    /// <param name="testBase">Reference to the test base creating the runner.</param>
     /// <param name="factory">Reference to the browser factory to use (e.g.: for chrome browsers).</param>
     public BrowserRunner(BrowserTestBase testBase, IBrowserFactory factory)
         : base(testBase)

@@ -41,6 +41,13 @@ public class SinusConsoleFormatter : ConsoleFormatter, IDisposable
         this.Dispose(disposing: false);
     }
 
+    /// <summary>
+    /// Writes the log message.
+    /// </summary>
+    /// <typeparam name="TState">Type identifying how the LogEntry object is used.</typeparam>
+    /// <param name="logEntry">Main content of the log entry.</param>
+    /// <param name="scopeProvider"></param>
+    /// <param name="textWriter"></param>
     public override void Write<TState>(
         in LogEntry<TState> logEntry,
         IExternalScopeProvider? scopeProvider,
@@ -77,12 +84,19 @@ public class SinusConsoleFormatter : ConsoleFormatter, IDisposable
         textWriter.WriteLine($"    {message}");
     }
 
+    /// <summary>
+    /// Disposes the object as defined in IDisposable.
+    /// </summary>
     public void Dispose()
     {
         this.Dispose(disposing: true);
         GC.SuppressFinalize(this);
     }
 
+    /// <summary>
+    /// Implementation of the disposal as called by IDisposable.Dispose.
+    /// </summary>
+    /// <param name="disposing">True if called by Dispose; False if called by Destructor.</param>
     protected virtual void Dispose(bool disposing)
     {
         if (!this.disposedValue)

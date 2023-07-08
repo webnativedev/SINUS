@@ -24,15 +24,6 @@ public class TestInitializer : ChromeTestBase
     public static void AssemblyInitialize(TestContext testContext)
         => StoreAssemblyTestContext(testContext);
 
-    /// <summary>
-    /// Method that is called by the MS-Test Framework on class initialization.
-    /// </summary>
-    /// <param name="testContext">The current context of the test execution (class level).</param>
-    /// <returns>Async context.</returns>
-    [ClassInitialize]
-    public static async Task ClassInitialize(TestContext testContext)
-        => await StoreClassTestContext(testContext);
-
     [AssemblyCleanup]
     public static void AssemblyCleanup()
     {

@@ -31,8 +31,9 @@ internal sealed class Browser : IBrowser
     /// </summary>
     /// <param name="driver">Underlying Selenium WebDrivers.</param>
     /// <param name="contentFolder">Folder to store data.</param>
+    /// <param name="id">Single identifier that identifies the browser uniquely inside the test session.</param>
     /// <param name="loggerFactory">The factory to create logger-objects.</param>
-    public Browser(IWebDriver driver, ILoggerFactory loggerFactory, string contentFolder = "./", string id = null)
+    public Browser(IWebDriver driver, ILoggerFactory loggerFactory, string contentFolder = "./", string? id = null)
     {
         this.LoggerFactory = loggerFactory;
         this.Logger.LogInformation(
@@ -43,9 +44,12 @@ internal sealed class Browser : IBrowser
 
         this.driver = driver ?? throw new ArgumentNullException(nameof(driver), "driver null");
         this.contentFolder = contentFolder;
-        this.id = id;
+        this.id = id ?? "<no id>";
 
-        TestsIncludingBrowsers.Add(id);
+        if(id != null)
+        {
+            TestsIncludingBrowsers.Add(id);
+        }
     }
 
     /// <summary>

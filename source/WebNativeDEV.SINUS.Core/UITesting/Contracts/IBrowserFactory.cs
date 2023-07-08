@@ -13,6 +13,7 @@ public interface IBrowserFactory
     /// Factory method that creates a browser object that can be used to interact with web pages.
     /// </summary>
     /// <param name="url">Initial URL to navigate to.</param>
+    /// <param name="id">Single identifier that identifies the browser uniquely inside the test session.</param>
     /// <returns>An instance of a browser.</returns>
     IBrowser CreateBrowser(Uri url, string id);
 }

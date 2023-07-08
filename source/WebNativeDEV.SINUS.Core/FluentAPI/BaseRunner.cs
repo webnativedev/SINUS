@@ -30,7 +30,7 @@ internal abstract class BaseRunner : IDisposable
     /// <summary>
     /// Initializes a new instance of the <see cref="BaseRunner"/> class.
     /// </summary>
-    /// <param name="loggerFactory">LoggerFactory to create a logger instance for the test.</param>
+    /// <param name="testBase">Reference to the test base creating the runner.</param>
     protected BaseRunner(TestBase testBase)
     {
         this.TestBase = testBase;

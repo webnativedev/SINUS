@@ -21,7 +21,7 @@ internal class Runner : BaseRunner, IRunner, IGiven, IGivenWithSut, IWhen, IThen
     /// <summary>
     /// Initializes a new instance of the <see cref="Runner"/> class.
     /// </summary>
-    /// <param name="loggerFactory">LoggerFactory to create a logger instance for the test.</param>
+    /// <param name="testBase">Reference to the test base creating the runner.</param>
     public Runner(TestBase testBase)
         : base(testBase)
     {

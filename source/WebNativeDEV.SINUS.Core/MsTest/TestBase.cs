@@ -24,7 +24,6 @@ using WebNativeDEV.SINUS.MsTest.Chrome;
 public abstract class TestBase
 {
     private static TestContext? testContextAssembly;
-    private static TestContext? testContextClass;
     private static ILoggerFactory? defaultLoggerFactory;
 
     private ILoggerFactory? loggerFactory;
@@ -62,6 +61,11 @@ public abstract class TestBase
     public ILoggerFactory LoggerFactory => this.loggerFactory ??= DefaultLoggerFactory;
 
     /// <summary>
+    /// Gets or sets the TestContext injected by the framework.
+    /// </summary>
+    public TestContext? TestContext { get; set; }
+
+    /// <summary>
     /// Gets the run directory where tests are executed.
     /// </summary>
     public string RunDir
@@ -93,7 +97,7 @@ public abstract class TestBase
         get
         {
             this.Logger.LogDebug("TestName accessed");
-            return testContextClass?.TestName ?? "<unnamed>";
+            return this.TestContext?.TestName ?? "<unnamed>";
         }
     }
 
@@ -112,21 +116,14 @@ public abstract class TestBase
     }
 
     /// <summary>
-    /// Method that is called indirectly in class initialization that is used by the MS-Test Framework.
+    /// Prints the usage statistics of the browser objects.
     /// </summary>
-    /// <param name="testContext">The current context of the test execution (class level).</param>
-    /// <returns>Async context.</returns>
-    protected static async Task StoreClassTestContext(TestContext testContext)
-    {
-        testContextClass = testContext;
-        await Task.FromResult(testContext).ConfigureAwait(false);
-    }
-
     protected static void PrintBrowserUsageStatistic()
     {
         var logger = DefaultLoggerFactory.CreateLogger<TestBase>();
         logger.LogInformation("+--------------------------------");
         logger.LogInformation("| Tests Including Browsers");
+
         foreach(var id in Browser.TestsIncludingBrowsers)
         {
             var disposedInfo = Browser.TestsDisposingBrowsers.Contains(id)
@@ -134,6 +131,7 @@ public abstract class TestBase
                                     : "leak";
             logger.LogInformation("| {Id} ({DisposedInfo})", id, disposedInfo);
         }
+
         logger.LogInformation("+--------------------------------");
     }
 
