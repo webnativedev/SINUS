@@ -11,7 +11,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using WebNativeDEV.SINUS.Core.MsTest;
+using WebNativeDEV.SINUS.Core.MsTest.Extensions;
 using WebNativeDEV.SINUS.Core.MsTest.Sut;
+using WebNativeDEV.SINUS.MsTest;
 
 /// <summary>
 /// Base Class for Runners.
@@ -28,12 +31,14 @@ internal abstract class BaseRunner : IDisposable
     /// Initializes a new instance of the <see cref="BaseRunner"/> class.
     /// </summary>
     /// <param name="loggerFactory">LoggerFactory to create a logger instance for the test.</param>
-    protected BaseRunner(ILoggerFactory loggerFactory)
+    protected BaseRunner(TestBase testBase)
     {
-        this.Logger = loggerFactory.CreateLogger<BrowserRunner>();
+        this.TestBase = testBase;
+        this.Logger = this.TestBase.LoggerFactory.CreateLogger<BrowserRunner>();
         this.Logger.LogDebug("Created a log for base-runner");
 
         this.DataBag = new Dictionary<string, object?>();
+        this.Exceptions = new List<(RunCategory, Exception)>();
         this.disposables = new List<IDisposable>();
     }
 
@@ -41,6 +46,8 @@ internal abstract class BaseRunner : IDisposable
     /// Gets or sets a value indicating whether the test is only a placeholder for later or not.
     /// </summary>
     protected bool IsPreparedOnly { get; set; }
+
+    protected List<(RunCategory, Exception)> Exceptions { get; set; }
 
     /// <summary>
     /// Gets the list of disposables (= the list of objects to automatically dispose).
@@ -57,6 +64,11 @@ internal abstract class BaseRunner : IDisposable
     /// Gets the current state of the test run.
     /// </summary>
     protected Dictionary<string, object?> DataBag { get; }
+
+    /// <summary>
+    /// Gets the reference to the TestBase that creates the runner.
+    /// </summary>
+    protected TestBase TestBase { get; }
 
     /// <summary>
     /// Gets the logger that can be used to print information.
@@ -79,13 +91,23 @@ internal abstract class BaseRunner : IDisposable
     /// <param name="description">Human readable description what is going to be performed.</param>
     /// <param name="action">The action to be executed.</param>
     /// <returns>A reference to the runner for Fluent API purpose.</returns>
-    protected BaseRunner Run(string category, string description, Action action)
+    protected BaseRunner Run(RunCategory category, string description, Action action)
     {
-        this.Logger.LogInformation("{Category}: {Description}", category, description);
-        var watch = Stopwatch.StartNew();
-        action?.Invoke();
-        watch.Stop();
-        this.Logger.LogInformation("{Category}: process took {Elapsed} ms", category, watch.ElapsedMilliseconds);
+        using (this.Logger.CreatePerformanceDataScope(category.ToString(), description))
+        {
+            #pragma warning disable CA1031 // do not catch general exception types
+            try
+            {
+                action?.Invoke();
+            }
+            catch (Exception exc)
+            {
+                this.Logger.LogError(exc, "Exception occured in execution of {Category}", category);
+                this.Exceptions.Add((category, exc));
+            }
+            #pragma warning restore CA1031 // do not catch general exception types
+        }
+
         return this;
     }
 
@@ -148,26 +170,34 @@ internal abstract class BaseRunner : IDisposable
         {
             if (disposing)
             {
-                this.httpClient?.CancelPendingRequests();
-                this.httpClient?.Dispose();
-                this.httpClient = null;
+                this.Run(RunCategory.Dispose, "Dispose objects", () =>
+                {
+                    this.httpClient?.CancelPendingRequests();
+                    this.httpClient?.Dispose();
+                    this.httpClient = null;
 
-                this.DataBag
-                    .Values
-                    .Where(x => x != null)
-                    .OfType<IDisposable>()
-                    .ToList()
-                    .ForEach(d => d.Dispose());
+                    this.DataBag
+                        .Values
+                        .Where(x => x != null)
+                        .OfType<IDisposable>()
+                        .ToList()
+                        .ForEach(d => d.Dispose());
 
-                this.disposables
-                    .Where(x => x != null)
-                    .OfType<IDisposable>()
-                    .ToList()
-                    .ForEach(d => d.Dispose());
+                    this.disposables
+                        .Where(x => x != null)
+                        .OfType<IDisposable>()
+                        .ToList()
+                        .ForEach(d => d.Dispose());
+                });
 
                 if (this.IsPreparedOnly)
                 {
                     Assert.Inconclusive("The test is considered inconclusive, because it was rated 'only-prepared' when seeing no 'When'-part.");
+                }
+
+                if(this.Exceptions.Any())
+                {
+                    Assert.Fail($"Exceptions occured. Count: {this.Exceptions.Count}");
                 }
             }
 

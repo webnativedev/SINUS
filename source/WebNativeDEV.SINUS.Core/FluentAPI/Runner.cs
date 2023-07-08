@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Logging;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 using WebNativeDEV.SINUS.Core.MsTest.Sut;
+using WebNativeDEV.SINUS.MsTest;
 
 /// <summary>
 /// Represents a class that manages the execution of a test based on a given-when-then sequence.
@@ -21,8 +22,8 @@ internal class Runner : BaseRunner, IRunner, IGiven, IGivenWithSut, IWhen, IThen
     /// Initializes a new instance of the <see cref="Runner"/> class.
     /// </summary>
     /// <param name="loggerFactory">LoggerFactory to create a logger instance for the test.</param>
-    public Runner(ILoggerFactory loggerFactory)
-        : base(loggerFactory)
+    public Runner(TestBase testBase)
+        : base(testBase)
     {
     }
 
@@ -36,41 +37,31 @@ internal class Runner : BaseRunner, IRunner, IGiven, IGivenWithSut, IWhen, IThen
 
     /// <inheritdoc/>
     public IGiven Given(string description, Action<Dictionary<string, object?>>? action = null)
-        => (IGiven)this.Run("Given", description, () => action?.Invoke(this.DataBag));
+        => (IGiven)this.Run(RunCategory.Given, description, () => action?.Invoke(this.DataBag));
 
     /// <inheritdoc/>
     public IGivenWithSut GivenASystem<TProgram>(string description)
             where TProgram : class
         => (IGivenWithSut)this.Run(
-                "Given",
-                $"Given: a SUT in memory",
-                () =>
-                {
-                    this.CreateSut<TProgram>();
-                    this.Given(description);
-                });
+                RunCategory.Given,
+                $"a SUT in memory: " + description,
+                () => this.CreateSut<TProgram>());
 
     /// <inheritdoc/>
     public IWhen When(string description, Action<Dictionary<string, object?>>? action = null)
     {
-        if (action == null)
-        {
-            this.IsPreparedOnly = true;
-        }
+        this.IsPreparedOnly = this.IsPreparedOnly || action == null;
 
-        return (IWhen)this.Run("When", description, () => action?.Invoke(this.DataBag));
+        return (IWhen)this.Run(RunCategory.When, description, () => action?.Invoke(this.DataBag));
     }
 
     /// <inheritdoc/>
     public IWhen When(string description, Action<HttpClient, Dictionary<string, object?>>? action)
     {
-        if (action == null)
-        {
-            this.IsPreparedOnly = true;
-        }
+        this.IsPreparedOnly = this.IsPreparedOnly || action == null;
 
         return (IWhen)this.Run(
-            "When",
+            RunCategory.When,
             description,
             () => action?.Invoke(
                 this.HttpClient,
@@ -80,11 +71,11 @@ internal class Runner : BaseRunner, IRunner, IGiven, IGivenWithSut, IWhen, IThen
     /// <inheritdoc/>
     public IThen Then(string description, Action<Dictionary<string, object?>>? action = null)
         => (IThen)this.Run(
-            "Then",
+            RunCategory.Then,
             description,
             () => action?.Invoke(this.DataBag));
 
     /// <inheritdoc/>
     public IDisposable Debug(Action<Dictionary<string, object?>>? action = null)
-        => this.Run("Debug", string.Empty, () => action?.Invoke(this.DataBag));
+        => this.Run(RunCategory.Debug, string.Empty, () => action?.Invoke(this.DataBag));
 }

@@ -14,5 +14,5 @@ public interface IBrowserFactory
     /// </summary>
     /// <param name="url">Initial URL to navigate to.</param>
     /// <returns>An instance of a browser.</returns>
-    IBrowser CreateBrowser(Uri url);
+    IBrowser CreateBrowser(Uri url, string id);
 }

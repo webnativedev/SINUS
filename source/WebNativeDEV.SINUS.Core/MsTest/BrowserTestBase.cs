@@ -40,5 +40,5 @@ public abstract class BrowserTestBase : TestBase
     /// Creates a Runner object to run Tests on.
     /// </summary>
     /// <returns>An object of runner.</returns>
-    protected new IBrowserRunner Test() => new BrowserRunner(this.LoggerFactory, this.Factory);
+    protected new IBrowserRunner Test() => new BrowserRunner(this, this.Factory);
 }

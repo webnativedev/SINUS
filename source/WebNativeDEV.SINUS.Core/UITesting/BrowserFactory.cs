@@ -94,7 +94,7 @@ internal abstract class BrowserFactory : IBrowserFactory, IDisposable
     }
 
     /// <inheritdoc/>
-    public virtual IBrowser CreateBrowser(Uri url)
+    public virtual IBrowser CreateBrowser(Uri url, string id)
     {
         this.Logger.LogInformation("Create Browser requested for {Url}", url);
 
@@ -104,7 +104,8 @@ internal abstract class BrowserFactory : IBrowserFactory, IDisposable
         return new Browser(
             driver,
             this.LoggerFactory,
-            this.LogsDir ?? throw new InvalidDataException("LogDir not set"));
+            this.LogsDir ?? throw new InvalidDataException("LogDir not set"),
+            id);
     }
 
     /// <summary>

@@ -8,6 +8,8 @@ using Microsoft.Extensions.Logging;
 using System;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 using WebNativeDEV.SINUS.Core.UITesting.Contracts;
+using WebNativeDEV.SINUS.MsTest;
+using WebNativeDEV.SINUS.MsTest.Abstract;
 
 /// <summary>
 /// Represents a class that manages the execution of a test based on a given-when-then sequence.
@@ -24,8 +26,8 @@ internal sealed class BrowserRunner : Runner, IBrowserRunner, IGivenBrowser, IWh
     /// </summary>
     /// <param name="loggerFactory">LoggerFactory to create a logger instance for the test.</param>
     /// <param name="factory">Reference to the browser factory to use (e.g.: for chrome browsers).</param>
-    public BrowserRunner(ILoggerFactory loggerFactory, IBrowserFactory factory)
-        : base(loggerFactory)
+    public BrowserRunner(BrowserTestBase testBase, IBrowserFactory factory)
+        : base(testBase)
     {
         this.Factory = factory;
     }
@@ -54,9 +56,9 @@ internal sealed class BrowserRunner : Runner, IBrowserRunner, IGivenBrowser, IWh
     /// <inheritdoc/>
     public IGivenBrowser GivenABrowserAt(string? humanReadablePageName, Uri url)
     => (IGivenBrowser)this.Run(
-            "Given",
+            RunCategory.Given,
             $"a Browser at {url} - {humanReadablePageName}",
-            () => this.browser = this.Factory.CreateBrowser(url));
+            () => this.browser = this.Factory.CreateBrowser(url, this.TestBase.TestName));
 
     /// <inheritdoc/>
     public IGivenBrowser GivenASystemAndABrowserAt<TProgram>(string? humanReadablePageName, string endpoint, string url)
@@ -67,7 +69,7 @@ internal sealed class BrowserRunner : Runner, IBrowserRunner, IGivenBrowser, IWh
     public IGivenBrowser GivenASystemAndABrowserAt<TProgram>(string? humanReadablePageName, string endpoint, Uri url)
         where TProgram : class
         => (IGivenBrowser)this.Run(
-            "Given",
+            RunCategory.Given,
             $"a SUT {endpoint} and a Browser",
             () =>
             {
@@ -88,25 +90,22 @@ internal sealed class BrowserRunner : Runner, IBrowserRunner, IGivenBrowser, IWh
     /// <inheritdoc/>
     public IWhenBrowser When(string description, Action<IBrowser, Dictionary<string, object?>>? action = null)
     {
-        if (action == null)
-        {
-            this.IsPreparedOnly = true;
-        }
+        this.IsPreparedOnly = this.IsPreparedOnly || action == null;
 
-        return (IWhenBrowser)this.Run("When", description, () => action?.Invoke(
+        return (IWhenBrowser)this.Run(RunCategory.When, description, () => action?.Invoke(
             this.browser ?? throw new InvalidOperationException("no browser created"),
             this.DataBag));
     }
 
     /// <inheritdoc/>
     public IThenBrowser Then(string description, Action<IBrowser, Dictionary<string, object?>>? action = null)
-        => (IThenBrowser)this.Run("Then", description, () => action?.Invoke(
+        => (IThenBrowser)this.Run(RunCategory.Then, description, () => action?.Invoke(
             this.browser ?? throw new InvalidOperationException("no browser created"),
             this.DataBag));
 
     /// <inheritdoc/>
     public IDisposable Debug(Action<IBrowser, Dictionary<string, object?>>? action = null)
-        => (IDisposable)this.Run("Debug", string.Empty, () => action?.Invoke(
+        => (IDisposable)this.Run(RunCategory.Debug, string.Empty, () => action?.Invoke(
             this.browser ?? throw new InvalidOperationException("no browser created"),
             this.DataBag));
 
@@ -117,8 +116,11 @@ internal sealed class BrowserRunner : Runner, IBrowserRunner, IGivenBrowser, IWh
         {
             if (disposing)
             {
-                this.browser?.Dispose();
-                this.browser = null;
+                this.Run(RunCategory.Dispose, "Dispose browser", () =>
+                {
+                    this.browser?.Dispose();
+                    this.browser = null;
+                });
             }
 
             this.disposedValue = true;

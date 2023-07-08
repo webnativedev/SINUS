@@ -6,11 +6,15 @@ namespace WebNativeDEV.SINUS.MsTest;
 
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Runtime.CompilerServices;
 using WebNativeDEV.SINUS.Core.FluentAPI;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 using WebNativeDEV.SINUS.Core.MsTest;
+using WebNativeDEV.SINUS.Core.UITesting;
 using WebNativeDEV.SINUS.Core.UITesting.Contracts;
+using WebNativeDEV.SINUS.MsTest.Chrome;
 
 /// <summary>
 /// Represents an abstract test base that allows later unit tests to
@@ -41,13 +45,12 @@ public abstract class TestBase
         get => defaultLoggerFactory ??= Microsoft.Extensions.Logging.LoggerFactory.Create(
                 builder =>
                 {
-                    builder.AddSimpleConsole(options =>
+                    builder.AddConsole(options =>
                     {
-                        options.ColorBehavior = Microsoft.Extensions.Logging.Console.LoggerColorBehavior.Enabled;
-                        options.SingleLine = false;
-                        options.TimestampFormat = "HH:mm:ss:fffffff ";
+                        options.FormatterName = "SinusConsoleFormatter";
+                    }).AddConsoleFormatter<SinusConsoleFormatter, ConsoleFormatterOptions>(options =>
+                    {
                         options.IncludeScopes = true;
-                        options.UseUtcTimestamp = false;
                     });
                 });
         set => defaultLoggerFactory = value;
@@ -119,11 +122,26 @@ public abstract class TestBase
         await Task.FromResult(testContext).ConfigureAwait(false);
     }
 
+    protected static void PrintBrowserUsageStatistic()
+    {
+        var logger = DefaultLoggerFactory.CreateLogger<TestBase>();
+        logger.LogInformation("+--------------------------------");
+        logger.LogInformation("| Tests Including Browsers");
+        foreach(var id in Browser.TestsIncludingBrowsers)
+        {
+            var disposedInfo = Browser.TestsDisposingBrowsers.Contains(id)
+                                    ? "disposed"
+                                    : "leak";
+            logger.LogInformation("| {Id} ({DisposedInfo})", id, disposedInfo);
+        }
+        logger.LogInformation("+--------------------------------");
+    }
+
     /// <summary>
     /// Creates a Runner object to run Tests on.
     /// </summary>
     /// <returns>An object of runner.</returns>
-    protected IRunner Test() => new Runner(this.LoggerFactory);
+    protected IRunner Test() => new Runner(this);
 
     /// <summary>
     /// Creates a logger object.

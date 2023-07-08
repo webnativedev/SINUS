@@ -46,6 +46,9 @@ in the industry of software development.
   * Opinionated: SINUS can be your one-stop-shop library for testing
     based on MS-Test in a nice BDT API, but consider that you will introduce also
     some dependencies to libraries that need to considered (e.g.: Selenium).
+  * Opinionated: track code coverage automatically to be confident about the amount of tests.
+    Herefore use CI/CD analysis and quality gates, but consider also local analysis.
+    https://github.com/danielpalme/ReportGenerator
 * create some service tests.
   * Opinionated: SINUS will help you with that task as well, but it might be
     beneficial for the overall process to create a small UI to test. A lot
@@ -83,6 +86,14 @@ Unit tests should be "FIRST" (fast, isolated/independent, repeatable, self-valid
 
 To sum it up, we are testing execution logic that can be called from outside of the unit without depending on the internal setup and implementation.
 
+## Integration Tests
+
+By using WebApplicationFactory we can execute isolated tests in-memory. 
+This mode helps in REST-based tests, but is not compatible with Selenium tests requiring a publicly available service.
+
+Hereby we see methods that instrument the code that is checked by the integration test to be able to evaluate the code coverage.
+https://learn.microsoft.com/en-us/visualstudio/test/microsoft-code-coverage-console-tool?view=vs-2022
+
 ## Getting Started
 
 * Create a test project
@@ -110,3 +121,5 @@ To sum it up, we are testing execution logic that can be called from outside of 
   * Opinionated: Call it explicitly. It allows you to impelement the method as expression body via ```=>```.
 * Consider using StyleCop (also for the test-project)
   * Opinionated: remove CS1591, SA1600 for tests to remove the necessary XML documentation which is already covered via method name and description fields of SINUS.
+* Consider using a memory leak analysis tool or directly a supporting nuget package.
+  * (no own experience yet:) https://www.jetbrains.com/dotmemory/unit/ | https://www.nuget.org/packages/JetBrains.DotMemoryUnit/

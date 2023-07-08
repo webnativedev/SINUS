@@ -22,6 +22,7 @@ internal sealed class Browser : IBrowser
 {
     private readonly IWebDriver driver;
     private readonly string contentFolder;
+    private readonly string id;
     private bool disposedValue;
     private ILogger? logger;
 
@@ -31,7 +32,7 @@ internal sealed class Browser : IBrowser
     /// <param name="driver">Underlying Selenium WebDrivers.</param>
     /// <param name="contentFolder">Folder to store data.</param>
     /// <param name="loggerFactory">The factory to create logger-objects.</param>
-    public Browser(IWebDriver driver, ILoggerFactory loggerFactory, string contentFolder = "./")
+    public Browser(IWebDriver driver, ILoggerFactory loggerFactory, string contentFolder = "./", string id = null)
     {
         this.LoggerFactory = loggerFactory;
         this.Logger.LogInformation(
@@ -42,6 +43,9 @@ internal sealed class Browser : IBrowser
 
         this.driver = driver ?? throw new ArgumentNullException(nameof(driver), "driver null");
         this.contentFolder = contentFolder;
+        this.id = id;
+
+        TestsIncludingBrowsers.Add(id);
     }
 
     /// <summary>
@@ -51,6 +55,10 @@ internal sealed class Browser : IBrowser
     {
         this.Dispose(disposing: false);
     }
+
+    public static List<string> TestsIncludingBrowsers { get; } = new List<string>();
+
+    public static List<string> TestsDisposingBrowsers { get; } = new List<string>();
 
     /// <inheritdoc/>
     public string? Title
@@ -202,6 +210,7 @@ internal sealed class Browser : IBrowser
             {
                 this.Logger.LogInformation("Driver quitted");
                 this.driver?.Quit();
+                TestsDisposingBrowsers.Add(this.id);
             }
 
             this.disposedValue = true;
