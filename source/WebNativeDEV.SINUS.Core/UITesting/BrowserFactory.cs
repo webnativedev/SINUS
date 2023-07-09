@@ -6,6 +6,7 @@ namespace WebNativeDEV.SINUS.Core.UITesting;
 
 using Microsoft.Extensions.Logging;
 using OpenQA.Selenium;
+using System.Diagnostics.CodeAnalysis;
 using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 
 /// <summary>
@@ -36,6 +37,7 @@ internal abstract class BrowserFactory : IBrowserFactory, IDisposable
     /// <summary>
     /// Finalizes an instance of the <see cref="BrowserFactory"/> class.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     ~BrowserFactory()
     {
         this.Dispose(disposing: false);

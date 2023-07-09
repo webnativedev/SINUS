@@ -24,6 +24,9 @@ public class TestInitializer : ChromeTestBase
     public static void AssemblyInitialize(TestContext testContext)
         => StoreAssemblyTestContext(testContext);
 
+    /// <summary>
+    /// Method that is called by the MS-Test Framework on assmebly cleanup.
+    /// </summary>
     [AssemblyCleanup]
     public static void AssemblyCleanup()
     {

@@ -6,6 +6,7 @@ namespace WebNativeDEV.SINUS.Core.FluentAPI;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Logging;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
@@ -30,6 +31,7 @@ internal class Runner : BaseRunner, IRunner, IGiven, IGivenWithSut, IWhen, IThen
     /// <summary>
     /// Finalizes an instance of the <see cref="Runner"/> class.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     ~Runner()
     {
         this.Dispose(disposing: false);

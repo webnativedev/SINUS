@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
 using WebNativeDEV.SINUS.Core.FluentAPI;
+using System.Diagnostics.CodeAnalysis;
 
 /// <summary>
 /// Formatter class that is very much custom for the use case and defines "blocks" for
@@ -36,6 +37,7 @@ public class SinusConsoleFormatter : ConsoleFormatter, IDisposable
     /// <summary>
     /// Finalizes an instance of the <see cref="SinusConsoleFormatter"/> class.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     ~SinusConsoleFormatter()
     {
         this.Dispose(disposing: false);
@@ -47,7 +49,7 @@ public class SinusConsoleFormatter : ConsoleFormatter, IDisposable
     /// <typeparam name="TState">Type identifying how the LogEntry object is used.</typeparam>
     /// <param name="logEntry">Main content of the log entry.</param>
     /// <param name="scopeProvider"></param>
-    /// <param name="textWriter"></param>
+    /// <param name="textWriter">The writer that is used to target the output channel.</param>
     public override void Write<TState>(
         in LogEntry<TState> logEntry,
         IExternalScopeProvider? scopeProvider,

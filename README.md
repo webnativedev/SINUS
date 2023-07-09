@@ -75,6 +75,8 @@ Quality criterias are:
 
 Unit tests should be "FIRST" (fast, isolated/independent, repeatable, self-validating, thorough).
 
+Do not test:
+
 * bootstrap code (container registration, initialization)
 * configuration (constants, enums, readonly fields)
 * model classes and data transfer objects (DTO)
@@ -82,6 +84,7 @@ Unit tests should be "FIRST" (fast, isolated/independent, repeatable, self-valid
 * functions that directly return variables
 * facades without any logic
 * private methods
+* Finalizers (especially in combination with IDisposable pattern implementation)
 * exception messages and log messages
 
 To sum it up, we are testing execution logic that can be called from outside of the unit without depending on the internal setup and implementation.

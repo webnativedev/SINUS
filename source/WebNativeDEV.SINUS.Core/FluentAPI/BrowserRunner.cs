@@ -6,6 +6,7 @@ namespace WebNativeDEV.SINUS.Core.FluentAPI;
 
 using Microsoft.Extensions.Logging;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 using WebNativeDEV.SINUS.MsTest;
@@ -35,6 +36,7 @@ internal sealed class BrowserRunner : Runner, IBrowserRunner, IGivenBrowser, IWh
     /// <summary>
     /// Finalizes an instance of the <see cref="BrowserRunner"/> class.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     ~BrowserRunner()
     {
         this.Dispose(disposing: false);

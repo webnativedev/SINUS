@@ -6,6 +6,7 @@ namespace WebNativeDEV.SINUS.Core.MsTest;
 
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 internal sealed class PerformanceDataScope : IDisposable
 {
@@ -38,6 +39,7 @@ internal sealed class PerformanceDataScope : IDisposable
     /// <summary>
     /// Finalizes an instance of the <see cref="PerformanceDataScope"/> class.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     ~PerformanceDataScope()
     {
         this.Dispose(disposing: false);
