@@ -7,6 +7,7 @@ namespace WebNativeDEV.SINUS.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebNativeDEV.SINUS.MsTest.Chrome;
 using WebNativeDEV.SINUS.SystemUnderTest;
+using WebNativeDEV.SINUS.SystemUnderTest.Controllers;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'Type_or_Member'.
 #pragma warning disable SA1600 // Elements should be documented
@@ -55,4 +56,19 @@ public sealed partial class SystemUnderTestTests : ChromeTestBase
                 "Title should be 'SINUS TestSystem'",
                 (data) => Assert.AreEqual("4", data["Result"] as string))
             .Dispose();
+
+    [TestMethod]
+    public void Given_SutClass_When_CallingCalcToSquareMyNumberWith2_Then_ResultShouldBe4()
+        => this.Test()
+                .Given("instance of a calculation controller", data => data["controller"] = new CalcController())
+                .When("calling the calculation method", data =>
+                {
+                    var controller = data["controller"] as CalcController;
+                    data["result"] = controller.CalculateSquare(2);
+                })
+                .Then("check value does be 4", data =>
+                {
+                    Assert.AreEqual(4, (int)data["result"]);
+                })
+                .Dispose();
 }
