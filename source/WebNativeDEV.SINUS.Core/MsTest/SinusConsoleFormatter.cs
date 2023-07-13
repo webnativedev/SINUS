@@ -48,7 +48,7 @@ public class SinusConsoleFormatter : ConsoleFormatter, IDisposable
     /// </summary>
     /// <typeparam name="TState">Type identifying how the LogEntry object is used.</typeparam>
     /// <param name="logEntry">Main content of the log entry.</param>
-    /// <param name="scopeProvider"></param>
+    /// <param name="scopeProvider">Unused parameter only added to satisfy the interface.</param>
     /// <param name="textWriter">The writer that is used to target the output channel.</param>
     public override void Write<TState>(
         in LogEntry<TState> logEntry,

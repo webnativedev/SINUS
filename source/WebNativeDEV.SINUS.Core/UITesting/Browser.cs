@@ -62,8 +62,14 @@ internal sealed class Browser : IBrowser
         this.Dispose(disposing: false);
     }
 
+    /// <summary>
+    /// Gets a list of test-identifiers that includes a browser.
+    /// </summary>
     public static List<string> TestsIncludingBrowsers { get; } = new List<string>();
 
+    /// <summary>
+    /// Gets a list of test-identifiers that released the browser after using it.
+    /// </summary>
     public static List<string> TestsDisposingBrowsers { get; } = new List<string>();
 
     /// <inheritdoc/>

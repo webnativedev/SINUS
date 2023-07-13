@@ -38,7 +38,7 @@ internal class Runner : BaseRunner, IRunner, IGiven, IGivenWithSut, IWhen, IThen
     }
 
     /// <inheritdoc/>
-    public IGiven Given(string description, Action<Dictionary<string, object?>>? action = null)
+    public IGiven Given(string description, Action<RunStore>? action = null)
         => (IGiven)this.Run(RunCategory.Given, description, () => action?.Invoke(this.DataBag));
 
     /// <inheritdoc/>
@@ -50,7 +50,7 @@ internal class Runner : BaseRunner, IRunner, IGiven, IGivenWithSut, IWhen, IThen
                 () => this.CreateSut<TProgram>());
 
     /// <inheritdoc/>
-    public IWhen When(string description, Action<Dictionary<string, object?>>? action = null)
+    public IWhen When(string description, Action<RunStore>? action = null)
     {
         this.IsPreparedOnly = this.IsPreparedOnly || action == null;
 
@@ -58,7 +58,7 @@ internal class Runner : BaseRunner, IRunner, IGiven, IGivenWithSut, IWhen, IThen
     }
 
     /// <inheritdoc/>
-    public IWhen When(string description, Action<HttpClient, Dictionary<string, object?>>? action)
+    public IWhen When(string description, Action<HttpClient, RunStore>? action)
     {
         this.IsPreparedOnly = this.IsPreparedOnly || action == null;
 
@@ -71,13 +71,20 @@ internal class Runner : BaseRunner, IRunner, IGiven, IGivenWithSut, IWhen, IThen
     }
 
     /// <inheritdoc/>
-    public IThen Then(string description, Action<Dictionary<string, object?>>? action = null)
+    public IThen Then(string description, Action<RunStore>? action = null)
         => (IThen)this.Run(
             RunCategory.Then,
             description,
             () => action?.Invoke(this.DataBag));
 
     /// <inheritdoc/>
-    public IDisposable Debug(Action<Dictionary<string, object?>>? action = null)
+    public IDisposable Debug(Action<RunStore>? action = null)
         => this.Run(RunCategory.Debug, string.Empty, () => action?.Invoke(this.DataBag));
+
+    /// <inheritdoc/>
+    public IDisposable DebugPrint()
+        => this.Run(
+                RunCategory.Debug,
+                string.Empty,
+                () => this.DataBag.Print());
 }

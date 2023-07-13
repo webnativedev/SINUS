@@ -53,7 +53,7 @@ jobs:
         run: |
           .\.sonar\scanner\dotnet-sonarscanner begin /k:"webnativedev_SINUS" /o:"webnativedev" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.vstest.reportsPaths=TestResults/*.trx /d:sonar.cs.opencover.reportsPaths=TestResults/*/coverage.opencover.xml
           dotnet build --configuration DEBUG --no-restore --no-incremental source\sinus.sln -v:n
-          dotnet test source\sinus.sln --no-build --no-restore --collect:"XPlat Code Coverage;Format=json,lcov,cobertura,opencover" --results-directory TestResults/ --logger "trx;LogFileName=coverage.trx" --logger:"console;verbosity=detailed"
+          dotnet test source\sinus.sln --no-build --no-restore --collect:"XPlat Code Coverage;Format=json,lcov,cobertura,opencover" --results-directory TestResults/ --logger "trx;LogFileName=coverage.trx" --logger:"console;verbosity=detailed"  --filter "TestCategory!=external"
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
       - name: Debug-ShowDir-PostBuild
         shell: powershell

@@ -5,6 +5,9 @@
 namespace WebNativeDEV.SINUS.SystemUnderTest;
 
 using System.Diagnostics.CodeAnalysis;
+using WebNativeDEV.SINUS.SystemUnderTest.Services;
+using WebNativeDEV.SINUS.SystemUnderTest.Services.Abstractions;
+using WebNativeDEV.SINUS.SystemUnderTest.Services.Mock;
 
 /// <summary>
 /// This class is used to bootstrap the webapi project.
@@ -20,15 +23,38 @@ public partial class Program
     }
 
     /// <summary>
+    /// Gets a value indicating whether the service runs as test-double.
+    /// </summary>
+    public static bool ShouldMock { get; private set; }
+
+    /// <summary>
     /// Entry point into the application.
     /// </summary>
     /// <param name="args">OS arguments.</param>
     [ExcludeFromCodeCoverage(Justification = "framework bootstrap code, no logic included")]
     private static void Main(string[] args)
     {
+        args ??= Array.Empty<string>();
+
+        Console.WriteLine("    +-----------------------------");
+        Console.WriteLine("    | Args: ");
+        args.ToList().ForEach(x => Console.WriteLine($"    |     * {x}"));
+        ShouldMock = args.Contains("--ExecutionMode=Mock");
+        Console.WriteLine("    | Mocking: " + (ShouldMock ? "activated" : "deactivated"));
+        Console.WriteLine("    +-----------------------------");
+
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
+        if (ShouldMock)
+        {
+            builder.Services.AddSingleton<ITimeProvider, MockTimeProvider>();
+        }
+        else
+        {
+            builder.Services.AddSingleton<ITimeProvider, TimeProvider>();
+        }
+
         builder.Services.AddControllers();
 
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

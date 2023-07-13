@@ -23,5 +23,5 @@ public interface IGivenWithSut
     /// An object that will point to the runner.
     /// The interface helps to reduce the set of options to only the appropriate in the sequence.
     /// </returns>
-    IWhen When(string description, Action<HttpClient, Dictionary<string, object?>>? action);
+    IWhen When(string description, Action<HttpClient, RunStore>? action);
 }

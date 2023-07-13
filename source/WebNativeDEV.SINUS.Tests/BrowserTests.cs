@@ -19,70 +19,70 @@ public sealed class BrowserTests : ChromeTestBase
     private (string, string) Google { get; } = ("Google", "https://www.google.at");
 
     [TestMethod]
-    public void Given_Browser_When_GotoAnyUrl_Then_NoExceptionOccursCallingDispose()
+    [TestCategory("external")]
+    public void Given_ABrowserLoadingGoogle_When_CheckTitle_Then_TitleIsNotNull()
         => this.Test()
             .GivenABrowserAt(this.Google)
-            .When("Navigation to page finished")
-            .Then("no exception should occur", (browser, data) => Assert.IsNotNull(browser))
+            .When("Navigation to page finished", (browser, data) => data.StoreActual(browser.Title!))
+            .Then("Title should not be null", (browser, data) => Assert.IsNotNull(data.ReadActual<string>()))
             .Dispose();
 
     [TestMethod]
-    public void Given_Browser_When_GotoAnyUrl_Then_NoExceptionOccursCallingDebugAndDispose()
+    [TestCategory("external")]
+    public void Given_ABrowserLoadingGoogle_When_CheckTitle_Then_TitleIsNotNull_Debug_AllStoredValues()
      => this.Test()
             .GivenABrowserAt(this.Google)
-            .When("Navigation to page finished")
-            .Then("no exception should occur", (browser, data) => Assert.IsNotNull(browser))
-            .Debug((browser, data) => { })
+            .When("Navigation to page finished", (browser, data) => data.StoreActual(browser.Title!))
+            .Then("no exception should occur", (browser, data) => Assert.IsNotNull(data.ReadActual<string>()))
+            .Debug((browser, data) => data.Print())
             .Dispose();
 
     [TestMethod]
-    public void Given_Browser_When_GotoAnyUrl_Then_NoExceptionOccursDisposwByVarUsing()
+    [TestCategory("external")]
+    public void Given_ABrowserLoadingGoogleWithUsing_When_CheckTitle_Then_TitleIsNotNull()
     {
         using var runner = this.Test()
             .GivenABrowserAt(this.Google)
-            .When("Navigation to page finished")
-            .Then("no exception should occur", (browser, data) => Assert.IsNotNull(browser));
+            .When("Navigation to page finished", (browser, data) => data.StoreActual(browser.Title!))
+            .Then("Title should not be null", (browser, data) => Assert.IsNotNull(data.ReadActual<string>()));
     }
 
     [TestMethod]
-    public void Given_Browser_When_GotoAnyUrl_Then_NoExceptionOccursDisposwByVarUsingWithDebug()
+    [TestCategory("external")]
+    public void Given_ABrowserLoadingGoogleWithUsing_When_CheckTitle_Then_TitleIsNotNull_Debug_AllStoredValues()
     {
         using var runner = this.Test()
-            .GivenABrowserAt(this.Google)
-            .When("Navigation to page finished")
-            .Then("no exception should occur", (browser, data) => Assert.IsNotNull(browser))
-            .Debug((_, _) => { });
+                .GivenABrowserAt(this.Google)
+                .When("Navigation to page finished", (browser, data) => data.StoreActual(browser.Title!))
+                .Then("no exception should occur", (browser, data) => Assert.IsNotNull(data.ReadActual<string>()))
+                .Debug((browser, data) => data.Print());
     }
 
     [TestMethod]
-    public void Given_Browser_When_GotoAnyUrl_Then_NoExceptionOccursDisposeByUsingBlock()
+    [TestCategory("external")]
+    public void Given_ABrowserLoadingGoogleWithUsingBlock_When_CheckTitle_Then_TitleIsNotNull_Debug_AllStoredValues()
     {
         using (this.Test()
-            .GivenABrowserAt(this.Google)
-            .When("Navigation to page finished")
-            .Then("no exception should occur", (browser, data) => Assert.IsNotNull(browser)))
+                .GivenABrowserAt(this.Google)
+                .When("Navigation to page finished", (browser, data) => data.StoreActual(browser.Title!))
+                .Then("no exception should occur", (browser, data) => Assert.IsNotNull(data.ReadActual<string>()))
+                .Debug((browser, data) => data.Print()))
         {
         }
     }
 
     [TestMethod]
-    public void Given_ABrowser_When_GotoSomeWebsite_Then_TitleShouldBeSet()
-        => this.Test()
-            .GivenABrowserAt(this.Google)
-            .When("Navigation to page finished")
-            .Then("check tab name", (browser, data) => Assert.IsNotNull(browser.Title))
-            .Dispose();
+    [TestCategory("external")]
+    public void Given_ABrowserLoadingGoogle_When_Nothing_Then_ResultInconclusive()
+    => this.Test()
+        .GivenABrowserAt(this.Google)
+        .When("Navigation to page finished")
+        .Then("Title should not be null", (browser, data) => Assert.IsNotNull(browser))
+        .Dispose();
 
     [TestMethod]
-    public void Given_ABrowserOpensGoogle_When_ReadingTheTitle_Then_TitleShouldBeSet()
-        => this.Test()
-            .GivenABrowserAt(this.Google)
-            .When("Reading the title", (browser, data) => data["Title"] = browser.Title)
-            .Then("Title should be set", (browser, data) => Assert.IsNotNull(data["Title"]))
-            .Dispose();
-
-    [TestMethod]
-    public void Given_Browser_When_GotoGoogle_Then_TakeScreenshotShouldWork()
+    [TestCategory("external")]
+    public void Given_ABrowserLoadingGoogle_When_TakeASnapshot_Then_NoExceptionShouldOccur()
         => this.Test()
             .GivenABrowserAt(this.Google)
             .When("Taking a snapshot", (browser, data) => browser.TakeScreenshot())

@@ -90,7 +90,7 @@ internal sealed class BrowserRunner : Runner, IBrowserRunner, IGivenBrowser, IWh
         => this.GivenASystemAndABrowserAt<TProgram>(humanReadablePageName, DefaultEndpoint, DefaultEndpoint + (browserPageToStart ?? string.Empty));
 
     /// <inheritdoc/>
-    public IWhenBrowser When(string description, Action<IBrowser, Dictionary<string, object?>>? action = null)
+    public IWhenBrowser When(string description, Action<IBrowser, RunStore>? action = null)
     {
         this.IsPreparedOnly = this.IsPreparedOnly || action == null;
 
@@ -100,13 +100,26 @@ internal sealed class BrowserRunner : Runner, IBrowserRunner, IGivenBrowser, IWh
     }
 
     /// <inheritdoc/>
-    public IThenBrowser Then(string description, Action<IBrowser, Dictionary<string, object?>>? action = null)
-        => (IThenBrowser)this.Run(RunCategory.Then, description, () => action?.Invoke(
-            this.browser ?? throw new InvalidOperationException("no browser created"),
-            this.DataBag));
+    public IThenBrowser Then(string description, Action<IBrowser, RunStore>[] actions)
+    {
+        var actionCount = actions.Length;
+        for (int i = 0; i < actionCount; i++)
+        {
+            var action = actions[i];
+            string prefix = actionCount == 1
+                ? string.Empty
+                : $"{i + 1:00}: ";
+
+            this.Run(RunCategory.Then, $"{prefix}{description}", () => action?.Invoke(
+                this.browser ?? throw new InvalidOperationException("no browser created"),
+                this.DataBag));
+        }
+
+        return this;
+    }
 
     /// <inheritdoc/>
-    public IDisposable Debug(Action<IBrowser, Dictionary<string, object?>>? action = null)
+    public IDisposable Debug(Action<IBrowser, RunStore>? action = null)
         => (IDisposable)this.Run(RunCategory.Debug, string.Empty, () => action?.Invoke(
             this.browser ?? throw new InvalidOperationException("no browser created"),
             this.DataBag));

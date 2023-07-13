@@ -19,5 +19,5 @@ public interface IThenBrowser : IDisposable
     /// </summary>
     /// <param name="action">Pass in your debug code here.</param>
     /// <returns>An instance to the runner, so it can be disposed.</returns>
-    IDisposable Debug(Action<IBrowser, Dictionary<string, object?>>? action = null);
+    IDisposable Debug(Action<IBrowser, RunStore>? action = null);
 }

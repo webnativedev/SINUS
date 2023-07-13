@@ -8,6 +8,10 @@ using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
+/// <summary>
+/// Represents a manager class responsible for starting and ending a defined scope of execution
+/// and log corresponding meta-data.
+/// </summary>
 internal sealed class PerformanceDataScope : IDisposable
 {
     private const string MainMessageBody = "execution performance for block is";
@@ -45,9 +49,19 @@ internal sealed class PerformanceDataScope : IDisposable
         this.Dispose(disposing: false);
     }
 
+    /// <summary>
+    /// Checks if a message matches the template of performance messages.
+    /// </summary>
+    /// <param name="message">The message to check.</param>
+    /// <returns>Whether it is a performance message or not.</returns>
     public static bool IsPerformanceMessage(string message)
         => message.Contains(MainMessageBody, StringComparison.InvariantCulture);
 
+    /// <summary>
+    /// Removes all the clutter from a performance message and reduces it to the count of ms only.
+    /// </summary>
+    /// <param name="message">The message to reduce.</param>
+    /// <returns>The reduced message.</returns>
     public static string ReduceLogMessage(string message)
     {
         var idx = message.IndexOf(MainMessageBody, StringComparison.InvariantCulture) + MainMessageBody.Length;
@@ -60,6 +74,9 @@ internal sealed class PerformanceDataScope : IDisposable
         return result;
     }
 
+    /// <summary>
+    /// The Dispose function as defined by IDisposable and corresponding pattern.
+    /// </summary>
     public void Dispose()
     {
         // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in der Methode "Dispose(bool disposing)" ein.

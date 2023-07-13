@@ -49,4 +49,22 @@ public class TestInitializer : ChromeTestBase
     [TestMethod]
     public void Maintenance_ProcessesKilled()
         => this.CountZombieProcesses(maxAgeOfProessInMinutes: 2);
+
+    /// <summary>
+    /// Maintenance Print Meta-Data.
+    /// </summary>
+    [TestMethod]
+    public void Maintenance_PrintData()
+    {
+        this.Test()
+            .Given("solid testbase")
+            .When("storing data", data =>
+            {
+                data["logsDir"] = this.LogsDir;
+                data["runDir"] = this.RunDir;
+                data["testName"] = this.TestName;
+            })
+            .Then("all data should be not null")
+            .DebugPrint();
+    }
 }

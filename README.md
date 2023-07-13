@@ -71,6 +71,14 @@ Quality criterias are:
 * maintainable
 * trustworthy
 
+Consider:
+
+* standard flow (positive cases)
+* edge cases
+* failing flows (negative cases)
+
+(see equivalence partitioning)
+
 ### Unit Tests
 
 Unit tests should be "FIRST" (fast, isolated/independent, repeatable, self-validating, thorough).
@@ -91,7 +99,7 @@ To sum it up, we are testing execution logic that can be called from outside of 
 
 ## Integration Tests
 
-By using WebApplicationFactory we can execute isolated tests in-memory. 
+By using a custom WebApplicationFactory we can execute isolated tests in-memory. 
 This mode helps in REST-based tests, but is not compatible with Selenium tests requiring a publicly available service.
 
 Hereby we see methods that instrument the code that is checked by the integration test to be able to evaluate the code coverage.
@@ -115,6 +123,7 @@ https://learn.microsoft.com/en-us/visualstudio/test/microsoft-code-coverage-cons
 * With the Given part (use intelliSense) you can spin-up a browser and optionally a System-Under-Test (SUT) in-memory or public (meaning reachable via network outside the test).
   * use public SUT configuration for UI tests, because the web driver spawns outside the unit test in a separate process.
   * consider to use components for mocking / test doubles
+  * Opinionated: use Moq for mocking
 * With the When part (use intelliSense) you can perform the main action and here no action means a prepared test, that can not yet be evaluated properly.
 * With the Then part (use intelliSense) you can perform checks on the action.
   * Consider to install an Assertion Library helping you writing more meaningful assertions.

@@ -23,7 +23,7 @@ public interface IRunner
     /// An object that will point to the runner.
     /// The interface helps to reduce the set of options to only the appropriate in the sequence.
     /// </returns>
-    IGiven Given(string description, Action<Dictionary<string, object?>>? action = null);
+    IGiven Given(string description, Action<RunStore>? action = null);
 
     /// <summary>
     /// Allows to define the Then-Action in a Given-When-Then sequence.

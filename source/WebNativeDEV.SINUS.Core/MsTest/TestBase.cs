@@ -56,14 +56,14 @@ public abstract class TestBase
     }
 
     /// <summary>
-    /// Gets a logger factory to create a logger object.
-    /// </summary>
-    public ILoggerFactory LoggerFactory => this.loggerFactory ??= DefaultLoggerFactory;
-
-    /// <summary>
     /// Gets or sets the TestContext injected by the framework.
     /// </summary>
     public TestContext? TestContext { get; set; }
+
+    /// <summary>
+    /// Gets a logger factory to create a logger object.
+    /// </summary>
+    public ILoggerFactory LoggerFactory => this.loggerFactory ??= DefaultLoggerFactory;
 
     /// <summary>
     /// Gets the run directory where tests are executed.
@@ -73,7 +73,8 @@ public abstract class TestBase
         get
         {
             this.Logger.LogDebug("RunDir accessed");
-            return testContextAssembly?.TestRunDirectory ?? ".";
+            return (testContextAssembly?.TestRunDirectory ??
+                this.TestContext?.TestRunDirectory) ?? ".";
         }
     }
 
@@ -85,7 +86,8 @@ public abstract class TestBase
         get
         {
             this.Logger.LogDebug("LogDir accessed");
-            return testContextAssembly?.TestLogsDir ?? ".";
+            return (testContextAssembly?.TestLogsDir ??
+                this.TestContext?.TestLogsDir) ?? ".";
         }
     }
 

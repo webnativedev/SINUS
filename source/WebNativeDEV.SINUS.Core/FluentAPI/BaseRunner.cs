@@ -37,7 +37,7 @@ internal abstract class BaseRunner : IDisposable
         this.Logger = this.TestBase.LoggerFactory.CreateLogger<BrowserRunner>();
         this.Logger.LogDebug("Created a log for base-runner");
 
-        this.DataBag = new Dictionary<string, object?>();
+        this.DataBag = new RunStore(this.TestBase.LoggerFactory);
         this.Exceptions = new List<(RunCategory, Exception)>();
         this.disposables = new List<IDisposable>();
     }
@@ -47,7 +47,10 @@ internal abstract class BaseRunner : IDisposable
     /// </summary>
     protected bool IsPreparedOnly { get; set; }
 
-    protected List<(RunCategory, Exception)> Exceptions { get; set; }
+    /// <summary>
+    /// Gets the exceptions that occured during the execution.
+    /// </summary>
+    protected List<(RunCategory, Exception)> Exceptions { get; }
 
     /// <summary>
     /// Gets the list of disposables (= the list of objects to automatically dispose).
@@ -63,7 +66,7 @@ internal abstract class BaseRunner : IDisposable
     /// <summary>
     /// Gets the current state of the test run.
     /// </summary>
-    protected Dictionary<string, object?> DataBag { get; }
+    protected RunStore DataBag { get; }
 
     /// <summary>
     /// Gets the reference to the TestBase that creates the runner.
@@ -125,18 +128,10 @@ internal abstract class BaseRunner : IDisposable
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(endpoint))
-                {
-                    var privateBuilder = new WebApplicationFactory<TProgram>();
-                    this.httpClient = privateBuilder.CreateClient();
-                    builder = privateBuilder;
-                }
-                else
-                {
-                    var publicBuilder = new SinusWebApplicationFactory<TProgram>(endpoint);
-                    this.httpClient = publicBuilder.CreateClient();
-                    builder = publicBuilder;
-                }
+                // if endpoint is null then in-memory, else public
+                var waf = new SinusWebApplicationFactory<TProgram>(endpoint);
+                this.httpClient = waf.CreateClient();
+                builder = waf;
 
                 break;
             }
@@ -176,12 +171,7 @@ internal abstract class BaseRunner : IDisposable
                     this.httpClient?.Dispose();
                     this.httpClient = null;
 
-                    this.DataBag
-                        .Values
-                        .Where(x => x != null)
-                        .OfType<IDisposable>()
-                        .ToList()
-                        .ForEach(d => d.Dispose());
+                    this.DataBag.DisposeAllDisposables();
 
                     this.disposables
                         .Where(x => x != null)
