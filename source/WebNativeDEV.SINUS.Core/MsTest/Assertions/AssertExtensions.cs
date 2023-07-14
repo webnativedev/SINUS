@@ -37,4 +37,19 @@ public static class AssertExtensions
 
         Assert.AreEqual(expected, actual);
     }
+
+    /// <summary>
+    /// Covers an action to check for exceptions.
+    /// </summary>
+    /// <param name="assert">Instance to the object to extend.</param>
+    /// <param name="action">The action that should be exceptionless.</param>
+    public static void NoExceptionOccurs(this Assert assert, Action action)
+    {
+        if (assert is null)
+        {
+            throw new ArgumentNullException(nameof(assert));
+        }
+
+        action?.Invoke();
+    }
 }

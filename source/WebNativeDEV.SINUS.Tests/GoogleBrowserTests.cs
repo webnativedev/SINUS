@@ -1,4 +1,4 @@
-// <copyright file="BrowserTests.cs" company="WebNativeDEV">
+// <copyright file="GoogleBrowserTests.cs" company="WebNativeDEV">
 // Copyright (c) Daniel Kienböck. All Rights Reserved. Licensed under the MIT License. See LICENSE in the project root for license information.
 // </copyright>
 
@@ -14,7 +14,7 @@ using WebNativeDEV.SINUS.MsTest.Chrome;
 /// These tests demonstrate the basic usage of the ui driven test base.
 /// </summary>
 [TestClass]
-public sealed class BrowserTests : ChromeTestBase
+public sealed class GoogleBrowserTests : ChromeTestBase
 {
     private (string, string) Google { get; } = ("Google", "https://www.google.at");
 

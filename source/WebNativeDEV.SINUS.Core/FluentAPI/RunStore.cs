@@ -66,6 +66,17 @@ public class RunStore
     }
 
     /// <summary>
+    /// Stores an instance without the need of a key.
+    /// The key will be generated using GUIDs.
+    /// </summary>
+    /// <param name="item">The item to store.</param>
+    /// <returns>An instance of the store to be used as fluent api.</returns>
+    public RunStore Store(object item)
+    {
+        return this.Store(Guid.NewGuid().ToString(), item);
+    }
+
+    /// <summary>
     /// Stores the value that is actually calculated normally in a When block.
     /// </summary>
     /// <param name="item">The item to store.</param>
@@ -76,14 +87,13 @@ public class RunStore
     }
 
     /// <summary>
-    /// Stores an instance without the need of a key.
-    /// The key will be generated using GUIDs.
+    /// Stores the System under test.
     /// </summary>
-    /// <param name="item">The item to store.</param>
+    /// <param name="systemUnderTest">The system under test.</param>
     /// <returns>An instance of the store to be used as fluent api.</returns>
-    public RunStore Store(object item)
+    public RunStore StoreSut(object systemUnderTest)
     {
-        return this.Store(Guid.NewGuid().ToString(), item);
+        return this.Store(KeySut, systemUnderTest);
     }
 
     /// <summary>
@@ -116,20 +126,7 @@ public class RunStore
             throw new InvalidOperationException("no distinct result possible");
         }
 
-        return (T)result.First();
-    }
-
-    /// <summary>
-    /// Disposes all items that are IDisposable.
-    /// </summary>
-    public void DisposeAllDisposables()
-    {
-        this.store
-            .Values
-            .Where(x => x != null)
-            .OfType<IDisposable>()
-            .ToList()
-            .ForEach(d => d.Dispose());
+        return (T)(result.FirstOrDefault() ?? throw new InvalidOperationException("no result"));
     }
 
     /// <summary>
@@ -140,16 +137,6 @@ public class RunStore
     public T ReadActual<T>()
     {
         return this.Read<T>(KeyActual);
-    }
-
-    /// <summary>
-    /// Stores the System under test.
-    /// </summary>
-    /// <param name="systemUnderTest">The system under test.</param>
-    /// <returns>An instance of the store to be used as fluent api.</returns>
-    public RunStore StoreSut(object systemUnderTest)
-    {
-        return this.Store(KeySut, systemUnderTest);
     }
 
     /// <summary>
@@ -169,11 +156,24 @@ public class RunStore
     {
         this.logger.LogInformation("+----------------------------");
 
-        foreach(var key in this.store.Keys)
+        foreach (var key in this.store.Keys)
         {
             this.logger.LogInformation("| {Key}: {Value}", key, this.store[key]);
         }
 
         this.logger.LogInformation("+----------------------------");
+    }
+
+    /// <summary>
+    /// Disposes all items that are IDisposable.
+    /// </summary>
+    public void DisposeAllDisposables()
+    {
+        this.store
+            .Values
+            .Where(x => x != null)
+            .OfType<IDisposable>()
+            .ToList()
+            .ForEach(d => d.Dispose());
     }
 }

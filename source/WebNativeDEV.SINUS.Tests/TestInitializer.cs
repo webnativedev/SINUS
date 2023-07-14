@@ -6,6 +6,7 @@ namespace WebNativeDEV.SINUS.Tests;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Runtime.CompilerServices;
+using WebNativeDEV.SINUS.Core.MsTest.Assertions;
 using WebNativeDEV.SINUS.Core.MsTest.Chrome.Extensions;
 using WebNativeDEV.SINUS.Core.MsTest.Extensions;
 using WebNativeDEV.SINUS.MsTest.Chrome;
@@ -39,8 +40,8 @@ public class TestInitializer : ChromeTestBase
     /// </summary>
     [TestMethod]
     public void Maintenance_CountOfResultFoldersBelow200()
-        => this.CountResultFoldersBelowParameter(
-                max: 200);
+        => Assert.That.NoExceptionOccurs(
+            () => this.CountResultFoldersBelowParameter(max: 200));
 
     /// <summary>
     /// Maintenance test related to zombie processes.
@@ -48,7 +49,15 @@ public class TestInitializer : ChromeTestBase
     /// </summary>
     [TestMethod]
     public void Maintenance_ProcessesKilled()
-        => this.CountZombieProcesses(maxAgeOfProessInMinutes: 2);
+        => Assert.That.NoExceptionOccurs(() => this.CountZombieProcesses(maxAgeOfProessInMinutes: 2));
+
+    /// <summary>
+    /// Maintenance test related to zombie processes.
+    /// Fails if too old processes stay on the machine.
+    /// </summary>
+    [TestMethod]
+    public void Maintenance_PrintBrowserUsage()
+        => Assert.That.NoExceptionOccurs(() => PrintBrowserUsageStatistic());
 
     /// <summary>
     /// Maintenance Print Meta-Data.

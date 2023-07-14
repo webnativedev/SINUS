@@ -11,7 +11,7 @@ using WebNativeDEV.SINUS.SystemUnderTest.Services.Abstractions;
 /// </summary>
 public class MockTimeProvider : ITimeProvider
 {
-    private static readonly DateTime MockedTimeStamp = new (2023, 4, 4, 17, 08, 59);
+    private static readonly DateTime MockedTimeStamp = new (2023, 4, 4, 17, 08, 59, DateTimeKind.Utc);
 
     /// <inheritdoc/>
     public int GetCurrentSeconds() => MockedTimeStamp.Second;

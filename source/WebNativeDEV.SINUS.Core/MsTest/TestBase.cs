@@ -122,19 +122,19 @@ public abstract class TestBase
     /// </summary>
     protected static void PrintBrowserUsageStatistic()
     {
-        var logger = DefaultLoggerFactory.CreateLogger<TestBase>();
-        logger.LogInformation("+--------------------------------");
-        logger.LogInformation("| Tests Including Browsers");
+        var usageLogger = DefaultLoggerFactory.CreateLogger<TestBase>();
+        usageLogger.LogInformation("+--------------------------------");
+        usageLogger.LogInformation("| Tests Including Browsers");
 
         foreach(var id in Browser.TestsIncludingBrowsers)
         {
             var disposedInfo = Browser.TestsDisposingBrowsers.Contains(id)
                                     ? "disposed"
                                     : "leak";
-            logger.LogInformation("| {Id} ({DisposedInfo})", id, disposedInfo);
+            usageLogger.LogInformation("| {Id} ({DisposedInfo})", id, disposedInfo);
         }
 
-        logger.LogInformation("+--------------------------------");
+        usageLogger.LogInformation("+--------------------------------");
     }
 
     /// <summary>
