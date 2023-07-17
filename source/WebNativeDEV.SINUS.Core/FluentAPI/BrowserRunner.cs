@@ -100,22 +100,15 @@ internal sealed class BrowserRunner : Runner, IBrowserRunner, IGivenBrowser, IWh
     }
 
     /// <inheritdoc/>
-    public IThenBrowser Then(string description, Action<IBrowser, RunStore>[] actions)
+    public IThenBrowser Then(string description, params Action<IBrowser, RunStore>[] actions)
     {
-        var actionCount = actions.Length;
-        for (int i = 0; i < actionCount; i++)
-        {
-            var action = actions[i];
-            string prefix = actionCount == 1
-                ? string.Empty
-                : $"{i + 1:00}: ";
+        List<Action> pureAction = new();
+        actions.ToList().ForEach(action => pureAction.Add(() => action?.Invoke(this.DataBag)));
 
-            this.Run(RunCategory.Then, $"{prefix}{description}", () => action?.Invoke(
-                this.browser ?? throw new InvalidOperationException("no browser created"),
-                this.DataBag));
-        }
-
-        return this;
+        return (IThen)this.Run(
+                RunCategory.Then,
+                description,
+                pureAction);
     }
 
     /// <inheritdoc/>

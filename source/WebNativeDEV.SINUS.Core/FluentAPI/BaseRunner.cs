@@ -120,6 +120,32 @@ internal abstract class BaseRunner : IDisposable
     }
 
     /// <summary>
+    /// Basic execution of each step.
+    /// </summary>
+    /// <param name="category">Part of the flow (given, when, then).</param>
+    /// <param name="description">Human readable description what is going to be performed.</param>
+    /// <param name="actions">The array of action to be executed.</param>
+    /// <returns>A reference to the runner for Fluent API purpose.</returns>
+    protected BaseRunner Run(RunCategory category, string description, IList<Action> actions)
+    {
+        var actionCount = actions.Count;
+        for (int i = 0; i < actionCount; i++)
+        {
+            var action = actions[i];
+            string prefix = actionCount == 1
+                ? string.Empty
+                : $"{i + 1:00}: ";
+
+            this.Run(
+                category,
+                $"{prefix}{description}",
+                () => action?.Invoke());
+        }
+
+        return this;
+    }
+
+    /// <summary>
     /// Creates a system under test.
     /// </summary>
     /// <typeparam name="TProgram">The type to bootstrap the Sut.</typeparam>

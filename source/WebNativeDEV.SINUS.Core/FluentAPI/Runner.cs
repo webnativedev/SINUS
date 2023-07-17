@@ -7,6 +7,7 @@ namespace WebNativeDEV.SINUS.Core.FluentAPI;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Logging;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
@@ -72,20 +73,15 @@ internal class Runner : BaseRunner, IRunner, IGiven, IGivenWithSut, IWhen, IThen
     }
 
     /// <inheritdoc/>
-    public IThen Then(string description, Action<RunStore>[] actions)
+    public IThen Then(string description, params Action<RunStore>[] actions)
     {
-        var actionCount = actions.Length;
-        for (int i = 0; i < actionCount; i++)
-        {
-            var action = actions[i];
-            string prefix = actionCount == 1
-                ? string.Empty
-                : $"{i + 1:00}: ";
+        List<Action> pureAction = new();
+        actions.ToList().ForEach(action => pureAction.Add(() => action?.Invoke(this.DataBag)));
 
-            this.Run(RunCategory.Then, $"{prefix}{description}", () => action?.Invoke(this.DataBag));
-        }
-
-        return this;
+        return (IThen)this.Run(
+                RunCategory.Then,
+                description,
+                pureAction);
     }
 
     /// <inheritdoc/>
