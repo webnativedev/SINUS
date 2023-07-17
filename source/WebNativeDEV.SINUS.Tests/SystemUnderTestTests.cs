@@ -22,14 +22,6 @@ public sealed partial class SystemUnderTestTests : ChromeTestBase
     private readonly (string?, string?) simpleView = ("SimpleView", "/simpleView");
 
     [TestMethod]
-    public void Given_ASystemUnderTest_When_StepsAreTaken_Then_ACheckVerifiesTheIdea()
-        => this.Test()
-            .Given("a SUT")
-            .When("steps are taken")
-            .Then("verification is done")
-            .Dispose();
-
-    [TestMethod]
     [DoNotParallelize]
     public void Given_Sut_When_CallingView_Then_SeleniumBrowsable_WithRunner()
         => this.Test()

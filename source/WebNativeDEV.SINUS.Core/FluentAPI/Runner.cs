@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Logging;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 using WebNativeDEV.SINUS.Core.MsTest.Sut;
+using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 using WebNativeDEV.SINUS.MsTest;
 
 /// <summary>
@@ -71,11 +72,21 @@ internal class Runner : BaseRunner, IRunner, IGiven, IGivenWithSut, IWhen, IThen
     }
 
     /// <inheritdoc/>
-    public IThen Then(string description, Action<RunStore>? action = null)
-        => (IThen)this.Run(
-            RunCategory.Then,
-            description,
-            () => action?.Invoke(this.DataBag));
+    public IThen Then(string description, Action<RunStore>[] actions)
+    {
+        var actionCount = actions.Length;
+        for (int i = 0; i < actionCount; i++)
+        {
+            var action = actions[i];
+            string prefix = actionCount == 1
+                ? string.Empty
+                : $"{i + 1:00}: ";
+
+            this.Run(RunCategory.Then, $"{prefix}{description}", () => action?.Invoke(this.DataBag));
+        }
+
+        return this;
+    }
 
     /// <inheritdoc/>
     public IDisposable Debug(Action<RunStore>? action = null)

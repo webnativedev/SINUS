@@ -73,6 +73,7 @@ public sealed class GoogleBrowserTests : ChromeTestBase
 
     [TestMethod]
     [TestCategory("external")]
+    [ExpectedException(typeof(AssertInconclusiveException))]
     public void Given_ABrowserLoadingGoogle_When_Nothing_Then_ResultInconclusive()
     => this.Test()
         .GivenABrowserAt(this.Google)

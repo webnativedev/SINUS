@@ -105,7 +105,12 @@ internal abstract class BaseRunner : IDisposable
             }
             catch (Exception exc)
             {
-                this.Logger.LogError(exc, "Exception occured in execution of {Category}", category);
+                this.Logger.LogError(
+                    exc,
+                    "Exception occured in execution of {Category} - {ExcClass}: {ExcMessage}",
+                    category,
+                    exc.GetType().ToString(),
+                    exc.Message);
                 this.Exceptions.Add((category, exc));
             }
             #pragma warning restore CA1031 // do not catch general exception types
