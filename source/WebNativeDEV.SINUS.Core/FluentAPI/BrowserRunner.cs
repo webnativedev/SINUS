@@ -103,9 +103,13 @@ internal sealed class BrowserRunner : Runner, IBrowserRunner, IGivenBrowser, IWh
     public IThenBrowser Then(string description, params Action<IBrowser, RunStore>[] actions)
     {
         List<Action> pureAction = new();
-        actions.ToList().ForEach(action => pureAction.Add(() => action?.Invoke(this.DataBag)));
+        actions.ToList().ForEach(action => 
+            pureAction.Add(
+                () => action?.Invoke(
+                    this.browser ?? throw new InvalidOperationException("no browser created"),
+                    this.DataBag)));
 
-        return (IThen)this.Run(
+        return (IThenBrowser)this.Run(
                 RunCategory.Then,
                 description,
                 pureAction);
