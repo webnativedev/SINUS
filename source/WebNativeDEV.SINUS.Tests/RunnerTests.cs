@@ -109,7 +109,7 @@ public class RunnerTests : TestBase
         this.Test()
             .Given("A setup without code", data => data["test"] = 11)
             .When("An excecution without code")
-            .Then("A validation without code", data => data["test2"] = 22)
+            .Then("A validation without code", data => data["test2"] = data["test"])
             .DebugPrint()
             .Dispose();
     }

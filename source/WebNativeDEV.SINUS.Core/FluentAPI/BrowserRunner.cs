@@ -60,7 +60,8 @@ internal sealed class BrowserRunner : Runner, IBrowserRunner, IGivenBrowser, IWh
     => (IGivenBrowser)this.Run(
             RunCategory.Given,
             $"a Browser at {url} - {humanReadablePageName}",
-            () => this.browser = this.Factory.CreateBrowser(url, this.TestBase.TestName));
+            () => this.browser = this.Factory.CreateBrowser(url, this.TestBase.TestName),
+            false);
 
     /// <inheritdoc/>
     public IGivenBrowser GivenASystemAndABrowserAt<TProgram>(string? humanReadablePageName, string endpoint, string url)
@@ -77,7 +78,8 @@ internal sealed class BrowserRunner : Runner, IBrowserRunner, IGivenBrowser, IWh
             {
                 this.CreateSut<TProgram>(endpoint);
                 this.GivenABrowserAt(humanReadablePageName, url);
-            });
+            },
+            false);
 
     /// <inheritdoc/>
     public IGivenBrowser GivenASystemAndABrowserAtDefaultEndpoint<TProgram>((string? humanReadablePageName, string? browserPageToStart) page)
@@ -94,32 +96,39 @@ internal sealed class BrowserRunner : Runner, IBrowserRunner, IGivenBrowser, IWh
     {
         this.IsPreparedOnly = this.IsPreparedOnly || action == null;
 
-        return (IWhenBrowser)this.Run(RunCategory.When, description, () => action?.Invoke(
-            this.browser ?? throw new InvalidOperationException("no browser created"),
-            this.DataBag));
+        return (IWhenBrowser)this.Run(
+            RunCategory.When,
+            description,
+            () => action?.Invoke(
+                this.browser ?? throw new InvalidOperationException("no browser created"),
+                this.DataBag),
+            false);
     }
 
     /// <inheritdoc/>
     public IThenBrowser Then(string description, params Action<IBrowser, RunStore>[] actions)
     {
         List<Action> pureAction = new();
-        actions.ToList().ForEach(action => 
-            pureAction.Add(
-                () => action?.Invoke(
-                    this.browser ?? throw new InvalidOperationException("no browser created"),
-                    this.DataBag)));
+        actions.ToList().ForEach(action => pureAction.Add(() => action?.Invoke(
+            this.browser ?? throw new InvalidOperationException("no browser created"),
+            this.DataBag)));
 
         return (IThenBrowser)this.Run(
                 RunCategory.Then,
                 description,
-                pureAction);
+                pureAction,
+                true);
     }
 
     /// <inheritdoc/>
     public IDisposable Debug(Action<IBrowser, RunStore>? action = null)
-        => (IDisposable)this.Run(RunCategory.Debug, string.Empty, () => action?.Invoke(
-            this.browser ?? throw new InvalidOperationException("no browser created"),
-            this.DataBag));
+        => this.Run(
+            RunCategory.Debug,
+            string.Empty,
+            () => action?.Invoke(
+                this.browser ?? throw new InvalidOperationException("no browser created"),
+                this.DataBag),
+            true);
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
@@ -128,11 +137,15 @@ internal sealed class BrowserRunner : Runner, IBrowserRunner, IGivenBrowser, IWh
         {
             if (disposing)
             {
-                this.Run(RunCategory.Dispose, "Dispose browser", () =>
-                {
-                    this.browser?.Dispose();
-                    this.browser = null;
-                });
+                this.Run(
+                    RunCategory.Dispose,
+                    "Dispose browser",
+                    () =>
+                    {
+                        this.browser?.Dispose();
+                        this.browser = null;
+                    },
+                    true);
             }
 
             this.disposedValue = true;

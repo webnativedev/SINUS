@@ -93,15 +93,25 @@ internal abstract class BaseRunner : IDisposable
     /// <param name="category">Part of the flow (given, when, then).</param>
     /// <param name="description">Human readable description what is going to be performed.</param>
     /// <param name="action">The action to be executed.</param>
+    /// <param name="shouldRunIfAlreadyExceptionOccured">Indicates whether execution should take place or not.</param>
     /// <returns>A reference to the runner for Fluent API purpose.</returns>
-    protected BaseRunner Run(RunCategory category, string description, Action action)
+    protected BaseRunner Run(RunCategory category, string description, Action action, bool shouldRunIfAlreadyExceptionOccured)
     {
         using (this.Logger.CreatePerformanceDataScope(category.ToString(), description))
         {
-            #pragma warning disable CA1031 // do not catch general exception types
+#pragma warning disable CA1031 // do not catch general exception types
             try
             {
-                action?.Invoke();
+                if (this.Exceptions.Count == 0 || shouldRunIfAlreadyExceptionOccured)
+                {
+                    action?.Invoke();
+                }
+                else
+                {
+                    this.Logger.LogInformation(
+                        "execution of {Category} skipped, because exceptions are already tracked",
+                        category);
+                }
             }
             catch (Exception exc)
             {
@@ -113,7 +123,7 @@ internal abstract class BaseRunner : IDisposable
                     exc.Message);
                 this.Exceptions.Add((category, exc));
             }
-            #pragma warning restore CA1031 // do not catch general exception types
+#pragma warning restore CA1031 // do not catch general exception types
         }
 
         return this;
@@ -125,8 +135,9 @@ internal abstract class BaseRunner : IDisposable
     /// <param name="category">Part of the flow (given, when, then).</param>
     /// <param name="description">Human readable description what is going to be performed.</param>
     /// <param name="actions">The array of action to be executed.</param>
+    /// <param name="shouldRunIfAlreadyExceptionOccured">Indicates whether execution should take place or not.</param>
     /// <returns>A reference to the runner for Fluent API purpose.</returns>
-    protected BaseRunner Run(RunCategory category, string description, IList<Action> actions)
+    protected BaseRunner Run(RunCategory category, string description, IList<Action> actions, bool shouldRunIfAlreadyExceptionOccured)
     {
         var actionCount = actions.Count;
         for (int i = 0; i < actionCount; i++)
@@ -139,7 +150,8 @@ internal abstract class BaseRunner : IDisposable
             this.Run(
                 category,
                 $"{prefix}{description}",
-                () => action?.Invoke());
+                () => action?.Invoke(),
+                shouldRunIfAlreadyExceptionOccured);
         }
 
         return this;
@@ -196,27 +208,31 @@ internal abstract class BaseRunner : IDisposable
         {
             if (disposing)
             {
-                this.Run(RunCategory.Dispose, "Dispose objects", () =>
-                {
-                    this.httpClient?.CancelPendingRequests();
-                    this.httpClient?.Dispose();
-                    this.httpClient = null;
+                this.Run(
+                    RunCategory.Dispose,
+                    "Dispose objects",
+                    () =>
+                    {
+                        this.httpClient?.CancelPendingRequests();
+                        this.httpClient?.Dispose();
+                        this.httpClient = null;
 
-                    this.DataBag.DisposeAllDisposables();
+                        this.DataBag.DisposeAllDisposables();
 
-                    this.disposables
-                        .Where(x => x != null)
-                        .OfType<IDisposable>()
-                        .ToList()
-                        .ForEach(d => d.Dispose());
-                });
+                        this.disposables
+                            .Where(x => x != null)
+                            .OfType<IDisposable>()
+                            .ToList()
+                            .ForEach(d => d.Dispose());
+                    },
+                    true);
 
                 if (this.IsPreparedOnly)
                 {
                     Assert.Inconclusive("The test is considered inconclusive, because it was rated 'only-prepared' when seeing no 'When'-part.");
                 }
 
-                if(this.Exceptions.Any())
+                if (this.Exceptions.Any())
                 {
                     Assert.Fail($"Exceptions occured. Count: {this.Exceptions.Count}");
                 }

@@ -36,6 +36,7 @@ public class SimpleTests : TestBase
     }
 
     [TestMethod]
+    [ExpectedException(typeof(AssertInconclusiveException))]
     public void Given_TheMockTimeProvider_When_GettingTheCurrentSeconds_Then_ValueEquals59_AsGherkinPreparation()
     {
         this.Test()

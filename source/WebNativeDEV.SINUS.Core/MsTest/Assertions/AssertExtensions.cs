@@ -8,6 +8,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using WebNativeDEV.SINUS.Core.FluentAPI;
 
+#pragma warning disable IDE0060 // Remove unused parameter
+
 /// <summary>
 /// Custom Assert functions.
 /// </summary>
@@ -23,11 +25,6 @@ public static class AssertExtensions
     /// <param name="expected">Value to compare against (including type check).</param>
     public static void AreEqualToActual<T>(this Assert assert, RunStore store, T expected)
     {
-        if (assert is null)
-        {
-            throw new ArgumentNullException(nameof(assert));
-        }
-
         if (store is null)
         {
             throw new ArgumentNullException(nameof(store));
@@ -45,11 +42,23 @@ public static class AssertExtensions
     /// <param name="action">The action that should be exceptionless.</param>
     public static void NoExceptionOccurs(this Assert assert, Action action)
     {
-        if (assert is null)
+        string? exceptionMessage = null;
+
+#pragma warning disable CA1031 // Don't catch generic exceptions
+
+        try
         {
-            throw new ArgumentNullException(nameof(assert));
+            (action ?? throw new ArgumentNullException(nameof(action))).Invoke();
+        }
+        catch (Exception exc)
+        {
+            exceptionMessage = exc.Message;
         }
 
-        action?.Invoke();
+        Assert.IsNull(exceptionMessage, "Exception occured while executing action.");
+
+#pragma warning restore CA1031
     }
 }
+
+#pragma warning restore IDE0060

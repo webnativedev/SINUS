@@ -10,7 +10,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebNativeDEV.SINUS.Core.MsTest.Assertions;
 using WebNativeDEV.SINUS.MsTest.Chrome;
+using WebNativeDEV.SINUS.SystemUnderTest;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'Type_or_Member'.
 #pragma warning disable SA1600 // Elements should be documented
@@ -18,4 +20,24 @@ using WebNativeDEV.SINUS.MsTest.Chrome;
 [TestClass]
 public class SimpleBrowserTests : ChromeTestBase
 {
+    private const string SimpleViewTitle = "SINUS TestSystem";
+    private readonly (string?, string?) simpleView = ("SimpleView", "/simpleView");
+
+    [TestMethod]
+    [DoNotParallelize]
+    public void Given_AWebsite_When_CreatingScreenshot_Then_NoExceptionShouldOccur()
+        => this.Test()
+            .GivenASystemAndABrowserAtDefaultEndpoint<Program>(this.simpleView)
+            .When("making a screenshot", (browser, data) => browser.TakeScreenshot())
+            .Then("no exception should occur")
+            .Dispose();
+
+    [TestMethod]
+    [DoNotParallelize]
+    public void Given_AWebsite_When_StoringTheTitle_Then_ItShouldBeCorrect()
+        => this.Test()
+            .GivenASystemAndABrowserAtDefaultEndpoint<Program>(this.simpleView)
+            .When("storing the title", (browser, data) => data.StoreActual(browser?.Title))
+            .Then("it should equal to the real title", (browser, data) => Assert.That.AreEqualToActual(data, SimpleViewTitle))
+            .Dispose();
 }

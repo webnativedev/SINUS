@@ -73,7 +73,11 @@ public class TestInitializer : ChromeTestBase
                 data["runDir"] = this.RunDir;
                 data["testName"] = this.TestName;
             })
-            .Then("all data should be not null")
+            .Then(
+                "all data should be not null",
+                data => Assert.IsNotNull(data["logsDir"]),
+                data => Assert.IsNotNull(data["runDir"]),
+                data => Assert.IsNotNull(data["testName"]))
             .DebugPrint();
     }
 }

@@ -41,7 +41,11 @@ internal class Runner : BaseRunner, IRunner, IGiven, IGivenWithSut, IWhen, IThen
 
     /// <inheritdoc/>
     public IGiven Given(string description, Action<RunStore>? action = null)
-        => (IGiven)this.Run(RunCategory.Given, description, () => action?.Invoke(this.DataBag));
+        => (IGiven)this.Run(
+            RunCategory.Given,
+            description,
+            () => action?.Invoke(this.DataBag),
+            false);
 
     /// <inheritdoc/>
     public IGivenWithSut GivenASystem<TProgram>(string description)
@@ -49,14 +53,19 @@ internal class Runner : BaseRunner, IRunner, IGiven, IGivenWithSut, IWhen, IThen
         => (IGivenWithSut)this.Run(
                 RunCategory.Given,
                 $"a SUT in memory: " + description,
-                () => this.CreateSut<TProgram>());
+                () => this.CreateSut<TProgram>(),
+                false);
 
     /// <inheritdoc/>
     public IWhen When(string description, Action<RunStore>? action = null)
     {
         this.IsPreparedOnly = this.IsPreparedOnly || action == null;
 
-        return (IWhen)this.Run(RunCategory.When, description, () => action?.Invoke(this.DataBag));
+        return (IWhen)this.Run(
+            RunCategory.When,
+            description,
+            () => action?.Invoke(this.DataBag),
+            false);
     }
 
     /// <inheritdoc/>
@@ -69,7 +78,8 @@ internal class Runner : BaseRunner, IRunner, IGiven, IGivenWithSut, IWhen, IThen
             description,
             () => action?.Invoke(
                 this.HttpClient,
-                this.DataBag));
+                this.DataBag),
+            false);
     }
 
     /// <inheritdoc/>
@@ -81,17 +91,23 @@ internal class Runner : BaseRunner, IRunner, IGiven, IGivenWithSut, IWhen, IThen
         return (IThen)this.Run(
                 RunCategory.Then,
                 description,
-                pureAction);
+                pureAction,
+                true);
     }
 
     /// <inheritdoc/>
     public IDisposable Debug(Action<RunStore>? action = null)
-        => this.Run(RunCategory.Debug, string.Empty, () => action?.Invoke(this.DataBag));
+        => this.Run(
+            RunCategory.Debug,
+            string.Empty,
+            () => action?.Invoke(this.DataBag),
+            true);
 
     /// <inheritdoc/>
     public IDisposable DebugPrint()
         => this.Run(
                 RunCategory.Debug,
                 string.Empty,
-                () => this.DataBag.Print());
+                () => this.DataBag.Print(),
+                true);
 }

@@ -30,8 +30,8 @@ public class SinusConsoleFormatter : ConsoleFormatter, IDisposable
     public SinusConsoleFormatter(IOptionsMonitor<ConsoleFormatterOptions> options)
         : base("SinusConsoleFormatter")
     {
-        (this.optionsReloadToken, this.formatterOptions) =
-            (options.OnChange(this.ReloadLoggerOptions), options?.CurrentValue ?? new ConsoleFormatterOptions());
+        this.optionsReloadToken = options?.OnChange(this.ReloadLoggerOptions);
+        this.formatterOptions = options?.CurrentValue ?? new ConsoleFormatterOptions();
     }
 
     /// <summary>

@@ -17,7 +17,7 @@ public class RunStore
     private const string KeyActual = "actual";
     private const string KeySut = "SystemUnderTest";
 
-    private readonly Dictionary<string, object> store = new();
+    private readonly Dictionary<string, object?> store = new();
     private readonly ILogger logger;
 
     /// <summary>
@@ -34,11 +34,11 @@ public class RunStore
     /// </summary>
     /// <param name="key">The key to find values.</param>
     /// <returns>An object represented by the key.</returns>
-    public object this[string key]
+    public object? this[string key]
     {
         get
         {
-            return this.Read<object>(key);
+            return this.Read<object?>(key);
         }
 
         set
@@ -54,13 +54,8 @@ public class RunStore
     /// <param name="item">An instance to store.</param>
     /// <returns>An instance of the store to be used as fluent api.</returns>
     /// <exception cref="ArgumentNullException">Item should not be null.</exception>
-    public RunStore Store(string key, object item)
+    public RunStore Store(string key, object? item)
     {
-        if (item is null)
-        {
-            throw new ArgumentNullException(nameof(item), "item should not be null");
-        }
-
         this.store.Add(key, item);
         return this;
     }
@@ -71,7 +66,7 @@ public class RunStore
     /// </summary>
     /// <param name="item">The item to store.</param>
     /// <returns>An instance of the store to be used as fluent api.</returns>
-    public RunStore Store(object item)
+    public RunStore Store(object? item)
     {
         return this.Store(Guid.NewGuid().ToString(), item);
     }
@@ -81,9 +76,21 @@ public class RunStore
     /// </summary>
     /// <param name="item">The item to store.</param>
     /// <returns>An instance of the store to be used as fluent api.</returns>
-    public RunStore StoreActual(object item)
+    public RunStore StoreActual(object? item)
     {
         return this.Store(KeyActual, item);
+    }
+
+    /// <summary>
+    /// Stores the value that is actually calculated in When.
+    /// </summary>
+    /// <typeparam name="TSut">Type of the system under test.</typeparam>
+    /// <param name="calculationFunction">The block calculating the actual value.</param>
+    /// <returns>An instance of the store to support the fluent api style.</returns>
+    public RunStore StoreActual<TSut>(Func<TSut, object?> calculationFunction)
+    {
+        return this.StoreActual(calculationFunction?.Invoke(this.ReadSut<TSut>())
+            ?? throw new InvalidDataException("Operation returned null value"));
     }
 
     /// <summary>
@@ -91,7 +98,7 @@ public class RunStore
     /// </summary>
     /// <param name="systemUnderTest">The system under test.</param>
     /// <returns>An instance of the store to be used as fluent api.</returns>
-    public RunStore StoreSut(object systemUnderTest)
+    public RunStore StoreSut(object? systemUnderTest)
     {
         return this.Store(KeySut, systemUnderTest);
     }
@@ -155,6 +162,8 @@ public class RunStore
     /// </summary>
     public void Print()
     {
+        this.logger.LogInformation("+----------------------------");
+        this.logger.LogInformation("| Count: {Count}", this.store.Keys.Count);
         this.logger.LogInformation("+----------------------------");
 
         foreach (var key in this.store.Keys)

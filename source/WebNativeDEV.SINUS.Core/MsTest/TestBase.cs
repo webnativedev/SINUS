@@ -86,8 +86,8 @@ public abstract class TestBase
         get
         {
             this.Logger.LogDebug("LogDir accessed");
-            return (testContextAssembly?.TestLogsDir ??
-                this.TestContext?.TestLogsDir) ?? ".";
+            return (testContextAssembly?.TestRunResultsDirectory ??
+                this.TestContext?.TestRunResultsDirectory) ?? ".";
         }
     }
 
@@ -124,9 +124,9 @@ public abstract class TestBase
     {
         var usageLogger = DefaultLoggerFactory.CreateLogger<TestBase>();
         usageLogger.LogInformation("+--------------------------------");
-        usageLogger.LogInformation("| Tests Including Browsers");
+        usageLogger.LogInformation("| Tests Including Browsers: {Count}", Browser.TestsIncludingBrowsers.Count);
 
-        foreach(var id in Browser.TestsIncludingBrowsers)
+        foreach (var id in Browser.TestsIncludingBrowsers)
         {
             var disposedInfo = Browser.TestsDisposingBrowsers.Contains(id)
                                     ? "disposed"
@@ -135,6 +135,7 @@ public abstract class TestBase
         }
 
         usageLogger.LogInformation("+--------------------------------");
+        usageLogger.LogInformation(" ");
     }
 
     /// <summary>
