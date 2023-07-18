@@ -125,4 +125,77 @@ public class RunnerTests : TestBase
             .DebugPrint()
             .Dispose();
     }
+
+    [TestMethod]
+    public void Given_ARunnerWithRunStore_When_StoringDataInDifferentWays_Then_AllShouldBeAvailable()
+    {
+        this.Test()
+            .Given("A RunStore")
+            .When("saving some data", data =>
+            {
+                data.Store(item: (double)1.555);
+                data.Store(key: "key2", item: 2);
+                data.StoreActual(item: "3");
+                data.StoreSut(systemUnderTest: "sut");
+                data.StoreActual<string>(sut => sut + "3");
+                data["key5"] = 5;
+            })
+            .Then(
+                "All data could be read", 
+                data => Assert.AreEqual((double)1.555, data.Read<double>()),
+                data => Assert.AreEqual(2, data.Read<int>("key2")),
+                data => Assert.AreEqual("sut", data.ReadSut<string>()),
+                data => Assert.AreEqual("sut3", data.ReadActual<string>()),
+                data => Assert.AreEqual(5, data["key5"]))
+            .DebugPrint()
+            .Dispose();
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(AssertFailedException))]
+    public void Given_ARunnerWithRunStore_When_StoringActualWithNoMethod_Then_Throw()
+    {
+        this.Test()
+            .Given("A RunStore")
+            .When("saving some data with null as calculation function", data =>
+            {
+                data.StoreActual<string>(null!);
+            })
+            .Then("exception occured")
+            .DebugPrint()
+            .Dispose();
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(AssertFailedException))]
+    public void Given_ARunnerWithRunStore_When_StoringActualAsStringAndReadAsInt_Then_Throw()
+    {
+        this.Test()
+            .Given("A RunStore")
+            .When("saving some data and read with another type", data =>
+            {
+                data.StoreActual("3");
+                var check = data.ReadActual<int>();
+            })
+            .Then("exception occurs")
+            .DebugPrint()
+            .Dispose();
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(AssertFailedException))]
+    public void Given_ARunnerWithRunStore_When_StoringMultipleStrings_Then_CannotReadByType()
+    {
+        this.Test()
+            .Given("A RunStore")
+            .When("saving some strings", data =>
+            {
+                data.Store(item: "1");
+                data.Store(item: "2");
+                var check = data.Read<string>();
+            })
+            .Then("exception occurs")
+            .DebugPrint()
+            .Dispose();
+    }
 }

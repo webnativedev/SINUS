@@ -86,15 +86,15 @@ public class SinusConsoleFormatterTests : TestBase
                 formatter!);
 
         var config = new ConfigureOptions<ConsoleFormatterOptions>(
-            (options) => new ConsoleFormatterOptions()
-            {
-                IncludeScopes = false,
-            });
+            (options) => { });
 
         var postConfig = new PostConfigureOptions<ConsoleFormatterOptions>(
             "abc",
-            (options) => new ConsoleFormatterOptions());
-        var optionsFactory = new OptionsFactory<ConsoleFormatterOptions>(new[] { config }, new[] { postConfig });
+            (options) => { });
+
+        var optionsFactory = new OptionsFactory<ConsoleFormatterOptions>(
+            new[] { config },
+            new[] { postConfig });
 
         var configuration = new ConfigurationBuilder().Build();
         var tokenSource = new ConfigurationChangeTokenSource<ConsoleFormatterOptions>(configuration);

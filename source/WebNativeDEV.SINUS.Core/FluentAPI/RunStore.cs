@@ -56,7 +56,7 @@ public class RunStore
     /// <exception cref="ArgumentNullException">Item should not be null.</exception>
     public RunStore Store(string key, object? item)
     {
-        this.store.Add(key, item);
+        this.store[key] = item;
         return this;
     }
 
