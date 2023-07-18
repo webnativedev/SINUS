@@ -4,7 +4,6 @@
 
 namespace WebNativeDEV.SINUS.SystemUnderTest.Controllers;
 
-using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 
 /// <summary>

@@ -8,11 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.Logging;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
-using WebNativeDEV.SINUS.Core.MsTest.Sut;
-using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 using WebNativeDEV.SINUS.MsTest;
 
 /// <summary>

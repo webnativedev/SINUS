@@ -9,7 +9,6 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using WebNativeDEV.SINUS.Core.UITesting;
 using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 
 /// <summary>

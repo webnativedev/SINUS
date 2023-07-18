@@ -4,18 +4,14 @@
 
 namespace WebNativeDEV.SINUS.MsTest;
 
-using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 using WebNativeDEV.SINUS.Core.FluentAPI;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.Core.UITesting;
-using WebNativeDEV.SINUS.Core.UITesting.Contracts;
-using WebNativeDEV.SINUS.MsTest.Chrome;
 
 /// <summary>
 /// Represents an abstract test base that allows later unit tests to

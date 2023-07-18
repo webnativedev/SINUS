@@ -5,7 +5,6 @@
 namespace WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 
 using System;
-using System.Collections.Generic;
 
 /// <summary>
 /// Represents in the given-when-then sequence the given part.

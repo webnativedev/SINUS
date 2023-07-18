@@ -5,7 +5,6 @@
 namespace WebNativeDEV.SINUS.Tests;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Runtime.CompilerServices;
 using WebNativeDEV.SINUS.Core.MsTest.Assertions;
 using WebNativeDEV.SINUS.Core.MsTest.Chrome.Extensions;
 using WebNativeDEV.SINUS.Core.MsTest.Extensions;

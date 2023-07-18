@@ -4,12 +4,10 @@
 
 namespace WebNativeDEV.SINUS.Core.FluentAPI;
 
-using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 using WebNativeDEV.SINUS.Core.UITesting.Contracts;
-using WebNativeDEV.SINUS.MsTest;
 using WebNativeDEV.SINUS.MsTest.Abstract;
 
 /// <summary>

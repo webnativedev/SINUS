@@ -5,8 +5,6 @@
 namespace WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 
 using System;
-using System.Collections.Generic;
-using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 
 /// <summary>
 /// Represents in the given-when-then sequence the when part.

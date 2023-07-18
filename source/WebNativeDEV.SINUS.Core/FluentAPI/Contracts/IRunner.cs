@@ -5,8 +5,6 @@
 namespace WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 
 using System;
-using System.Collections.Generic;
-using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 
 /// <summary>
 /// Represents an interface that manages the execution of a test based on a given-when-then sequence.

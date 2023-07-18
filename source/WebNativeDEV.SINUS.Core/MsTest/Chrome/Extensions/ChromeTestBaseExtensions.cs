@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
-using WebNativeDEV.SINUS.Core.UITesting;
 using WebNativeDEV.SINUS.MsTest.Chrome;
 
 /// <summary>

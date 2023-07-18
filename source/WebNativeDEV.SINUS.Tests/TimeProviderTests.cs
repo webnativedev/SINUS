@@ -4,13 +4,7 @@
 
 namespace WebNativeDEV.SINUS.Tests;
 
-using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WebNativeDEV.SINUS.MsTest;
 using WebNativeDEV.SINUS.SystemUnderTest.Controllers;
 using WebNativeDEV.SINUS.SystemUnderTest.Services;

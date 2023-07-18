@@ -4,14 +4,14 @@
 
 namespace WebNativeDEV.SINUS.Core.MsTest;
 
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using WebNativeDEV.SINUS.Core.FluentAPI;
-using System.Diagnostics.CodeAnalysis;
 
 /// <summary>
 /// Formatter class that is very much custom for the use case and defines "blocks" for

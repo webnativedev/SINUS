@@ -4,7 +4,6 @@
 
 namespace WebNativeDEV.SINUS.SystemUnderTest.Controllers;
 
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebNativeDEV.SINUS.SystemUnderTest.Services.Abstractions;
 
