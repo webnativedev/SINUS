@@ -28,7 +28,7 @@ internal abstract class BrowserFactory : IBrowserFactory, IDisposable
     protected BrowserFactory(string runDir, string logsDir, ILoggerFactory loggerFactory)
     {
         this.LoggerFactory = loggerFactory;
-        this.Logger.LogDebug("BrowserFactory created {Type} {LogDir} {RunDir}", this.GetType().ToString(), logsDir, runDir);
+        this.Logger.LogInformation("BrowserFactory created {Type} {LogDir} {RunDir}", this.GetType().ToString(), logsDir, runDir);
 
         this.runDir = runDir;
         this.logsDir = logsDir;
@@ -50,13 +50,13 @@ internal abstract class BrowserFactory : IBrowserFactory, IDisposable
     {
         get
         {
-            this.Logger.LogDebug("RunDir queried: {RunDir}", this.runDir);
+            this.Logger.LogInformation("RunDir queried: {RunDir}", this.runDir);
             return this.runDir;
         }
 
         set
         {
-            this.Logger.LogDebug("RunDir set: {RunDir}", this.runDir);
+            this.Logger.LogInformation("RunDir set: {RunDir}", this.runDir);
             this.runDir = value;
         }
     }
@@ -68,13 +68,13 @@ internal abstract class BrowserFactory : IBrowserFactory, IDisposable
     {
         get
         {
-            this.Logger.LogDebug("LogsDir queried: {LogsDir}", this.logsDir);
+            this.Logger.LogInformation("LogsDir queried: {LogsDir}", this.logsDir);
             return this.logsDir;
         }
 
         set
         {
-            this.Logger.LogDebug("LogDir set: {LogsDir}", this.logsDir);
+            this.Logger.LogInformation("LogDir set: {LogsDir}", this.logsDir);
             this.logsDir = value;
         }
     }

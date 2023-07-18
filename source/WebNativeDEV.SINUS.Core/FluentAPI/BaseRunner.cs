@@ -35,7 +35,7 @@ internal abstract class BaseRunner : IDisposable
     {
         this.TestBase = testBase;
         this.Logger = this.TestBase.LoggerFactory.CreateLogger<BrowserRunner>();
-        this.Logger.LogDebug("Created a log for base-runner");
+        this.Logger.LogInformation("Created a log for base-runner");
 
         this.DataBag = new RunStore(this.TestBase.LoggerFactory);
         this.Exceptions = new List<(RunCategory, Exception)>();
@@ -121,6 +121,7 @@ internal abstract class BaseRunner : IDisposable
                     category,
                     exc.GetType().ToString(),
                     exc.Message);
+                this.Logger.LogError("Stacktrace: {StackTrace}", exc.StackTrace);
                 this.Exceptions.Add((category, exc));
             }
 #pragma warning restore CA1031 // do not catch general exception types

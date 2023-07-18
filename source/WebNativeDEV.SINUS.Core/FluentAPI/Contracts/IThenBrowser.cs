@@ -20,4 +20,10 @@ public interface IThenBrowser : IDisposable
     /// <param name="action">Pass in your debug code here.</param>
     /// <returns>An instance to the runner, so it can be disposed.</returns>
     IDisposable Debug(Action<IBrowser, RunStore>? action = null);
+
+    /// <summary>
+    /// Method that can be used to print full RunStore-instance.
+    /// </summary>
+    /// <returns>An instance to the runner, so it can be disposed.</returns>
+    IDisposable DebugPrint();
 }

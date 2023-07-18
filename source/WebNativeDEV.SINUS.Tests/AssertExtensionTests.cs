@@ -37,4 +37,13 @@ public class AssertExtensionTests : TestBase
             .When("Running assert with null", data => Assert.That.AreEqualToActual<string?>(data, null!))
             .Then("exception should be thrown")
             .Dispose();
+
+    [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethod]
+    [ExpectedException(typeof(AssertFailedException))]
+    public void Given_AssertionExtensions_When_ExecutionOfAreEqualToActual_Then_StoreWithNullThrowsAnError()
+        => this.Test()
+            .Given("Assert class extended and actual value available", data => data.StoreActual("test"))
+            .When("Running assert with null", data => Assert.That.AreEqualToActual(null!, "test"))
+            .Then("exception should be thrown")
+            .Dispose();
 }

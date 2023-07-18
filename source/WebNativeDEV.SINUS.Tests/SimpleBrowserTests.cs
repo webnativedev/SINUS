@@ -40,4 +40,30 @@ public class SimpleBrowserTests : ChromeTestBase
             .When("storing the title", (browser, data) => data.StoreActual(browser?.Title))
             .Then("it should equal to the real title", (browser, data) => Assert.That.AreEqualToActual(data, SimpleViewTitle))
             .Dispose();
+
+    [TestMethod]
+    [DoNotParallelize]
+    public void Given_AWebsite_When_CallingPrintUsageStatistic_Then_ItShouldReturnOneLeakingBecauseDisposeCalledAfterwards()
+        => this.Test()
+            .GivenASystemAndABrowserAtDefaultEndpoint<Program>(this.simpleView)
+            .When("storing the title", (browser, data) => data.StoreActual(browser?.Title))
+            .Then("it should equal to the real title", (browser, data) => PrintBrowserUsageStatistic())
+            .Dispose();
+
+    [TestMethod]
+    public void Given_ABrowser_When_StoreData_Then_NoThrow()
+    {
+        this.Test()
+            .GivenASystemAndABrowserAtDefaultEndpoint<Program>(this.simpleView)
+            .When("Calling Browser", (browser, data) =>
+            {
+                data.Store(browser.PageSource);
+                data.Store(browser.Title);
+                data.Store(browser.Url);
+                data.Store("element active: " + (browser.FindActiveElement()?.Text ?? "<none>"));
+            })
+            .Then("no exception should be thrown")
+            .DebugPrint()
+            .Dispose();
+    }
 }

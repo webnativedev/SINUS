@@ -141,7 +141,7 @@ public class RunnerTests : TestBase
                 data["key5"] = 5;
             })
             .Then(
-                "All data could be read", 
+                "All data could be read",
                 data => Assert.AreEqual((double)1.555, data.Read<double>()),
                 data => Assert.AreEqual(2, data.Read<int>("key2")),
                 data => Assert.AreEqual("sut", data.ReadSut<string>()),

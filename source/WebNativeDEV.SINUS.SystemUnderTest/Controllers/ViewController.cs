@@ -34,7 +34,7 @@ public class ViewController : ControllerBase
     [Produces("text/html")]
     public ContentResult Get()
     {
-        this.logger.LogDebug("View Accessed Get()");
+        this.logger.LogInformation("View Accessed Get()");
         return this.Content(
             """
                 <html><head><title>SINUS TestSystem</title></head>

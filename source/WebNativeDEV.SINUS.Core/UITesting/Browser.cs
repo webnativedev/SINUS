@@ -233,6 +233,7 @@ internal sealed class Browser : IBrowser
     /// Shows the object in the debugger.
     /// </summary>
     /// <returns>A representative plain text string.</returns>
+    [ExcludeFromCodeCoverage]
     private string GetDebuggerDisplay()
     {
         return $"Broswer object created {this.driver} - content: {this.contentFolder}";

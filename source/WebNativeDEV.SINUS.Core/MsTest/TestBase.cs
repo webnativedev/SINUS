@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using WebNativeDEV.SINUS.Core.FluentAPI;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
@@ -68,11 +69,12 @@ public abstract class TestBase
     /// <summary>
     /// Gets the run directory where tests are executed.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public string RunDir
     {
         get
         {
-            this.Logger.LogDebug("RunDir accessed");
+            this.Logger.LogInformation("RunDir accessed");
             return (testContextAssembly?.TestRunDirectory ??
                 this.TestContext?.TestRunDirectory) ?? ".";
         }
@@ -81,11 +83,12 @@ public abstract class TestBase
     /// <summary>
     /// Gets the run directory where tests are logging to.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public string LogsDir
     {
         get
         {
-            this.Logger.LogDebug("LogDir accessed");
+            this.Logger.LogInformation("LogDir accessed");
             return (testContextAssembly?.TestRunResultsDirectory ??
                 this.TestContext?.TestRunResultsDirectory) ?? ".";
         }
@@ -94,11 +97,12 @@ public abstract class TestBase
     /// <summary>
     /// Gets the name of the current test.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public string TestName
     {
         get
         {
-            this.Logger.LogDebug("TestName accessed");
+            this.Logger.LogInformation("TestName accessed");
             return this.TestContext?.TestName ?? "<unnamed>";
         }
     }

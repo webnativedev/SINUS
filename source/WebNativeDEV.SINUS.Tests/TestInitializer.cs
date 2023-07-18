@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using WebNativeDEV.SINUS.Core.MsTest.Assertions;
 using WebNativeDEV.SINUS.Core.MsTest.Chrome.Extensions;
 using WebNativeDEV.SINUS.Core.MsTest.Extensions;
+using WebNativeDEV.SINUS.MsTest;
 using WebNativeDEV.SINUS.MsTest.Chrome;
 
 /// <summary>
@@ -23,7 +24,10 @@ public class TestInitializer : ChromeTestBase
     /// <param name="testContext">The current context of the test execution (assembly level).</param>
     [AssemblyInitialize]
     public static void AssemblyInitialize(TestContext testContext)
-        => StoreAssemblyTestContext(testContext);
+    {
+        TestBase.DefaultLoggerFactory = null!;
+        StoreAssemblyTestContext(testContext);
+    }
 
     /// <summary>
     /// Method that is called by the MS-Test Framework on assmebly cleanup.

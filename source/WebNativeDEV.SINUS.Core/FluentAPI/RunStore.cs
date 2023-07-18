@@ -133,8 +133,7 @@ public class RunStore
             throw new InvalidOperationException("no distinct result possible");
         }
 
-        return result.FirstOrDefault()
-            ?? throw new InvalidOperationException("no result");
+        return result[0];
     }
 
     /// <summary>
