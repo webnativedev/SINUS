@@ -4,13 +4,14 @@
 
 namespace WebNativeDEV.SINUS.MsTest;
 
-using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Diagnostics.CodeAnalysis;
 using WebNativeDEV.SINUS.Core.FluentAPI;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 using WebNativeDEV.SINUS.Core.MsTest;
-using WebNativeDEV.SINUS.Core.UITesting.Contracts;
+using WebNativeDEV.SINUS.Core.UITesting;
 
 /// <summary>
 /// Represents an abstract test base that allows later unit tests to
@@ -20,7 +21,6 @@ using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 public abstract class TestBase
 {
     private static TestContext? testContextAssembly;
-    private static TestContext? testContextClass;
     private static ILoggerFactory? defaultLoggerFactory;
 
     private ILoggerFactory? loggerFactory;
@@ -41,17 +41,21 @@ public abstract class TestBase
         get => defaultLoggerFactory ??= Microsoft.Extensions.Logging.LoggerFactory.Create(
                 builder =>
                 {
-                    builder.AddSimpleConsole(options =>
+                    builder.AddConsole(options =>
                     {
-                        options.ColorBehavior = Microsoft.Extensions.Logging.Console.LoggerColorBehavior.Enabled;
-                        options.SingleLine = false;
-                        options.TimestampFormat = "HH:mm:ss:fffffff ";
+                        options.FormatterName = "SinusConsoleFormatter";
+                    }).AddConsoleFormatter<SinusConsoleFormatter, ConsoleFormatterOptions>(options =>
+                    {
                         options.IncludeScopes = true;
-                        options.UseUtcTimestamp = false;
                     });
                 });
         set => defaultLoggerFactory = value;
     }
+
+    /// <summary>
+    /// Gets or sets the TestContext injected by the framework.
+    /// </summary>
+    public TestContext? TestContext { get; set; }
 
     /// <summary>
     /// Gets a logger factory to create a logger object.
@@ -61,36 +65,41 @@ public abstract class TestBase
     /// <summary>
     /// Gets the run directory where tests are executed.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public string RunDir
     {
         get
         {
-            this.Logger.LogDebug("RunDir accessed");
-            return testContextAssembly?.TestRunDirectory ?? ".";
+            this.Logger.LogInformation("RunDir accessed");
+            return (testContextAssembly?.TestRunDirectory ??
+                this.TestContext?.TestRunDirectory) ?? ".";
         }
     }
 
     /// <summary>
     /// Gets the run directory where tests are logging to.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public string LogsDir
     {
         get
         {
-            this.Logger.LogDebug("LogDir accessed");
-            return testContextAssembly?.TestLogsDir ?? ".";
+            this.Logger.LogInformation("LogDir accessed");
+            return (testContextAssembly?.TestRunResultsDirectory ??
+                this.TestContext?.TestRunResultsDirectory) ?? ".";
         }
     }
 
     /// <summary>
     /// Gets the name of the current test.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public string TestName
     {
         get
         {
-            this.Logger.LogDebug("TestName accessed");
-            return testContextClass?.TestName ?? "<unnamed>";
+            this.Logger.LogInformation("TestName accessed");
+            return this.TestContext?.TestName ?? "<unnamed>";
         }
     }
 
@@ -109,21 +118,31 @@ public abstract class TestBase
     }
 
     /// <summary>
-    /// Method that is called indirectly in class initialization that is used by the MS-Test Framework.
+    /// Prints the usage statistics of the browser objects.
     /// </summary>
-    /// <param name="testContext">The current context of the test execution (class level).</param>
-    /// <returns>Async context.</returns>
-    protected static async Task StoreClassTestContext(TestContext testContext)
+    protected static void PrintBrowserUsageStatistic()
     {
-        testContextClass = testContext;
-        await Task.FromResult(testContext).ConfigureAwait(false);
+        var usageLogger = DefaultLoggerFactory.CreateLogger<TestBase>();
+        usageLogger.LogInformation("+--------------------------------");
+        usageLogger.LogInformation("| Tests Including Browsers: {Count}", Browser.TestsIncludingBrowsers.Count);
+
+        foreach (var id in Browser.TestsIncludingBrowsers)
+        {
+            var disposedInfo = Browser.TestsDisposingBrowsers.Contains(id)
+                                    ? "disposed"
+                                    : "leak";
+            usageLogger.LogInformation("| {Id} ({DisposedInfo})", id, disposedInfo);
+        }
+
+        usageLogger.LogInformation("+--------------------------------");
+        usageLogger.LogInformation(" ");
     }
 
     /// <summary>
     /// Creates a Runner object to run Tests on.
     /// </summary>
     /// <returns>An object of runner.</returns>
-    protected IRunner Test() => new Runner(this.LoggerFactory);
+    protected IRunner Test() => new Runner(this);
 
     /// <summary>
     /// Creates a logger object.

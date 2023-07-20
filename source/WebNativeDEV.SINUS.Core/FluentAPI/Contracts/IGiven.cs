@@ -5,7 +5,6 @@
 namespace WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 
 using System;
-using System.Collections.Generic;
 
 /// <summary>
 /// Represents in the given-when-then sequence the given part.
@@ -23,5 +22,5 @@ public interface IGiven
     /// An object that will point to the runner.
     /// The interface helps to reduce the set of options to only the appropriate in the sequence.
     /// </returns>
-    IWhen When(string description, Action<Dictionary<string, object?>>? action = null);
+    IWhen When(string description, Action<RunStore>? action = null);
 }

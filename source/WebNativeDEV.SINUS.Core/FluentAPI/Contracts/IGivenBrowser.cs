@@ -23,5 +23,5 @@ public interface IGivenBrowser
     /// An object that will point to the runner.
     /// The interface helps to reduce the set of options to only the appropriate in the sequence.
     /// </returns>
-    IWhenBrowser When(string description, Action<IBrowser, Dictionary<string, object?>>? action = null);
+    IWhenBrowser When(string description, Action<IBrowser, RunStore>? action = null);
 }

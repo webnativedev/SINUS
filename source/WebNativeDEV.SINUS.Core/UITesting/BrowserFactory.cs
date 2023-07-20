@@ -6,6 +6,7 @@ namespace WebNativeDEV.SINUS.Core.UITesting;
 
 using Microsoft.Extensions.Logging;
 using OpenQA.Selenium;
+using System.Diagnostics.CodeAnalysis;
 using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 
 /// <summary>
@@ -27,7 +28,7 @@ internal abstract class BrowserFactory : IBrowserFactory, IDisposable
     protected BrowserFactory(string runDir, string logsDir, ILoggerFactory loggerFactory)
     {
         this.LoggerFactory = loggerFactory;
-        this.Logger.LogDebug("BrowserFactory created {Type} {LogDir} {RunDir}", this.GetType().ToString(), logsDir, runDir);
+        this.Logger.LogInformation("BrowserFactory created {Type} {LogDir} {RunDir}", this.GetType().ToString(), logsDir, runDir);
 
         this.runDir = runDir;
         this.logsDir = logsDir;
@@ -36,6 +37,7 @@ internal abstract class BrowserFactory : IBrowserFactory, IDisposable
     /// <summary>
     /// Finalizes an instance of the <see cref="BrowserFactory"/> class.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     ~BrowserFactory()
     {
         this.Dispose(disposing: false);
@@ -48,13 +50,13 @@ internal abstract class BrowserFactory : IBrowserFactory, IDisposable
     {
         get
         {
-            this.Logger.LogDebug("RunDir queried: {RunDir}", this.runDir);
+            this.Logger.LogInformation("RunDir queried: {RunDir}", this.runDir);
             return this.runDir;
         }
 
         set
         {
-            this.Logger.LogDebug("RunDir set: {RunDir}", this.runDir);
+            this.Logger.LogInformation("RunDir set: {RunDir}", this.runDir);
             this.runDir = value;
         }
     }
@@ -66,13 +68,13 @@ internal abstract class BrowserFactory : IBrowserFactory, IDisposable
     {
         get
         {
-            this.Logger.LogDebug("LogsDir queried: {LogsDir}", this.logsDir);
+            this.Logger.LogInformation("LogsDir queried: {LogsDir}", this.logsDir);
             return this.logsDir;
         }
 
         set
         {
-            this.Logger.LogDebug("LogDir set: {LogsDir}", this.logsDir);
+            this.Logger.LogInformation("LogDir set: {LogsDir}", this.logsDir);
             this.logsDir = value;
         }
     }
@@ -94,7 +96,7 @@ internal abstract class BrowserFactory : IBrowserFactory, IDisposable
     }
 
     /// <inheritdoc/>
-    public virtual IBrowser CreateBrowser(Uri url)
+    public virtual IBrowser CreateBrowser(Uri url, string id)
     {
         this.Logger.LogInformation("Create Browser requested for {Url}", url);
 
@@ -104,7 +106,8 @@ internal abstract class BrowserFactory : IBrowserFactory, IDisposable
         return new Browser(
             driver,
             this.LoggerFactory,
-            this.LogsDir ?? throw new InvalidDataException("LogDir not set"));
+            this.LogsDir ?? throw new InvalidDataException("LogDir not set"),
+            id);
     }
 
     /// <summary>

@@ -5,8 +5,10 @@
 namespace WebNativeDEV.SINUS.Tests;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using WebNativeDEV.SINUS.Core.MsTest.Assertions;
 using WebNativeDEV.SINUS.MsTest.Chrome;
 using WebNativeDEV.SINUS.SystemUnderTest;
+using WebNativeDEV.SINUS.SystemUnderTest.Controllers;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'Type_or_Member'.
 #pragma warning disable SA1600 // Elements should be documented
@@ -17,46 +19,50 @@ using WebNativeDEV.SINUS.SystemUnderTest;
 [TestClass]
 public sealed partial class SystemUnderTestTests : ChromeTestBase
 {
+    private readonly (string?, string?) simpleView = ("SimpleView", "/simpleView");
+
     [TestMethod]
     [DoNotParallelize]
-    public void Given_SUT_When_CallingView_Then_SeleniumBrowsable_WithRunner()
+    public void Given_Sut_When_CallingView_Then_SeleniumBrowsable_WithRunner()
         => this.Test()
-            .GivenASystemAndABrowserAt<Program>(
-                humanReadablePageName: "SimpleView",
-                endpoint: "https://localhost:10001",
-                url: new Uri("https://localhost:10001/simpleView"))
-            .When(
-                "making a screenshot",
-                (browser, data) => browser.TakeScreenshot())
+            .GivenASystemAndABrowserAtDefaultEndpoint<Program>(this.simpleView)
+            .When("making a screenshot", (browser, data) => browser.TakeScreenshot())
             .Then("no exception should occur")
             .Dispose();
 
     [TestMethod]
     [DoNotParallelize]
-    public void Given_SUT_When_CallingView_Then_TitleShouldBeRight()
+    public void Given_Sut_When_CallingView_Then_TitleShouldBeRight()
         => this.Test()
-            .GivenASystemAndABrowserAt<Program>(
-                "SimpleView",
-                endpoint: "https://localhost:10001",
-                url: new Uri("https://localhost:10001/simpleView"))
-            .When(
-                "checking the title",
-                (browser, data) => data.Add("Title", browser.Title))
+            .GivenASystemAndABrowserAtDefaultEndpoint<Program>(this.simpleView)
+            .When("checking the title", (browser, data) => data.StoreActual(browser.Title ?? string.Empty))
             .Then(
                 "Title should be 'SINUS TestSystem'",
-                (browser, data) => Assert.AreEqual("SINUS TestSystem", (string?)data["Title"]))
+                (browser, data) => Assert.That.AreEqualToActual(data, "SINUS TestSystem"))
             .Dispose();
 
     [TestMethod]
     [DoNotParallelize]
-    public void Given_SUT_When_CallingCalcToSquareMyNumberWith2_Then_ResultShouldBe4()
+    public void Given_Sut_When_CallingCalcToSquareMyNumberWith2_Then_ResultShouldBe4()
         => this.Test()
             .GivenASystem<Program>("Calculation REST-Service")
             .When(
                 "checking the title",
-                (client, data) => data.Add("Result", client.GetStringAsync("/calc/2").GetAwaiter().GetResult()))
+                (client, data) => data.StoreActual(client.GetStringAsync("/calc/2").GetAwaiter().GetResult()))
             .Then(
                 "Title should be 'SINUS TestSystem'",
-                (data) => Assert.AreEqual("4", data["Result"] as string))
+                (data) => Assert.That.AreEqualToActual(data, "4"))
+            .Dispose();
+
+    [TestMethod]
+    public void Given_SutClass_When_CallingCalcToSquareMyNumberWith2_Then_ResultShouldBe4()
+        => this.Test()
+            .Given(
+                "instance of a calculation controller",
+                data => data.StoreSut(new CalcController()))
+            .When(
+                "calling the calculation method",
+                data => data.StoreActual(data.ReadSut<CalcController>().CalculateSquare(2)))
+            .Then("check value does be 4", data => Assert.That.AreEqualToActual(data, 4))
             .Dispose();
 }

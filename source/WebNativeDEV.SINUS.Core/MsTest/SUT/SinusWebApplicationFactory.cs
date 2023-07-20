@@ -2,12 +2,11 @@
 // Copyright (c) Daniel Kienböck. All Rights Reserved. Licensed under the MIT License. See LICENSE in the project root for license information.
 // </copyright>
 
-namespace WebNativeDEV.SINUS.Core.MsTest.SUT;
+namespace WebNativeDEV.SINUS.Core.MsTest.Sut;
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Hosting;
-using WebNativeDEV.SINUS.Core.MsTest;
 
 /// <summary>
 /// Spawns a publicly available application that can be tested via Selenium.
@@ -21,24 +20,30 @@ using WebNativeDEV.SINUS.Core.MsTest;
 ///
 /// ... these links helped me to find a solution to spawn a WebApplication (and not only in-memory).
 /// </remarks>
-internal sealed class SinusWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPoint>, IDisposable
+internal sealed class SinusWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPoint>
     where TEntryPoint : class
 {
-    private IHost? kestrelHost;
+    private IHost? customHost;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SinusWebApplicationFactory{TEntryPoint}"/> class.
     /// </summary>
     /// <param name="hostUrl">The endpoint of the system under test. </param>
-    public SinusWebApplicationFactory(string hostUrl)
+    public SinusWebApplicationFactory(string? hostUrl)
     {
         this.HostUrl = hostUrl;
+        this.InMemory = string.IsNullOrWhiteSpace(this.HostUrl);
     }
 
     /// <summary>
     /// Gets the endpoint of the system.
     /// </summary>
-    public string HostUrl { get; }
+    public string? HostUrl { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether the Web Application will be run in-memory or public via kestrel.
+    /// </summary>
+    public bool InMemory { get; }
 
     /// <summary>
     /// Sets the urls to use.
@@ -46,7 +51,12 @@ internal sealed class SinusWebApplicationFactory<TEntryPoint> : WebApplicationFa
     /// <param name="builder">Injected by the framework to configure the host.</param>
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.UseUrls(this.HostUrl);
+        if (!this.InMemory && !string.IsNullOrWhiteSpace(this.HostUrl))
+        {
+            builder.UseUrls(this.HostUrl);
+        }
+
+        builder.UseSetting("ExecutionMode", "Mock");
     }
 
     /// <summary>
@@ -57,6 +67,12 @@ internal sealed class SinusWebApplicationFactory<TEntryPoint> : WebApplicationFa
     /// <returns>The configure host.</returns>
     protected override IHost CreateHost(IHostBuilder builder)
     {
+        if (this.InMemory)
+        {
+            this.customHost = base.CreateHost(builder);
+            return this.customHost;
+        }
+
         if (builder == null)
         {
             throw new ArgumentNullException(nameof(builder));
@@ -66,9 +82,8 @@ internal sealed class SinusWebApplicationFactory<TEntryPoint> : WebApplicationFa
 
         builder.ConfigureWebHost(webHostBuilder => webHostBuilder.UseKestrel());
 
-        this.kestrelHost = builder.Build();
-        this.kestrelHost.Start();
-
+        this.customHost = builder.Build();
+        this.customHost.Start();
         return dummyHost;
     }
 
@@ -79,9 +94,12 @@ internal sealed class SinusWebApplicationFactory<TEntryPoint> : WebApplicationFa
 
         try
         {
-            this.kestrelHost?.StopAsync().GetAwaiter().GetResult();
-            this.kestrelHost?.Dispose();
-            this.kestrelHost = null;
+            if (this.customHost != null)
+            {
+                this.customHost.StopAsync().GetAwaiter().GetResult();
+                this.customHost.Dispose();
+                this.customHost = null;
+            }
         }
         catch
         {

@@ -5,8 +5,6 @@
 namespace WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 
 using System;
-using System.Collections.Generic;
-using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 
 /// <summary>
 /// Represents an interface that manages the execution of a test based on a given-when-then sequence.
@@ -23,17 +21,17 @@ public interface IRunner
     /// An object that will point to the runner.
     /// The interface helps to reduce the set of options to only the appropriate in the sequence.
     /// </returns>
-    IGiven Given(string description, Action<Dictionary<string, object?>>? action = null);
+    IGiven Given(string description, Action<RunStore>? action = null);
 
     /// <summary>
     /// Allows to define the Then-Action in a Given-When-Then sequence.
     /// </summary>
-    /// <typeparam name="TProgram">The type to bootstrap the SUT.</typeparam>
+    /// <typeparam name="TProgram">The type to bootstrap the Sut.</typeparam>
     /// <param name="description">Plain text description.</param>
     /// <returns>
     /// An object that will point to the runner.
     /// The interface helps to reduce the set of options to only the appropriate in the sequence.
     /// </returns>
-    IGivenWithSUT GivenASystem<TProgram>(string description)
+    IGivenWithSut GivenASystem<TProgram>(string description)
         where TProgram : class;
 }

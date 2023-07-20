@@ -6,85 +6,104 @@ namespace WebNativeDEV.SINUS.Core.FluentAPI;
 
 using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.Logging;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
-using WebNativeDEV.SINUS.Core.MsTest.SUT;
+using WebNativeDEV.SINUS.MsTest;
 
 /// <summary>
 /// Represents a class that manages the execution of a test based on a given-when-then sequence.
 /// This interface allows to create a proper Fluent API.
 /// </summary>
-internal class Runner : BaseRunner, IRunner, IGiven, IGivenWithSUT, IWhen, IThen
+internal class Runner : BaseRunner, IRunner, IGiven, IGivenWithSut, IWhen, IThen
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="Runner"/> class.
     /// </summary>
-    /// <param name="loggerFactory">LoggerFactory to create a logger instance for the test.</param>
-    public Runner(ILoggerFactory loggerFactory)
-        : base(loggerFactory)
+    /// <param name="testBase">Reference to the test base creating the runner.</param>
+    public Runner(TestBase testBase)
+        : base(testBase)
     {
     }
 
     /// <summary>
     /// Finalizes an instance of the <see cref="Runner"/> class.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     ~Runner()
     {
         this.Dispose(disposing: false);
     }
 
     /// <inheritdoc/>
-    public IGiven Given(string description, Action<Dictionary<string, object?>>? action = null)
-        => (IGiven)this.Run("Given", description, () => action?.Invoke(this.DataBag));
+    public IGiven Given(string description, Action<RunStore>? action = null)
+        => (IGiven)this.Run(
+            RunCategory.Given,
+            description,
+            () => action?.Invoke(this.DataBag),
+            false);
 
     /// <inheritdoc/>
-    public IGivenWithSUT GivenASystem<TProgram>(string description)
+    public IGivenWithSut GivenASystem<TProgram>(string description)
             where TProgram : class
-        => (IGivenWithSUT)this.Run(
-                "Given",
-                $"Given: a SUT in memory",
-                () =>
-                {
-                    this.CreateSUT<TProgram>();
-                    this.Given(description);
-                });
+        => (IGivenWithSut)this.Run(
+                RunCategory.Given,
+                $"a SUT in memory: " + description,
+                () => this.CreateSut<TProgram>(),
+                false);
 
     /// <inheritdoc/>
-    public IWhen When(string description, Action<Dictionary<string, object?>>? action = null)
+    public IWhen When(string description, Action<RunStore>? action = null)
     {
-        if (action == null)
-        {
-            this.IsPreparedOnly = true;
-        }
+        this.IsPreparedOnly = this.IsPreparedOnly || action == null;
 
-        return (IWhen)this.Run("When", description, () => action?.Invoke(this.DataBag));
+        return (IWhen)this.Run(
+            RunCategory.When,
+            description,
+            () => action?.Invoke(this.DataBag),
+            false);
     }
 
     /// <inheritdoc/>
-    public IWhen When(string description, Action<HttpClient, Dictionary<string, object?>>? action)
+    public IWhen When(string description, Action<HttpClient, RunStore>? action)
     {
-        if (action == null)
-        {
-            this.IsPreparedOnly = true;
-        }
+        this.IsPreparedOnly = this.IsPreparedOnly || action == null;
 
         return (IWhen)this.Run(
-            "When",
+            RunCategory.When,
             description,
             () => action?.Invoke(
                 this.HttpClient,
-                this.DataBag));
+                this.DataBag),
+            false);
     }
 
     /// <inheritdoc/>
-    public IThen Then(string description, Action<Dictionary<string, object?>>? action = null)
-        => (IThen)this.Run(
-            "Then",
-            description,
-            () => action?.Invoke(this.DataBag));
+    public IThen Then(string description, params Action<RunStore>[] actions)
+    {
+        List<Action> pureAction = new();
+        actions.ToList().ForEach(action => pureAction.Add(() => action?.Invoke(this.DataBag)));
+
+        return (IThen)this.Run(
+                RunCategory.Then,
+                description,
+                pureAction,
+                true);
+    }
 
     /// <inheritdoc/>
-    public IDisposable Debug(Action<Dictionary<string, object?>>? action = null)
-        => this.Run("Debug", string.Empty, () => action?.Invoke(this.DataBag));
+    public IDisposable Debug(Action<RunStore>? action = null)
+        => this.Run(
+            RunCategory.Debug,
+            string.Empty,
+            () => action?.Invoke(this.DataBag),
+            true);
+
+    /// <inheritdoc/>
+    public IDisposable DebugPrint()
+        => this.Run(
+                RunCategory.Debug,
+                string.Empty,
+                () => this.DataBag.Print(),
+                true);
 }

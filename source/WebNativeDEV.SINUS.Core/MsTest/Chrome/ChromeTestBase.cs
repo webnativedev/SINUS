@@ -3,6 +3,7 @@
 // </copyright>
 
 namespace WebNativeDEV.SINUS.MsTest.Chrome;
+
 using WebNativeDEV.SINUS.Core.UITesting.Chrome;
 using WebNativeDEV.SINUS.MsTest.Abstract;
 

@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System.Diagnostics;
-using WebNativeDEV.SINUS.Core.UITesting;
+using System.Diagnostics.CodeAnalysis;
 using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 
 /// <summary>
@@ -17,11 +17,12 @@ using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 /// </summary>
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 #pragma warning disable CA1724 // ignoring conflicting name with "OpenQA.Selenium.DevTools.V112.Browser"
-internal sealed class Browser : IBrowser, IDisposable
+internal sealed class Browser : IBrowser
 #pragma warning restore CA1724
 {
     private readonly IWebDriver driver;
     private readonly string contentFolder;
+    private readonly string id;
     private bool disposedValue;
     private ILogger? logger;
 
@@ -30,8 +31,9 @@ internal sealed class Browser : IBrowser, IDisposable
     /// </summary>
     /// <param name="driver">Underlying Selenium WebDrivers.</param>
     /// <param name="contentFolder">Folder to store data.</param>
+    /// <param name="id">Single identifier that identifies the browser uniquely inside the test session.</param>
     /// <param name="loggerFactory">The factory to create logger-objects.</param>
-    public Browser(IWebDriver driver, ILoggerFactory loggerFactory, string contentFolder = "./")
+    public Browser(IWebDriver driver, ILoggerFactory loggerFactory, string contentFolder = "./", string? id = null)
     {
         this.LoggerFactory = loggerFactory;
         this.Logger.LogInformation(
@@ -42,15 +44,32 @@ internal sealed class Browser : IBrowser, IDisposable
 
         this.driver = driver ?? throw new ArgumentNullException(nameof(driver), "driver null");
         this.contentFolder = contentFolder;
+        this.id = id ?? "<no id>";
+
+        if(id != null)
+        {
+            TestsIncludingBrowsers.Add(id);
+        }
     }
 
     /// <summary>
     /// Finalizes an instance of the <see cref="Browser"/> class.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     ~Browser()
     {
         this.Dispose(disposing: false);
     }
+
+    /// <summary>
+    /// Gets a list of test-identifiers that includes a browser.
+    /// </summary>
+    public static List<string> TestsIncludingBrowsers { get; } = new List<string>();
+
+    /// <summary>
+    /// Gets a list of test-identifiers that released the browser after using it.
+    /// </summary>
+    public static List<string> TestsDisposingBrowsers { get; } = new List<string>();
 
     /// <inheritdoc/>
     public string? Title
@@ -202,6 +221,7 @@ internal sealed class Browser : IBrowser, IDisposable
             {
                 this.Logger.LogInformation("Driver quitted");
                 this.driver?.Quit();
+                TestsDisposingBrowsers.Add(this.id);
             }
 
             this.disposedValue = true;
@@ -212,6 +232,7 @@ internal sealed class Browser : IBrowser, IDisposable
     /// Shows the object in the debugger.
     /// </summary>
     /// <returns>A representative plain text string.</returns>
+    [ExcludeFromCodeCoverage]
     private string GetDebuggerDisplay()
     {
         return $"Broswer object created {this.driver} - content: {this.contentFolder}";

@@ -46,6 +46,9 @@ in the industry of software development.
   * Opinionated: SINUS can be your one-stop-shop library for testing
     based on MS-Test in a nice BDT API, but consider that you will introduce also
     some dependencies to libraries that need to considered (e.g.: Selenium).
+  * Opinionated: track code coverage automatically to be confident about the amount of tests.
+    Herefore use CI/CD analysis and quality gates, but consider also local analysis.
+    https://github.com/danielpalme/ReportGenerator
 * create some service tests.
   * Opinionated: SINUS will help you with that task as well, but it might be
     beneficial for the overall process to create a small UI to test. A lot
@@ -68,9 +71,19 @@ Quality criterias are:
 * maintainable
 * trustworthy
 
+Consider:
+
+* standard flow (positive cases)
+* edge cases
+* failing flows (negative cases)
+
+(see equivalence partitioning)
+
 ### Unit Tests
 
 Unit tests should be "FIRST" (fast, isolated/independent, repeatable, self-validating, thorough).
+
+Do not test:
 
 * bootstrap code (container registration, initialization)
 * configuration (constants, enums, readonly fields)
@@ -79,9 +92,18 @@ Unit tests should be "FIRST" (fast, isolated/independent, repeatable, self-valid
 * functions that directly return variables
 * facades without any logic
 * private methods
+* Finalizers (especially in combination with IDisposable pattern implementation)
 * exception messages and log messages
 
 To sum it up, we are testing execution logic that can be called from outside of the unit without depending on the internal setup and implementation.
+
+## Integration Tests
+
+By using a custom WebApplicationFactory we can execute isolated tests in-memory. 
+This mode helps in REST-based tests, but is not compatible with Selenium tests requiring a publicly available service.
+
+Hereby we see methods that instrument the code that is checked by the integration test to be able to evaluate the code coverage.
+https://learn.microsoft.com/en-us/visualstudio/test/microsoft-code-coverage-console-tool?view=vs-2022
 
 ## Getting Started
 
@@ -101,6 +123,7 @@ To sum it up, we are testing execution logic that can be called from outside of 
 * With the Given part (use intelliSense) you can spin-up a browser and optionally a System-Under-Test (SUT) in-memory or public (meaning reachable via network outside the test).
   * use public SUT configuration for UI tests, because the web driver spawns outside the unit test in a separate process.
   * consider to use components for mocking / test doubles
+  * Opinionated: use Moq for mocking
 * With the When part (use intelliSense) you can perform the main action and here no action means a prepared test, that can not yet be evaluated properly.
 * With the Then part (use intelliSense) you can perform checks on the action.
   * Consider to install an Assertion Library helping you writing more meaningful assertions.
@@ -110,3 +133,5 @@ To sum it up, we are testing execution logic that can be called from outside of 
   * Opinionated: Call it explicitly. It allows you to impelement the method as expression body via ```=>```.
 * Consider using StyleCop (also for the test-project)
   * Opinionated: remove CS1591, SA1600 for tests to remove the necessary XML documentation which is already covered via method name and description fields of SINUS.
+* Consider using a memory leak analysis tool or directly a supporting nuget package.
+  * (no own experience yet:) https://www.jetbrains.com/dotmemory/unit/ | https://www.nuget.org/packages/JetBrains.DotMemoryUnit/

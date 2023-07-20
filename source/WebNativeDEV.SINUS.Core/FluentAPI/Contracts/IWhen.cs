@@ -5,8 +5,6 @@
 namespace WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 
 using System;
-using System.Collections.Generic;
-using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 
 /// <summary>
 /// Represents in the given-when-then sequence the when part.
@@ -19,10 +17,10 @@ public interface IWhen
     /// Allows to define the Then-Action in a Given-When-Then sequence.
     /// </summary>
     /// <param name="description">Plain text description.</param>
-    /// <param name="action">Defines the execution part.</param>
+    /// <param name="actions">Defines the execution parts.</param>
     /// <returns>
     /// An object that will point to the runner.
     /// The interface helps to reduce the set of options to only the appropriate in the sequence.
     /// </returns>
-    IThen Then(string description, Action<Dictionary<string, object?>>? action = null);
+    IThen Then(string description, params Action<RunStore>[] actions);
 }
