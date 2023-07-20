@@ -61,17 +61,18 @@ jobs:
       with:
         dotnet-version: 7.0.x
 
-    - name: Build and analyze
+    - name: Show folder structure
       run: |
         ls -al
+        ls -al source
 
     - name: Restore dependencies
-      run: dotnet restore source/sinus.sln -v:n
+      run: dotnet restore source/SINUS.sln -v:n
 
     - name: Build and analyze
       run: |
-        dotnet build --configuration DEBUG --no-restore --no-incremental source\sinus.sln -v:n
-        dotnet test source/sinus.sln --no-build --no-restore --collect:"XPlat Code Coverage;Format=json,lcov,cobertura,opencover" --results-directory TestResults/ --logger "trx;LogFileName=coverage.trx" --logger:"console;verbosity=detailed"  --filter "TestCategory!=external"
+        dotnet build --configuration DEBUG --no-restore --no-incremental source\SINUS.sln -v:n
+        dotnet test source/SINUS.sln --no-build --no-restore --collect:"XPlat Code Coverage;Format=json,lcov,cobertura,opencover" --results-directory TestResults/ --logger "trx;LogFileName=coverage.trx" --logger:"console;verbosity=detailed"  --filter "TestCategory!=external"
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
