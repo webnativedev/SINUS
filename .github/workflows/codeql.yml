@@ -71,7 +71,7 @@ jobs:
 
     - name: Build and analyze
       run: |
-        dotnet build --configuration DEBUG --no-restore --no-incremental source\SINUS.sln -v:n
+        dotnet build --configuration DEBUG --no-restore --no-incremental source/SINUS.sln -v:n
         dotnet test source/SINUS.sln --no-build --no-restore --collect:"XPlat Code Coverage;Format=json,lcov,cobertura,opencover" --results-directory TestResults/ --logger "trx;LogFileName=coverage.trx" --logger:"console;verbosity=detailed"  --filter "TestCategory!=external"
 
     - name: Perform CodeQL Analysis
