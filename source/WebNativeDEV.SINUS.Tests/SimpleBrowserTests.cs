@@ -38,6 +38,24 @@ public class SimpleBrowserTests : ChromeTestBase
 
     [TestMethod]
     [DoNotParallelize]
+    public void Given_ABlankWebsite_When_StoringTheTitle_Then_ItShouldBeCorrect()
+        => this.Test()
+            .GivenABrowserAt(("empty page", "about:blank"))
+            .When("storing the title", (browser, data) => data.StoreActual(browser?.Title))
+            .Then("it should equal to the real title", (browser, data) => Assert.IsNotNull(data.ReadActual<string>()))
+            .Dispose();
+
+    [TestMethod]
+    [DoNotParallelize]
+    public void Given_ABlankWebsiteAsUri_When_StoringTheTitle_Then_ItShouldBeCorrect()
+        => this.Test()
+            .GivenABrowserAt("empty page", new Uri("about:blank"))
+            .When("storing the title", (browser, data) => data.StoreActual(browser?.Title))
+            .Then("it should equal to the real title", (browser, data) => Assert.IsNotNull(data.ReadActual<string>()))
+            .Dispose();
+
+    [TestMethod]
+    [DoNotParallelize]
     public void Given_AWebsite_When_CallingPrintUsageStatistic_Then_ItShouldReturnOneLeakingBecauseDisposeCalledAfterwards()
         => this.Test()
             .GivenASystemAndABrowserAtDefaultEndpoint<Program>(this.simpleView)
