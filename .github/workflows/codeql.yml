@@ -61,17 +61,17 @@ jobs:
       with:
         dotnet-version: 7.0.x
 
+    - name: Build and analyze
+      run: |
+        ls -al
+
     - name: Restore dependencies
-      run: dotnet restore source\sinus.sln -v:n
+      run: dotnet restore source/sinus.sln -v:n
 
     - name: Build and analyze
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      shell: powershell
       run: |
         dotnet build --configuration DEBUG --no-restore --no-incremental source\sinus.sln -v:n
-        dotnet test source\sinus.sln --no-build --no-restore --collect:"XPlat Code Coverage;Format=json,lcov,cobertura,opencover" --results-directory TestResults/ --logger "trx;LogFileName=coverage.trx" --logger:"console;verbosity=detailed"  --filter "TestCategory!=external"
+        dotnet test source/sinus.sln --no-build --no-restore --collect:"XPlat Code Coverage;Format=json,lcov,cobertura,opencover" --results-directory TestResults/ --logger "trx;LogFileName=coverage.trx" --logger:"console;verbosity=detailed"  --filter "TestCategory!=external"
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
