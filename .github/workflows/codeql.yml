@@ -56,20 +56,22 @@ jobs:
         # queries: security-extended,security-and-quality
 
 
-    # Autobuild attempts to build any compiled languages (C/C++, C#, Go, Java, or Swift).
-    # If this step fails, then you should remove it and run the build manually (see below)
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 7.0.x
 
-    # ℹ️ Command-line programs to run using the OS shell.
-    # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
+    - name: Restore dependencies
+      run: dotnet restore source\sinus.sln -v:n
 
-    #   If the Autobuild fails above, remove it and uncomment the following three lines.
-    #   modify them (or add more) to build your code if your project, please refer to the EXAMPLE below for guidance.
-
-    # - run: |
-    #     echo "Run, Build Application using script"
-    #     ./location_of_script_within_repo/buildscript.sh
+    - name: Build and analyze
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      shell: powershell
+      run: |
+        dotnet build --configuration DEBUG --no-restore --no-incremental source\sinus.sln -v:n
+        dotnet test source\sinus.sln --no-build --no-restore --collect:"XPlat Code Coverage;Format=json,lcov,cobertura,opencover" --results-directory TestResults/ --logger "trx;LogFileName=coverage.trx" --logger:"console;verbosity=detailed"  --filter "TestCategory!=external"
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
