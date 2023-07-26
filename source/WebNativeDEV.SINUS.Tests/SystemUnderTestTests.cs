@@ -4,8 +4,9 @@
 
 namespace WebNativeDEV.SINUS.Tests;
 
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WebNativeDEV.SINUS.Core.MsTest.Assertions;
+using WebNativeDEV.SINUS.Core.FluentAssertions;
 using WebNativeDEV.SINUS.MsTest.Chrome;
 using WebNativeDEV.SINUS.SystemUnderTest;
 using WebNativeDEV.SINUS.SystemUnderTest.Controllers;
@@ -22,7 +23,6 @@ public sealed partial class SystemUnderTestTests : ChromeTestBase
     private readonly (string?, string?) simpleView = ("SimpleView", "/simpleView");
 
     [TestMethod]
-    [DoNotParallelize]
     public void Given_Sut_When_CallingView_Then_SeleniumBrowsable_WithRunner()
         => this.Test()
             .GivenASystemAndABrowserAtDefaultEndpoint<Program>(this.simpleView)
@@ -31,18 +31,16 @@ public sealed partial class SystemUnderTestTests : ChromeTestBase
             .Dispose();
 
     [TestMethod]
-    [DoNotParallelize]
     public void Given_Sut_When_CallingView_Then_TitleShouldBeRight()
         => this.Test()
             .GivenASystemAndABrowserAtDefaultEndpoint<Program>(this.simpleView)
             .When("checking the title", (browser, data) => data.StoreActual(browser.Title ?? string.Empty))
             .Then(
                 "Title should be 'SINUS TestSystem'",
-                (browser, data) => Assert.That.AreEqualToActual(data, "SINUS TestSystem"))
+                (browser, data) => data.Should().ActualBe("SINUS TestSystem"))
             .Dispose();
 
     [TestMethod]
-    [DoNotParallelize]
     public void Given_Sut_When_CallingCalcToSquareMyNumberWith2_Then_ResultShouldBe4()
         => this.Test()
             .GivenASystem<Program>("Calculation REST-Service")
@@ -51,7 +49,7 @@ public sealed partial class SystemUnderTestTests : ChromeTestBase
                 (client, data) => data.StoreActual(client.GetStringAsync("/calc/2").GetAwaiter().GetResult()))
             .Then(
                 "Title should be 'SINUS TestSystem'",
-                (data) => Assert.That.AreEqualToActual(data, "4"))
+                (data) => data.Should().ActualBe("4"))
             .Dispose();
 
     [TestMethod]
@@ -63,6 +61,6 @@ public sealed partial class SystemUnderTestTests : ChromeTestBase
             .When(
                 "calling the calculation method",
                 data => data.StoreActual(data.ReadSut<CalcController>().CalculateSquare(2)))
-            .Then("check value does be 4", data => Assert.That.AreEqualToActual(data, 4))
+            .Then("check value does be 4", data => data.Should().ActualBe(4))
             .Dispose();
 }

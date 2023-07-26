@@ -4,10 +4,15 @@
 
 namespace WebNativeDEV.SINUS.Tests;
 
+using FluentAssertions;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using WebNativeDEV.SINUS.MsTest;
 using WebNativeDEV.SINUS.SystemUnderTest.Controllers;
 using WebNativeDEV.SINUS.SystemUnderTest.Services;
+using WebNativeDEV.SINUS.SystemUnderTest.Services.Abstractions;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'Type_or_Member'.
 #pragma warning disable SA1600 // Elements should be documented
@@ -41,4 +46,25 @@ public class TimeProviderTests : TestBase
             .Then("Check if controller exists", (data) => Assert.IsNotNull(data.ReadSut<TimeController>()))
             .DebugPrint()
             .Dispose();
+
+    [TestMethod]
+    public void Given_TimeControllerWithMockedSetup_When_GetSeconds_Then_MockedResultShouldBePresent()
+        => this.Test()
+            .Given("a time controller", data => {
+                var timeProviderMock = new Mock<ITimeProvider>();
+                timeProviderMock
+                    .Setup(x => x.GetCurrentSeconds())
+                    .Returns(1);
+                ITimeProvider provider = timeProviderMock.Object;
+
+                var loggerMock = new Mock<ILogger<TimeController>>();
+                ILogger<TimeController> logger = loggerMock.Object;
+
+                data.StoreSut(new TimeController(provider, logger));
+            })
+            .When("sut can be created", data => data.Actual = data.ReadSut<TimeController>().GetSeconds())
+            .Then("Check if controller exists", (data) => data.ReadActual<int>().Should().Be(1))
+            .DebugPrint()
+            .Dispose();
+
 }

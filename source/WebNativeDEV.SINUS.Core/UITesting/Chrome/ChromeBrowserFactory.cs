@@ -30,9 +30,9 @@ internal sealed class ChromeBrowserFactory : BrowserFactory
     private ILogger Logger => this.LoggerFactory.CreateLogger<ChromeBrowserFactory>();
 
     /// <inheritdoc/>
-    protected override ChromeDriver CreateWebDriver()
+    protected override ChromeDriver CreateWebDriver(BrowserFactoryOptions options)
     {
-        this.Logger.LogInformation("Create driver instance for chrome");
+        this.Logger.LogInformation("Create driver instance for chrome with options '{Options}'", options);
 
 #pragma warning disable CA2000
         ChromeDriverService service = ChromeDriverService.CreateDefaultService();
@@ -51,7 +51,16 @@ internal sealed class ChromeBrowserFactory : BrowserFactory
             PageLoadStrategy =
                 OpenQA.Selenium.PageLoadStrategy.Eager, // wait until DomContentLoaded Event
         };
-        chromeOptions.AddArguments("--ignore-certificate-errors");
+
+        if (options.IgnoreSslErrors)
+        {
+            chromeOptions.AddArguments("--ignore-certificate-errors");
+        }
+
+        if (options.Headless)
+        {
+            chromeOptions.AddArguments("--headless=chrome"); // or =new
+        }
 
         var driver = new ChromeDriver(service, chromeOptions);
 

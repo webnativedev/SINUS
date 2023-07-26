@@ -4,6 +4,7 @@
 
 namespace WebNativeDEV.SINUS.Tests;
 
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebNativeDEV.SINUS.MsTest.Chrome;
 
@@ -23,8 +24,12 @@ public sealed class GoogleBrowserTests : ChromeTestBase
     public void Given_ABrowserLoadingGoogle_When_CheckTitle_Then_TitleIsNotNull()
         => this.Test()
             .GivenABrowserAt(this.Google)
-            .When("Navigation to page finished", (browser, data) => data.StoreActual(browser.Title!))
-            .Then("Title should not be null", (browser, data) => Assert.IsNotNull(data.ReadActual<string>()))
+            .When(
+                "Navigation to page finished",
+                (browser, data) => data.Actual = browser.Title)
+            .Then(
+                "Title should not be null",
+                (browser, data) => data.Actual.Should().NotBeNull())
             .Dispose();
 
     [TestMethod]
@@ -32,8 +37,12 @@ public sealed class GoogleBrowserTests : ChromeTestBase
     public void Given_ABrowserLoadingGoogle_When_CheckTitle_Then_TitleIsNotNull_Debug_AllStoredValues()
      => this.Test()
             .GivenABrowserAt(this.Google)
-            .When("Navigation to page finished", (browser, data) => data.StoreActual(browser.Title!))
-            .Then("no exception should occur", (browser, data) => Assert.IsNotNull(data.ReadActual<string>()))
+            .When(
+                "Navigation to page finished",
+                (browser, data) => data.StoreActual(browser.Title!))
+            .Then(
+                "no exception should occur",
+                (browser, data) => data.ReadActual<string>().Should().NotBeNullOrWhiteSpace())
             .Debug((browser, data) => data.Print())
             .Dispose();
 
@@ -43,8 +52,12 @@ public sealed class GoogleBrowserTests : ChromeTestBase
     {
         using var runner = this.Test()
             .GivenABrowserAt(this.Google)
-            .When("Navigation to page finished", (browser, data) => data.StoreActual(browser.Title!))
-            .Then("Title should not be null", (browser, data) => Assert.IsNotNull(data.ReadActual<string>()));
+            .When(
+                "Navigation to page finished",
+                (browser, data) => data.StoreActual(browser.Title!))
+            .Then(
+                "Title should not be null",
+                (browser, data) => Assert.IsNotNull(data.ReadActual<string>()));
     }
 
     [TestMethod]
@@ -78,7 +91,7 @@ public sealed class GoogleBrowserTests : ChromeTestBase
     => this.Test()
         .GivenABrowserAt(this.Google)
         .When("Navigation to page finished")
-        .Then("Title should not be null", (browser, data) => Assert.IsNotNull(browser))
+        .Then("Title should not be null", (browser, data) => browser.Should().NotBeNull())
         .Dispose();
 
     [TestMethod]

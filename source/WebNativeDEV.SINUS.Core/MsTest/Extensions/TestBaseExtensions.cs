@@ -5,7 +5,6 @@
 namespace WebNativeDEV.SINUS.Core.MsTest.Extensions;
 
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebNativeDEV.SINUS.MsTest;
 using WebNativeDEV.SINUS.MsTest.Chrome;
 
@@ -27,9 +26,12 @@ public static class TestBaseExtensions
 
         // assumption that each Run has a run-directory below
         // the main TestResults folder (as standard)
-        var count = Directory.GetDirectories(Path.Combine(testBase.RunDir, "..")).Length;
+        int count = Directory.GetDirectories(Path.Combine(testBase.RunDir, "..")).Length;
 
-        Assert.IsTrue(count < max, $"too many result folders; <{max} wanted, but are {count}");
+        if (count >= max)
+        {
+            throw new InvalidOperationException($"too many result folders; <{max} wanted, but are {count}");
+        }
 
         logger.LogInformation("Foldercount: {Count} / max:{Max}", count, max);
     }

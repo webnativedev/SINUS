@@ -4,6 +4,7 @@
 
 namespace WebNativeDEV.SINUS.Tests;
 
+using FluentAssertions;
 using global::WebNativeDEV.SINUS.MsTest;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -120,7 +121,7 @@ public class SinusConsoleFormatterTests : TestBase
                 {
                     writer?.Flush();
                     var content = Encoding.ASCII.GetString(stream.ToArray()).ReplaceLineEndings(string.Empty).Trim();
-                    Assert.AreEqual(expectedResult, content, false);
+                    content.Should().Be(expectedResult);
                 })
             .DebugPrint()
             .Dispose();

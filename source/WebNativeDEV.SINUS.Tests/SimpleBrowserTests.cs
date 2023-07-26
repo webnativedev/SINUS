@@ -4,8 +4,10 @@
 
 namespace WebNativeDEV.SINUS.Tests;
 
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WebNativeDEV.SINUS.Core.MsTest.Assertions;
+using WebNativeDEV.SINUS.Core.FluentAssertions;
+using WebNativeDEV.SINUS.Core.UITesting;
 using WebNativeDEV.SINUS.MsTest.Chrome;
 using WebNativeDEV.SINUS.SystemUnderTest;
 
@@ -19,7 +21,6 @@ public class SimpleBrowserTests : ChromeTestBase
     private readonly (string?, string?) simpleView = ("SimpleView", "/simpleView");
 
     [TestMethod]
-    [DoNotParallelize]
     public void Given_AWebsite_When_CreatingScreenshot_Then_NoExceptionShouldOccur()
         => this.Test()
             .GivenASystemAndABrowserAtDefaultEndpoint<Program>(this.simpleView)
@@ -28,17 +29,29 @@ public class SimpleBrowserTests : ChromeTestBase
             .Dispose();
 
     [TestMethod]
-    [DoNotParallelize]
     public void Given_AWebsite_When_StoringTheTitle_Then_ItShouldBeCorrect()
         => this.Test()
             .GivenASystemAndABrowserAtDefaultEndpoint<Program>(this.simpleView)
             .When("storing the title", (browser, data) => data.StoreActual(browser?.Title))
-            .Then("it should equal to the real title", (browser, data) => Assert.That.AreEqualToActual(data, SimpleViewTitle))
+            .Then("it should equal to the real title", (browser, data) => data.Should().ActualBe(SimpleViewTitle))
             .Dispose();
 
     [TestMethod]
-    [DoNotParallelize]
-    public void Given_ABlankWebsite_When_StoringTheTitle_Then_ItShouldBeCorrect()
+    public void Given_ABlankWebsiteNotHeadless_When_StoringTheTitle_Then_ItShouldNotBeNull()
+        => this.Test()
+            .GivenABrowserAt(
+                ("empty page", "about:blank"),
+                new BrowserFactoryOptions()
+                {
+                    Headless = false,
+                    IgnoreSslErrors = false,
+                })
+            .When("storing the title", (browser, data) => data.StoreActual(browser?.Title))
+            .Then("it should equal to the real title", (browser, data) => Assert.IsNotNull(data.ReadActual<string>()))
+            .Dispose();
+
+    [TestMethod]
+    public void Given_ABlankWebsite_When_StoringTheTitle_Then_ItShouldNotBeNull()
         => this.Test()
             .GivenABrowserAt(("empty page", "about:blank"))
             .When("storing the title", (browser, data) => data.StoreActual(browser?.Title))
@@ -46,7 +59,6 @@ public class SimpleBrowserTests : ChromeTestBase
             .Dispose();
 
     [TestMethod]
-    [DoNotParallelize]
     public void Given_ABlankWebsiteAsUri_When_StoringTheTitle_Then_ItShouldBeCorrect()
         => this.Test()
             .GivenABrowserAt("empty page", new Uri("about:blank"))
@@ -55,7 +67,6 @@ public class SimpleBrowserTests : ChromeTestBase
             .Dispose();
 
     [TestMethod]
-    [DoNotParallelize]
     public void Given_AWebsite_When_CallingPrintUsageStatistic_Then_ItShouldReturnOneLeakingBecauseDisposeCalledAfterwards()
         => this.Test()
             .GivenASystemAndABrowserAtDefaultEndpoint<Program>(this.simpleView)

@@ -4,8 +4,9 @@
 
 namespace WebNativeDEV.SINUS.Tests;
 
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WebNativeDEV.SINUS.Core.MsTest.Assertions;
+using WebNativeDEV.SINUS.Core.FluentAssertions;
 using WebNativeDEV.SINUS.MsTest;
 using WebNativeDEV.SINUS.SystemUnderTest;
 using WebNativeDEV.SINUS.SystemUnderTest.Services.Abstractions;
@@ -27,7 +28,7 @@ public class SimpleTests : TestBase
         var actual = provider.GetCurrentSeconds();
 
         // Assert
-        Assert.AreEqual(expected: 59, actual);
+        actual.Should().Be(59);
     }
 
     [TestMethod]
@@ -51,9 +52,7 @@ public class SimpleTests : TestBase
             .When(
                 "Ask for the current seconds",
                 (data) => data.StoreActual(data.ReadSut<MockTimeProvider>().GetCurrentSeconds()))
-            .Then(
-                "Check for the mocked value 59",
-                data => Assert.That.AreEqualToActual(data, 59))
+            .Then("Check for the mocked value 59", data => data.Should().ActualBe(59))
             .Debug(data => data.Print())
             .Dispose();
     }
@@ -68,7 +67,7 @@ public class SimpleTests : TestBase
                 (client, data) => data.StoreActual(client.GetStringAsync("/time/sec").GetAwaiter().GetResult()))
             .Then(
                 "Check for the mocked value 59",
-                data => Assert.That.AreEqualToActual(data, "59"))
+                data => data.Should().ActualBe("59"))
             .DebugPrint()
             .Dispose();
     }

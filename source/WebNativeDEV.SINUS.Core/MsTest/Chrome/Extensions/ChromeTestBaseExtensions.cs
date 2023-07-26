@@ -4,6 +4,8 @@
 
 namespace WebNativeDEV.SINUS.Core.MsTest.Chrome.Extensions;
 
+using FluentAssertions;
+using global::FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -30,7 +32,7 @@ public static class ChromeTestBaseExtensions
             && x.StartTime < DateTime.Now.AddMinutes(-maxAgeOfProessInMinutes))
             .ToList();
 
-        Assert.IsTrue(processes.Count == 0, $"zombie drivers exist: {processes.Count}");
+        processes.Should().BeEmpty($"zombie drivers should not exist, but count: {processes.Count}");
 
         logger.LogInformation(
             "Processcount: {Count} processes older than {AgeInMin} min",

@@ -7,6 +7,9 @@ namespace WebNativeDEV.SINUS.Core.MsTest.Sut;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using OpenQA.Selenium.DevTools.V112.Target;
+using System.Runtime.CompilerServices;
 
 /// <summary>
 /// Spawns a publicly available application that can be tested via Selenium.
@@ -23,15 +26,19 @@ using Microsoft.Extensions.Hosting;
 internal sealed class SinusWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPoint>
     where TEntryPoint : class
 {
+    private static readonly Mutex Mutex = new(false, "SinusWebApplicationFactoryMutex");
+    private readonly ILogger logger;
     private IHost? customHost;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SinusWebApplicationFactory{TEntryPoint}"/> class.
     /// </summary>
     /// <param name="hostUrl">The endpoint of the system under test. </param>
-    public SinusWebApplicationFactory(string? hostUrl)
+    /// <param name="logger">A logger object of the creater.</param>
+    private SinusWebApplicationFactory(string? hostUrl, ILogger logger)
     {
         this.HostUrl = hostUrl;
+        this.logger = logger;
         this.InMemory = string.IsNullOrWhiteSpace(this.HostUrl);
     }
 
@@ -44,6 +51,22 @@ internal sealed class SinusWebApplicationFactory<TEntryPoint> : WebApplicationFa
     /// Gets a value indicating whether the Web Application will be run in-memory or public via kestrel.
     /// </summary>
     public bool InMemory { get; }
+
+    /// <summary>
+    /// Factory method to create an instance of a sinus web application factory.
+    /// </summary>
+    /// <typeparam name="T">Generic pointing to the class that initializes the system under test.</typeparam>
+    /// <param name="hostUrl">The endpoint of the system under test. </param>
+    /// <param name="logger">The log instance of the creating object.</param>
+    /// <returns>A newly created instance.</returns>
+    public static SinusWebApplicationFactory<T> Create<T>(string? hostUrl, ILogger logger)
+        where T : class
+    {
+        logger.LogInformation("Try to get mutex and create SinusWebApplicationFactory object");
+        Mutex.WaitOne(TimeSpan.FromMinutes(5));
+        logger.LogInformation("   mutex acquired");
+        return new SinusWebApplicationFactory<T>(hostUrl, logger);
+    }
 
     /// <summary>
     /// Sets the urls to use.
@@ -99,6 +122,9 @@ internal sealed class SinusWebApplicationFactory<TEntryPoint> : WebApplicationFa
                 this.customHost.StopAsync().GetAwaiter().GetResult();
                 this.customHost.Dispose();
                 this.customHost = null;
+
+                this.logger.LogInformation("release mutex to allow other instances of a system under test.");
+                Mutex.ReleaseMutex();
             }
         }
         catch

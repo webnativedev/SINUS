@@ -14,6 +14,7 @@ public interface IBrowserFactory
     /// </summary>
     /// <param name="url">Initial URL to navigate to.</param>
     /// <param name="id">Single identifier that identifies the browser uniquely inside the test session.</param>
+    /// <param name="options">Configures the browser factory.</param>
     /// <returns>An instance of a browser.</returns>
-    IBrowser CreateBrowser(Uri url, string id);
+    IBrowser CreateBrowser(Uri url, string id, BrowserFactoryOptions? options = null);
 }

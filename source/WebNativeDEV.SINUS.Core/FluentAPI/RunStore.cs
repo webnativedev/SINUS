@@ -30,6 +30,24 @@ public class RunStore
     }
 
     /// <summary>
+    /// Gets or sets the actual value.
+    /// </summary>
+    public object? Actual
+    {
+        get => this.ReadActualObject();
+        set => this.StoreActual(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the system under test.
+    /// </summary>
+    public object? Sut
+    {
+        get => this.ReadSutObject();
+        set => this.StoreSut(value);
+    }
+
+    /// <summary>
     /// Indexer that can be used instead of Read and Store methods.
     /// </summary>
     /// <param name="key">The key to find values.</param>
@@ -111,13 +129,24 @@ public class RunStore
     /// <returns>An instance from the store.</returns>
     public T Read<T>(string key)
     {
-        var result = this.store[key];
+        var result = this.ReadObject(key);
         if (result is not T)
         {
             throw new InvalidCastException("expected result is of different type");
         }
 
         return (T)result;
+    }
+
+    /// <summary>
+    /// Gets the instance from store based on the key as object.
+    /// </summary>
+    /// <param name="key">Identifier for the instance to get.</param>
+    /// <returns>An instance from the store as object.</returns>
+    public object ReadObject(string key)
+    {
+        return this.store[key]
+            ?? throw new InvalidDataException($"No value specified for key {key}");
     }
 
     /// <summary>
@@ -147,6 +176,15 @@ public class RunStore
     }
 
     /// <summary>
+    /// Reads the value that is returned by the system under test as a result.
+    /// </summary>
+    /// <returns>An instance from the store.</returns>
+    public object ReadActualObject()
+    {
+        return this.ReadObject(KeyActual);
+    }
+
+    /// <summary>
     /// Reads the value that represents the system under.
     /// </summary>
     /// <typeparam name="T">Type the result is checked against and casted into.</typeparam>
@@ -154,6 +192,15 @@ public class RunStore
     public T ReadSut<T>()
     {
         return this.Read<T>(KeySut);
+    }
+
+    /// <summary>
+    /// Reads the value that represents the system under test as object.
+    /// </summary>
+    /// <returns>An instance from the store as object.</returns>
+    public object? ReadSutObject()
+    {
+        return this.ReadObject(KeySut);
     }
 
     /// <summary>

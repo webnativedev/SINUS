@@ -4,8 +4,8 @@
 
 namespace WebNativeDEV.SINUS.Tests;
 
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WebNativeDEV.SINUS.Core.MsTest.Assertions;
 using WebNativeDEV.SINUS.Core.MsTest.Chrome.Extensions;
 using WebNativeDEV.SINUS.Core.MsTest.Extensions;
 using WebNativeDEV.SINUS.MsTest;
@@ -43,8 +43,9 @@ public class TestInitializer : ChromeTestBase
     /// </summary>
     [TestMethod]
     public void Maintenance_CountOfResultFoldersBelow200()
-        => Assert.That.NoExceptionOccurs(
-            () => this.CountResultFoldersBelowParameter(max: 200));
+    {
+        new Action(() => this.CountResultFoldersBelowParameter(max: 200)).Should().NotThrow();
+    }
 
     /// <summary>
     /// Maintenance test related to zombie processes.
@@ -52,7 +53,7 @@ public class TestInitializer : ChromeTestBase
     /// </summary>
     [TestMethod]
     public void Maintenance_ProcessesKilled()
-        => Assert.That.NoExceptionOccurs(() => this.CountZombieProcesses(maxAgeOfProessInMinutes: 2));
+        => new Action(() => this.CountZombieProcesses(maxAgeOfProessInMinutes: 2)).Should().NotThrow();
 
     /// <summary>
     /// Maintenance test related to zombie processes.
@@ -60,7 +61,7 @@ public class TestInitializer : ChromeTestBase
     /// </summary>
     [TestMethod]
     public void Maintenance_PrintBrowserUsage()
-        => Assert.That.NoExceptionOccurs(() => PrintBrowserUsageStatistic());
+        => new Action(() => PrintBrowserUsageStatistic()).Should().NotThrow();
 
     /// <summary>
     /// Maintenance Print Meta-Data.

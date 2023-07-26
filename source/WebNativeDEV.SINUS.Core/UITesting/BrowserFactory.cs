@@ -96,11 +96,16 @@ internal abstract class BrowserFactory : IBrowserFactory, IDisposable
     }
 
     /// <inheritdoc/>
-    public virtual IBrowser CreateBrowser(Uri url, string id)
+    public virtual IBrowser CreateBrowser(Uri url, string id, BrowserFactoryOptions? options = null)
     {
         this.Logger.LogInformation("Create Browser requested for {Url}", url);
 
-        var driver = this.CreateWebDriver();
+        var driver = this.CreateWebDriver(options ?? new BrowserFactoryOptions()
+        {
+            Headless = true,
+            IgnoreSslErrors = true,
+        });
+
         driver.Navigate().GoToUrl(url);
 
         return new Browser(
@@ -123,8 +128,9 @@ internal abstract class BrowserFactory : IBrowserFactory, IDisposable
     /// Creates an instance of a web driver. This is a native selenium driver and will
     /// be covered by a Browser object.
     /// </summary>
+    /// <param name="options">Configuration options.</param>
     /// <returns>A native selenium webdriver to load and interact with web pages.</returns>
-    protected abstract IWebDriver CreateWebDriver();
+    protected abstract IWebDriver CreateWebDriver(BrowserFactoryOptions options);
 
     /// <summary>
     /// Implementation of the disposal as called by IDisposable.Dispose.

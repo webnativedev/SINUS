@@ -170,7 +170,7 @@ internal abstract class BaseRunner : IDisposable
             try
             {
                 // if endpoint is null then in-memory, else public
-                var waf = new SinusWebApplicationFactory<TProgram>(endpoint);
+                var waf = SinusWebApplicationFactory<TProgram>.Create<TProgram>(endpoint, this.Logger);
                 this.httpClient = waf.CreateClient();
                 builder = waf;
 

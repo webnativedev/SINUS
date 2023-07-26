@@ -7,6 +7,7 @@ namespace WebNativeDEV.SINUS.Core.FluentAPI;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
+using WebNativeDEV.SINUS.Core.UITesting;
 using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 using WebNativeDEV.SINUS.MsTest.Abstract;
 
@@ -46,28 +47,28 @@ internal sealed class BrowserRunner : Runner, IBrowserRunner, IGivenBrowser, IWh
     private IBrowserFactory Factory { get; }
 
     /// <inheritdoc/>
-    public IGivenBrowser GivenABrowserAt(string? humanReadablePageName, string url)
-        => this.GivenABrowserAt(humanReadablePageName, new Uri(url));
+    public IGivenBrowser GivenABrowserAt(string? humanReadablePageName, string url, BrowserFactoryOptions? options = null)
+        => this.GivenABrowserAt(humanReadablePageName, new Uri(url), options);
 
     /// <inheritdoc/>
-    public IGivenBrowser GivenABrowserAt((string? humanReadablePageName, string url) website)
-        => this.GivenABrowserAt(website.humanReadablePageName, website.url);
+    public IGivenBrowser GivenABrowserAt((string? humanReadablePageName, string url) website, BrowserFactoryOptions? options = null)
+        => this.GivenABrowserAt(website.humanReadablePageName, website.url, options);
 
     /// <inheritdoc/>
-    public IGivenBrowser GivenABrowserAt(string? humanReadablePageName, Uri url)
+    public IGivenBrowser GivenABrowserAt(string? humanReadablePageName, Uri url, BrowserFactoryOptions? options = null)
     => (IGivenBrowser)this.Run(
             RunCategory.Given,
             $"a Browser at {url} - {humanReadablePageName}",
-            () => this.browser = this.Factory.CreateBrowser(url, this.TestBase.TestName),
+            () => this.browser = this.Factory.CreateBrowser(url, this.TestBase.TestName, options),
             false);
 
     /// <inheritdoc/>
-    public IGivenBrowser GivenASystemAndABrowserAt<TProgram>(string? humanReadablePageName, string endpoint, string url)
+    public IGivenBrowser GivenASystemAndABrowserAt<TProgram>(string? humanReadablePageName, string endpoint, string url, BrowserFactoryOptions? options = null)
         where TProgram : class
-        => this.GivenASystemAndABrowserAt<TProgram>(humanReadablePageName, endpoint, new Uri(url));
+        => this.GivenASystemAndABrowserAt<TProgram>(humanReadablePageName, endpoint, new Uri(url), options);
 
     /// <inheritdoc/>
-    public IGivenBrowser GivenASystemAndABrowserAt<TProgram>(string? humanReadablePageName, string endpoint, Uri url)
+    public IGivenBrowser GivenASystemAndABrowserAt<TProgram>(string? humanReadablePageName, string endpoint, Uri url, BrowserFactoryOptions? options = null)
         where TProgram : class
         => (IGivenBrowser)this.Run(
             RunCategory.Given,
@@ -75,19 +76,19 @@ internal sealed class BrowserRunner : Runner, IBrowserRunner, IGivenBrowser, IWh
             () =>
             {
                 this.CreateSut<TProgram>(endpoint);
-                this.GivenABrowserAt(humanReadablePageName, url);
+                this.GivenABrowserAt(humanReadablePageName, url, options);
             },
             false);
 
     /// <inheritdoc/>
-    public IGivenBrowser GivenASystemAndABrowserAtDefaultEndpoint<TProgram>((string? humanReadablePageName, string? browserPageToStart) page)
+    public IGivenBrowser GivenASystemAndABrowserAtDefaultEndpoint<TProgram>((string? humanReadablePageName, string? browserPageToStart) page, BrowserFactoryOptions? options = null)
         where TProgram : class
-        => this.GivenASystemAndABrowserAtDefaultEndpoint<TProgram>(page.humanReadablePageName, page.browserPageToStart);
+        => this.GivenASystemAndABrowserAtDefaultEndpoint<TProgram>(page.humanReadablePageName, page.browserPageToStart, options);
 
     /// <inheritdoc/>
-    public IGivenBrowser GivenASystemAndABrowserAtDefaultEndpoint<TProgram>(string? humanReadablePageName, string? browserPageToStart = null)
+    public IGivenBrowser GivenASystemAndABrowserAtDefaultEndpoint<TProgram>(string? humanReadablePageName, string? browserPageToStart = null, BrowserFactoryOptions? options = null)
         where TProgram : class
-        => this.GivenASystemAndABrowserAt<TProgram>(humanReadablePageName, DefaultEndpoint, DefaultEndpoint + (browserPageToStart ?? string.Empty));
+        => this.GivenASystemAndABrowserAt<TProgram>(humanReadablePageName, DefaultEndpoint, DefaultEndpoint + (browserPageToStart ?? string.Empty), options);
 
     /// <inheritdoc/>
     public IWhenBrowser When(string description, Action<IBrowser, RunStore>? action = null)
