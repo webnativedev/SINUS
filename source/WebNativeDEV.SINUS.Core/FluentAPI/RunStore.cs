@@ -8,14 +8,16 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using WebNativeDEV.SINUS.Core.Ioc;
+using WebNativeDEV.SINUS.MsTest;
 
 /// <summary>
 /// Represents the store that is used in test runners.
 /// </summary>
 public class RunStore
 {
-    private const string KeyActual = "actual";
-    private const string KeySut = "SystemUnderTest";
+    public const string KeyActual = "actual";
+    public const string KeySut = "SystemUnderTest";
 
     private readonly Dictionary<string, object?> store = new();
     private readonly ILogger logger;
@@ -23,10 +25,9 @@ public class RunStore
     /// <summary>
     /// Initializes a new instance of the <see cref="RunStore"/> class.
     /// </summary>
-    /// <param name="loggerFactory">Factory to create an own logger instance.</param>
-    public RunStore(ILoggerFactory loggerFactory)
+    public RunStore()
     {
-        this.logger = loggerFactory.CreateLogger<RunStore>();
+        this.logger = TestBase.Container.Resolve<ILoggerFactory>().CreateLogger<RunStore>();
     }
 
     /// <summary>
@@ -56,7 +57,7 @@ public class RunStore
     {
         get
         {
-            return this.Read<object?>(key);
+            return this.ReadObject(key);
         }
 
         set
@@ -92,6 +93,15 @@ public class RunStore
     /// <summary>
     /// Stores the value that is actually calculated normally in a When block.
     /// </summary>
+    /// <returns>An instance of the store to be used as fluent api.</returns>
+    public RunStore InitActual()
+    {
+        return this.Store(KeyActual, null);
+    }
+
+    /// <summary>
+    /// Stores the value that is actually calculated normally in a When block.
+    /// </summary>
     /// <param name="item">The item to store.</param>
     /// <returns>An instance of the store to be used as fluent api.</returns>
     public RunStore StoreActual(object? item)
@@ -107,8 +117,7 @@ public class RunStore
     /// <returns>An instance of the store to support the fluent api style.</returns>
     public RunStore StoreActual<TSut>(Func<TSut, object?> calculationFunction)
     {
-        return this.StoreActual(calculationFunction?.Invoke(this.ReadSut<TSut>())
-            ?? throw new InvalidDataException("Operation returned null value"));
+        return this.StoreActual(calculationFunction?.Invoke(this.ReadSut<TSut>()));
     }
 
     /// <summary>
@@ -143,10 +152,9 @@ public class RunStore
     /// </summary>
     /// <param name="key">Identifier for the instance to get.</param>
     /// <returns>An instance from the store as object.</returns>
-    public object ReadObject(string key)
+    public object? ReadObject(string key)
     {
-        return this.store[key]
-            ?? throw new InvalidDataException($"No value specified for key {key}");
+        return this.store[key];
     }
 
     /// <summary>
@@ -179,7 +187,7 @@ public class RunStore
     /// Reads the value that is returned by the system under test as a result.
     /// </summary>
     /// <returns>An instance from the store.</returns>
-    public object ReadActualObject()
+    public object? ReadActualObject()
     {
         return this.ReadObject(KeyActual);
     }
@@ -206,18 +214,42 @@ public class RunStore
     /// <summary>
     /// Prints the content to the logger.
     /// </summary>
-    public void Print()
+    public RunStore PrintStore()
+    {
+        return this.Print(this.store);
+    }
+
+    /// <summary>
+    /// Prints the content to the logger.
+    /// </summary>
+    public RunStore PrintAdditional(string key, object? value)
+    {
+        this.logger.LogInformation(
+            "| {Key}: {Value} (Type: {Type})",
+            key ?? "<null>",
+            value ?? "<null>",
+            value?.GetType()?.FullName ?? "<null>");
+
+        return this;
+    }
+
+    /// <summary>
+    /// Prints the content to the logger.
+    /// </summary>
+    private RunStore Print(Dictionary<string, object?> data)
     {
         this.logger.LogInformation("+----------------------------");
-        this.logger.LogInformation("| Count: {Count}", this.store.Keys.Count);
+        this.logger.LogInformation("| Count: {Count}", data.Keys.Count);
         this.logger.LogInformation("+----------------------------");
 
-        foreach (var key in this.store.Keys)
+        foreach (var key in data.Keys)
         {
-            this.logger.LogInformation("| {Key}: {Value}", key, this.store[key]);
+            this.logger.LogInformation("| {Key}: {Value} (Type: {Type})", key, data[key] ?? "<null>", data[key]?.GetType()?.FullName ?? "<null>");
         }
 
         this.logger.LogInformation("+----------------------------");
+
+        return this;
     }
 
     /// <summary>

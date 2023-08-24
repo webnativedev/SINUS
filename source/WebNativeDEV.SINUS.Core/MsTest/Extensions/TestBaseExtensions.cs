@@ -4,9 +4,11 @@
 
 namespace WebNativeDEV.SINUS.Core.MsTest.Extensions;
 
+using FluentAssertions;
 using Microsoft.Extensions.Logging;
+using WebNativeDEV.SINUS.Core.ArgumentValidation;
+using WebNativeDEV.SINUS.Core.Ioc;
 using WebNativeDEV.SINUS.MsTest;
-using WebNativeDEV.SINUS.MsTest.Chrome;
 
 /// <summary>
 /// Extension Methods that add value to the test base, but are not required base functionality.
@@ -21,7 +23,9 @@ public static class TestBaseExtensions
     /// <param name="max">Maximal amount of folders accepted.</param>
     public static void CountResultFoldersBelowParameter(this TestBase testBase, int max)
     {
-        ILogger<ChromeTestBase> logger = testBase?.LoggerFactory?.CreateLogger<ChromeTestBase>()
+        Ensure.NotNull(testBase);
+
+        ILogger<TestBase> logger = TestBase.Container?.Resolve<ILoggerFactory>()?.CreateLogger<TestBase>()
             ?? throw new ArgumentNullException(nameof(testBase), "extended object is null");
 
         // assumption that each Run has a run-directory below
@@ -34,5 +38,30 @@ public static class TestBaseExtensions
         }
 
         logger.LogInformation("Foldercount: {Count} / max:{Max}", count, max);
+    }
+
+    /// <summary>
+    /// Checks for zombie processes older as defined parameter.
+    /// </summary>
+    /// <param name="testBase">Reference to the test base object that is extended.</param>
+    /// <param name="maxAgeOfProessInMinutes">Max age for old a process should be to identify it as zombie.</param>
+    public static void CountChromeZombieProcesses(this TestBase testBase, int maxAgeOfProessInMinutes)
+    {
+        Ensure.NotNull(testBase);
+
+        ILogger<TestBase> logger = TestBase.Container.Resolve<ILoggerFactory>().CreateLogger<TestBase>();
+
+        var processes = System.Diagnostics.Process.GetProcesses().Where(
+            x => x.ProcessName.Contains("chromedriver", StringComparison.InvariantCultureIgnoreCase)
+            && x.StartTime < DateTime.Now.AddMinutes(-maxAgeOfProessInMinutes))
+            .ToList();
+
+        processes.Should().BeEmpty($"zombie drivers should not exist, but count: {processes.Count}");
+
+        logger.LogInformation(
+            "{TestName} - Processcount: {Count} processes older than {AgeInMin} min",
+            testBase.TestName,
+            processes.Count,
+            maxAgeOfProessInMinutes);
     }
 }

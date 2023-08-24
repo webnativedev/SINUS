@@ -7,11 +7,19 @@ namespace WebNativeDEV.SINUS.MsTest;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Diagnostics.CodeAnalysis;
+using WebNativeDEV.SINUS.Core.ArgumentValidation;
+using WebNativeDEV.SINUS.Core.Execution;
+using WebNativeDEV.SINUS.Core.Execution.Contracts;
 using WebNativeDEV.SINUS.Core.FluentAPI;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
-using WebNativeDEV.SINUS.Core.MsTest;
+using WebNativeDEV.SINUS.Core.Ioc;
+using WebNativeDEV.SINUS.Core.Ioc.Contracts;
+using WebNativeDEV.SINUS.Core.Logging;
+using WebNativeDEV.SINUS.Core.MsTest.Context;
 using WebNativeDEV.SINUS.Core.UITesting;
+using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 
 /// <summary>
 /// Represents an abstract test base that allows later unit tests to
@@ -20,25 +28,69 @@ using WebNativeDEV.SINUS.Core.UITesting;
 [TestClass]
 public abstract class TestBase
 {
-    private static TestContext? testContextAssembly;
-    private static ILoggerFactory? defaultLoggerFactory;
-
-    private ILoggerFactory? loggerFactory;
-    private ILogger? logger;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TestBase"/> class.
-    /// </summary>
-    protected TestBase()
+    static TestBase()
     {
+        Setup();
     }
 
     /// <summary>
-    /// Gets or sets the logger factory setup to create logger instances.
+    /// Gets or sets the TestContext injected by the framework.
     /// </summary>
-    public static ILoggerFactory DefaultLoggerFactory
+    public TestContext? TestContext { get; set; }
+
+    /// <summary>
+    /// Gets the IoC Container.
+    /// </summary>
+    public static IContainer Container { get; } = new Container();
+
+    /// <summary>
+    /// Gets the run directory where tests are executed.
+    /// </summary>
+    public string RunDir => this.TestContext?.TestRunDirectory ?? ".";
+
+    /// <summary>
+    /// Gets the run directory where tests are logging to.
+    /// </summary>
+    public string LogsDir => this.TestContext?.TestRunResultsDirectory ?? ".";
+
+    /// <summary>
+    /// Gets the name of the current test.
+    /// </summary>
+    public string TestName => this.TestContext?.TestName ?? "<unnamed>";
+
+    /// <summary>
+    /// Creates a Runner object to run Tests on.
+    /// </summary>
+    /// <returns>An object of runner.</returns>
+    protected IBrowserRunner Test() => new Runner(this);
+
+    /// <summary>
+    /// Creates a runner and uses the action to execute the test.
+    /// </summary>
+    /// <param name="action">The action to execute.</param>
+    protected void Test(Action<IBrowserRunner> action)
     {
-        get => defaultLoggerFactory ??= Microsoft.Extensions.Logging.LoggerFactory.Create(
+        Ensure.NotNull(action);
+
+        IBrowserRunner runner = this.Test();
+        action.Invoke(runner);
+
+        if(runner is IDisposable disposable)
+        {
+            disposable.Dispose();
+        }
+    }
+
+    /// <summary>
+    /// Sets up the TestBase.
+    /// </summary>
+    /// <param name="setup">An action to register further services.</param>
+    /// <param name="assemblyTestContext">TestContext injected from AssemblyInitialize.</param>
+    protected static void Setup(Action<IContainer>? setup = null, TestContext? assemblyTestContext = null)
+    {
+        Container.Register<ILoggerFactory>(() =>
+        {
+            return Microsoft.Extensions.Logging.LoggerFactory.Create(
                 builder =>
                 {
                     builder.AddConsole(options =>
@@ -49,105 +101,25 @@ public abstract class TestBase
                         options.IncludeScopes = true;
                     });
                 });
-        set => defaultLoggerFactory = value;
-    }
+        }).AsSingleton();
+        Container.Register<IWebDriverFactory>(() => new ChromeWebDriverFactory()).AsSingleton();
+        Container.Register<IBrowserFactory>(() => new BrowserFactory()).AsSingleton();
+        Container.Register<IExecutionEngine, ExecutionEngine>().AsSingleton();
 
-    /// <summary>
-    /// Gets or sets the TestContext injected by the framework.
-    /// </summary>
-    public TestContext? TestContext { get; set; }
-
-    /// <summary>
-    /// Gets a logger factory to create a logger object.
-    /// </summary>
-    public ILoggerFactory LoggerFactory => this.loggerFactory ??= DefaultLoggerFactory;
-
-    /// <summary>
-    /// Gets the run directory where tests are executed.
-    /// </summary>
-    [ExcludeFromCodeCoverage]
-    public string RunDir
-    {
-        get
+        if (assemblyTestContext != null)
         {
-            this.Logger.LogInformation("RunDir accessed");
-            return (testContextAssembly?.TestRunDirectory ??
-                this.TestContext?.TestRunDirectory) ?? ".";
-        }
-    }
-
-    /// <summary>
-    /// Gets the run directory where tests are logging to.
-    /// </summary>
-    [ExcludeFromCodeCoverage]
-    public string LogsDir
-    {
-        get
-        {
-            this.Logger.LogInformation("LogDir accessed");
-            return (testContextAssembly?.TestRunResultsDirectory ??
-                this.TestContext?.TestRunResultsDirectory) ?? ".";
-        }
-    }
-
-    /// <summary>
-    /// Gets the name of the current test.
-    /// </summary>
-    [ExcludeFromCodeCoverage]
-    public string TestName
-    {
-        get
-        {
-            this.Logger.LogInformation("TestName accessed");
-            return this.TestContext?.TestName ?? "<unnamed>";
-        }
-    }
-
-    /// <summary>
-    /// Gets a logger instance based on <see cref="CreateLogger"/>.
-    /// </summary>
-    private ILogger Logger => this.logger ??= this.CreateLogger();
-
-    /// <summary>
-    /// Method that is called indirectly in assembly startup that is used by the MS-Test Framework.
-    /// </summary>
-    /// <param name="testContext">The current context of the test execution (assembly level).</param>
-    protected static void StoreAssemblyTestContext(TestContext testContext)
-    {
-        testContextAssembly = testContext;
-    }
-
-    /// <summary>
-    /// Prints the usage statistics of the browser objects.
-    /// </summary>
-    protected static void PrintBrowserUsageStatistic()
-    {
-        var usageLogger = DefaultLoggerFactory.CreateLogger<TestBase>();
-        usageLogger.LogInformation("+--------------------------------");
-        usageLogger.LogInformation("| Tests Including Browsers: {Count}", Browser.TestsIncludingBrowsers.Count);
-
-        foreach (var id in Browser.TestsIncludingBrowsers)
-        {
-            var disposedInfo = Browser.TestsDisposingBrowsers.Contains(id)
-                                    ? "disposed"
-                                    : "leak";
-            usageLogger.LogInformation("| {Id} ({DisposedInfo})", id, disposedInfo);
+            Container.Register<IAssemblyTestContext>(
+                () => new AssemblyTestContext(assemblyTestContext)).AsSingleton();
         }
 
-        usageLogger.LogInformation("+--------------------------------");
-        usageLogger.LogInformation(" ");
+        setup?.Invoke(Container);
     }
 
     /// <summary>
-    /// Creates a Runner object to run Tests on.
+    /// Tear down for the test base.
     /// </summary>
-    /// <returns>An object of runner.</returns>
-    protected IRunner Test() => new Runner(this);
-
-    /// <summary>
-    /// Creates a logger object.
-    /// </summary>
-    /// <returns>A reference to a newly created logger.</returns>
-    private ILogger CreateLogger()
-        => this.LoggerFactory.CreateLogger(this.GetType());
+    protected static void TearDown()
+    {
+        Browser.PrintBrowserUsageStatistic();
+    }
 }

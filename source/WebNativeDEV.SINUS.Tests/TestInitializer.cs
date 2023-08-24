@@ -6,16 +6,16 @@ namespace WebNativeDEV.SINUS.Tests;
 
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WebNativeDEV.SINUS.Core.MsTest.Chrome.Extensions;
+using WebNativeDEV.SINUS.Core.Ioc;
+using WebNativeDEV.SINUS.Core.MsTest.Context;
 using WebNativeDEV.SINUS.Core.MsTest.Extensions;
 using WebNativeDEV.SINUS.MsTest;
-using WebNativeDEV.SINUS.MsTest.Chrome;
 
 /// <summary>
 /// Wrapper class used to store the testing context.
 /// </summary>
 [TestClass]
-public class TestInitializer : ChromeTestBase
+public class TestInitializer : TestBase
 {
     /// <summary>
     /// Method that is called by the MS-Test Framework on assmebly startup.
@@ -24,8 +24,10 @@ public class TestInitializer : ChromeTestBase
     [AssemblyInitialize]
     public static void AssemblyInitialize(TestContext testContext)
     {
-        TestBase.DefaultLoggerFactory = null!;
-        StoreAssemblyTestContext(testContext);
+        TestBase.Setup(
+            container =>
+            {
+            }, testContext);
     }
 
     /// <summary>
@@ -34,7 +36,7 @@ public class TestInitializer : ChromeTestBase
     [AssemblyCleanup]
     public static void AssemblyCleanup()
     {
-        PrintBrowserUsageStatistic();
+        TestBase.TearDown();
     }
 
     /// <summary>
@@ -43,9 +45,7 @@ public class TestInitializer : ChromeTestBase
     /// </summary>
     [TestMethod]
     public void Maintenance_CountOfResultFoldersBelow200()
-    {
-        new Action(() => this.CountResultFoldersBelowParameter(max: 200)).Should().NotThrow();
-    }
+        => new Action(() => this.CountResultFoldersBelowParameter(max: 200)).Should().NotThrow();
 
     /// <summary>
     /// Maintenance test related to zombie processes.
@@ -53,15 +53,7 @@ public class TestInitializer : ChromeTestBase
     /// </summary>
     [TestMethod]
     public void Maintenance_ProcessesKilled()
-        => new Action(() => this.CountZombieProcesses(maxAgeOfProessInMinutes: 2)).Should().NotThrow();
-
-    /// <summary>
-    /// Maintenance test related to zombie processes.
-    /// Fails if too old processes stay on the machine.
-    /// </summary>
-    [TestMethod]
-    public void Maintenance_PrintBrowserUsage()
-        => new Action(() => PrintBrowserUsageStatistic()).Should().NotThrow();
+        => new Action(() => this.CountChromeZombieProcesses(maxAgeOfProessInMinutes: 2)).Should().NotThrow();
 
     /// <summary>
     /// Maintenance Print Meta-Data.

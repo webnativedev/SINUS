@@ -6,16 +6,16 @@ namespace WebNativeDEV.SINUS.Tests;
 
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WebNativeDEV.SINUS.Core.FluentAssertions;
+using WebNativeDEV.SINUS.Core.Assertions;
 using WebNativeDEV.SINUS.Core.UITesting;
-using WebNativeDEV.SINUS.MsTest.Chrome;
+using WebNativeDEV.SINUS.MsTest;
 using WebNativeDEV.SINUS.SystemUnderTest;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'Type_or_Member'.
 #pragma warning disable SA1600 // Elements should be documented
 
 [TestClass]
-public class SimpleBrowserTests : ChromeTestBase
+public class SimpleBrowserTests : TestBase
 {
     private const string SimpleViewTitle = "SINUS TestSystem";
     private readonly (string?, string?) simpleView = ("SimpleView", "/simpleView");
@@ -71,7 +71,7 @@ public class SimpleBrowserTests : ChromeTestBase
         => this.Test()
             .GivenASystemAndABrowserAtDefaultEndpoint<Program>(this.simpleView)
             .When("storing the title", (browser, data) => data.StoreActual(browser?.Title))
-            .Then("it should equal to the real title", (browser, data) => PrintBrowserUsageStatistic())
+            .Then("it should print usage statistics", (browser, data) => { }) // TODO: print usage statistics
             .Dispose();
 
     [TestMethod]

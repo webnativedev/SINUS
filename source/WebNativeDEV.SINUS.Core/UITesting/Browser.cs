@@ -9,7 +9,9 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using WebNativeDEV.SINUS.Core.Ioc;
 using WebNativeDEV.SINUS.Core.UITesting.Contracts;
+using WebNativeDEV.SINUS.MsTest;
 
 /// <summary>
 /// The browser class represents an instance of a view
@@ -30,10 +32,11 @@ internal sealed class Browser : IBrowser
     /// Initializes a new instance of the <see cref="Browser"/> class.
     /// </summary>
     /// <param name="driver">Underlying Selenium WebDrivers.</param>
-    /// <param name="contentFolder">Folder to store data.</param>
-    /// <param name="id">Single identifier that identifies the browser uniquely inside the test session.</param>
     /// <param name="loggerFactory">The factory to create logger-objects.</param>
-    public Browser(IWebDriver driver, ILoggerFactory loggerFactory, string contentFolder = "./", string? id = null)
+    /// <param name="contentFolder">Folder to store data.</param>
+    /// <param name="humanReadablePageName">Logical page name.</param>
+    /// <param name="id">Single identifier that identifies the browser uniquely inside the test session.</param>
+    public Browser(IWebDriver driver, ILoggerFactory loggerFactory, string contentFolder = "./", string? humanReadablePageName = null, string? id = null)
     {
         this.LoggerFactory = loggerFactory;
         this.Logger.LogInformation(
@@ -44,6 +47,7 @@ internal sealed class Browser : IBrowser
 
         this.driver = driver ?? throw new ArgumentNullException(nameof(driver), "driver null");
         this.contentFolder = contentFolder;
+        this.HumanReadablePageName = humanReadablePageName;
         this.id = id ?? "<no id>";
 
         if(id != null)
@@ -107,6 +111,7 @@ internal sealed class Browser : IBrowser
     /// Gets the factory to create logger instances.
     /// </summary>
     private ILoggerFactory LoggerFactory { get; }
+    public string? HumanReadablePageName { get; }
 
     /// <summary>
     /// Gets the logger instance.
@@ -227,6 +232,29 @@ internal sealed class Browser : IBrowser
             this.disposedValue = true;
         }
     }
+
+    /// <summary>
+    /// Prints the usage statistics of the browser objects.
+    /// </summary>
+    public static void PrintBrowserUsageStatistic()
+    {
+        var loggerFactory = TestBase.Container.Resolve<ILoggerFactory>();
+        var usageLogger = loggerFactory.CreateLogger<TestBase>();
+        usageLogger.LogInformation("+--------------------------------");
+        usageLogger.LogInformation("| Tests Including Browsers: {Count}", Browser.TestsIncludingBrowsers.Count);
+
+        foreach (var id in Browser.TestsIncludingBrowsers)
+        {
+            var disposedInfo = Browser.TestsDisposingBrowsers.Contains(id)
+                                    ? "disposed"
+                                    : "leak";
+            usageLogger.LogInformation("| {Id} ({DisposedInfo})", id, disposedInfo);
+        }
+
+        usageLogger.LogInformation("+--------------------------------");
+        usageLogger.LogInformation(" ");
+    }
+
 
     /// <summary>
     /// Shows the object in the debugger.

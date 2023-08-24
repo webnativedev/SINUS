@@ -6,7 +6,7 @@ namespace WebNativeDEV.SINUS.Tests;
 
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WebNativeDEV.SINUS.Core.FluentAssertions;
+using WebNativeDEV.SINUS.Core.Assertions;
 using WebNativeDEV.SINUS.MsTest;
 using WebNativeDEV.SINUS.SystemUnderTest;
 using WebNativeDEV.SINUS.SystemUnderTest.Services.Abstractions;
@@ -53,7 +53,7 @@ public class SimpleTests : TestBase
                 "Ask for the current seconds",
                 (data) => data.StoreActual(data.ReadSut<MockTimeProvider>().GetCurrentSeconds()))
             .Then("Check for the mocked value 59", data => data.Should().ActualBe(59))
-            .Debug(data => data.Print())
+            .Debug(data => data.PrintStore())
             .Dispose();
     }
 

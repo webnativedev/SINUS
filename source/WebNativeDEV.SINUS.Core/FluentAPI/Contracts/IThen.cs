@@ -23,4 +23,16 @@ public interface IThen : IDisposable
     /// </summary>
     /// <returns>An instance to the runner, so it can be disposed.</returns>
     IDisposable DebugPrint();
+
+    /// <summary>
+    /// Method that is used to write all debug information and additional data to the logger.
+    /// </summary>
+    /// <returns>An instance to the runner, so it can be disposed.</returns>
+    IDisposable DebugPrint(params Tuple<string, object?>[] additionalData);
+
+    /// <summary>
+    /// Method that is used to write all debug information and additional data to the logger.
+    /// </summary>
+    /// <returns>An instance to the runner, so it can be disposed.</returns>
+    IDisposable DebugPrint(string key, object? value);
 }

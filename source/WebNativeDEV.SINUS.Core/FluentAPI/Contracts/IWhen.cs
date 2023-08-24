@@ -23,4 +23,66 @@ public interface IWhen
     /// The interface helps to reduce the set of options to only the appropriate in the sequence.
     /// </returns>
     IThen Then(string description, params Action<RunStore>[] actions);
+
+    /// <summary>
+    /// Allows to define the Then-Action in a Given-When-Then sequence.
+    /// </summary>
+    /// <param name="actions">Defines the execution parts.</param>
+    /// <returns>
+    /// An object that will point to the runner.
+    /// The interface helps to reduce the set of options to only the appropriate in the sequence.
+    /// </returns>
+    IThen Then(params Action<RunStore>[] actions);
+
+    /// <summary>
+    /// Allows to define the Then-Action in a Given-When-Then sequence.
+    /// </summary>
+    /// <param name="description">Plain text description.</param>
+    /// <returns>
+    /// An object that will point to the runner.
+    /// The interface helps to reduce the set of options to only the appropriate in the sequence.
+    /// </returns>
+    IThen ThenNoError(string description);
+
+    /// <summary>
+    /// Allows to define the Then-Action in a Given-When-Then sequence.
+    /// </summary>
+    /// <returns>
+    /// An object that will point to the runner.
+    /// The interface helps to reduce the set of options to only the appropriate in the sequence.
+    /// </returns>
+    IThen ThenNoError();
+
+    /// <summary>
+    /// Allows to define the Then-Action in a Given-When-Then sequence after
+    /// we expect that when fails.
+    /// </summary>
+    /// <param name="description">Plain text description.</param>
+    /// <returns>
+    /// An object that will point to the runner.
+    /// The interface helps to reduce the set of options to only the appropriate in the sequence.
+    /// </returns>
+    IThen ThenShouldHaveFailed(string description);
+
+    /// <summary>
+    /// Allows to define the Then-Action in a Given-When-Then sequence after
+    /// we expect that when fails.
+    /// </summary>
+    /// <returns>
+    /// An object that will point to the runner.
+    /// The interface helps to reduce the set of options to only the appropriate in the sequence.
+    /// </returns>
+    IThen ThenShouldHaveFailed();
+
+    /// <summary>
+    /// Allows to define the Then-Action in a Given-When-Then sequence after
+    /// we expect that when fails.
+    /// </summary>
+    /// <typeparam name="T">Exception type expected.</typeparam>
+    /// <returns>
+    /// An object that will point to the runner.
+    /// The interface helps to reduce the set of options to only the appropriate in the sequence.
+    /// </returns>
+    IThen ThenShouldHaveFailedWith<T>()
+        where T : Exception;
 }

@@ -117,7 +117,7 @@ https://learn.microsoft.com/en-us/visualstudio/test/microsoft-code-coverage-cons
   * Opinionated: don't see this as optional... in case the test-contexts are not captured via these methods unproper \
     file handling could be the result (e.g.: logs in the folder of execution instead of in the testresults).
 * Create a class and attribute it with \[TestClass\]
-* inherit the class from ChromeTestBase
+* inherit the class from TestBase
 * Create a method and attribute it with \[TestMethod\]
 * Instead of Arrange-Act-Assert use an inherited method Test() for browser-based testing or for testing without a UI.
 * With the Given part (use intelliSense) you can spin-up a browser and optionally a System-Under-Test (SUT) in-memory or public (meaning reachable via network outside the test).

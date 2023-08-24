@@ -23,4 +23,14 @@ public interface IGiven
     /// The interface helps to reduce the set of options to only the appropriate in the sequence.
     /// </returns>
     IWhen When(string description, Action<RunStore>? action = null);
+
+    /// <summary>
+    /// Allows to define the When-Action in a Given-When-Then sequence.
+    /// </summary>
+    /// <param name="action">Defines the execution part.</param>
+    /// <returns>
+    /// An object that will point to the runner.
+    /// The interface helps to reduce the set of options to only the appropriate in the sequence.
+    /// </returns>
+    IWhen When(Action<RunStore>? action = null);
 }

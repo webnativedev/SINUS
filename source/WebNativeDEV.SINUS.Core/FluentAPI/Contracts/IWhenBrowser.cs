@@ -24,4 +24,14 @@ public interface IWhenBrowser
     /// The interface helps to reduce the set of options to only the appropriate in the sequence.
     /// </returns>
     IThenBrowser Then(string description, params Action<IBrowser, RunStore>[] actions);
+
+    /// <summary>
+    /// Allows to define the Then-Action in a Given-When-Then sequence.
+    /// </summary>
+    /// <param name="actions">Defines the parts to check.</param>
+    /// <returns>
+    /// An object that will point to the runner.
+    /// The interface helps to reduce the set of options to only the appropriate in the sequence.
+    /// </returns>
+    IThenBrowser Then(params Action<IBrowser, RunStore>[] actions);
 }
