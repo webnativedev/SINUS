@@ -15,8 +15,6 @@ using System.Threading.Tasks;
 /// </summary>
 public class EventBusEventArgs : EventArgs
 {
-    private static EventBusEventArgs empty = new EventBusEventArgs();
-
     /// <summary>
     /// Initializes a new instance of the <see cref="EventBusEventArgs"/> class.
     /// </summary>
@@ -29,7 +27,7 @@ public class EventBusEventArgs : EventArgs
     /// <summary>
     /// Gets an empty object to reduce allocations.
     /// </summary>
-    public static new EventBusEventArgs Empty => empty;
+    public static new EventBusEventArgs Empty { get; } = new();
 
     /// <summary>
     /// Gets the value to transport via the arg class.

@@ -221,6 +221,7 @@ public class RunStore
     /// <summary>
     /// Prints the content to the logger.
     /// </summary>
+    /// <returns>The RunStore for a fluent api.</returns>
     public RunStore PrintStore()
     {
         return this.Print(this.store);
@@ -229,6 +230,9 @@ public class RunStore
     /// <summary>
     /// Prints the content to the logger.
     /// </summary>
+    /// <param name="key">The key to print.</param>
+    /// <param name="value">The value to print.</param>
+    /// <returns>The RunStore for a fluent api.</returns>
     public RunStore PrintAdditional(string key, object? value)
     {
         this.logger.LogInformation(
@@ -236,25 +240,6 @@ public class RunStore
             key ?? "<null>",
             value ?? "<null>",
             value?.GetType()?.FullName ?? "<null>");
-
-        return this;
-    }
-
-    /// <summary>
-    /// Prints the content to the logger.
-    /// </summary>
-    private RunStore Print(Dictionary<string, object?> data)
-    {
-        this.logger.LogInformation("+----------------------------");
-        this.logger.LogInformation("| Count: {Count}", data.Keys.Count);
-        this.logger.LogInformation("+----------------------------");
-
-        foreach (var key in data.Keys)
-        {
-            this.logger.LogInformation("| {Key}: {Value} (Type: {Type})", key, data[key] ?? "<null>", data[key]?.GetType()?.FullName ?? "<null>");
-        }
-
-        this.logger.LogInformation("+----------------------------");
 
         return this;
     }
@@ -270,5 +255,26 @@ public class RunStore
             .OfType<IDisposable>()
             .ToList()
             .ForEach(d => d.Dispose());
+    }
+
+    /// <summary>
+    /// Prints the content to the logger.
+    /// </summary>
+    /// <param name="data">The key/value pair to print.</param>
+    /// <returns>The RunStore for a fluent api.</returns>
+    private RunStore Print(Dictionary<string, object?> data)
+    {
+        this.logger.LogInformation("+----------------------------");
+        this.logger.LogInformation("| Count: {Count}", data.Keys.Count);
+        this.logger.LogInformation("+----------------------------");
+
+        foreach (var key in data.Keys)
+        {
+            this.logger.LogInformation("| {Key}: {Value} (Type: {Type})", key, data[key] ?? "<null>", data[key]?.GetType()?.FullName ?? "<null>");
+        }
+
+        this.logger.LogInformation("+----------------------------");
+
+        return this;
     }
 }

@@ -107,11 +107,13 @@ internal sealed class Browser : IBrowser
         }
     }
 
+    /// <inheritdoc/>
+    public string? HumanReadablePageName { get; }
+
     /// <summary>
     /// Gets the factory to create logger instances.
     /// </summary>
     private ILoggerFactory LoggerFactory { get; }
-    public string? HumanReadablePageName { get; }
 
     /// <summary>
     /// Gets the logger instance.
@@ -122,6 +124,33 @@ internal sealed class Browser : IBrowser
         {
             return this.logger ??= this.LoggerFactory.CreateLogger<Browser>();
         }
+    }
+
+    /// <summary>
+    /// Prints the usage statistics of the browser objects.
+    /// </summary>
+    public static void PrintBrowserUsageStatistic()
+    {
+        if (!Browser.TestsIncludingBrowsers.Any())
+        {
+            return;
+        }
+
+        var loggerFactory = TestBase.Container.Resolve<ILoggerFactory>();
+        var usageLogger = loggerFactory.CreateLogger<TestBase>();
+        usageLogger.LogInformation("+--------------------------------");
+        usageLogger.LogInformation("| Tests Including Browsers: {Count}", Browser.TestsIncludingBrowsers.Count);
+
+        foreach (var id in Browser.TestsIncludingBrowsers)
+        {
+            var disposedInfo = Browser.TestsDisposingBrowsers.Contains(id)
+                                    ? "disposed"
+                                    : "leak";
+            usageLogger.LogInformation("| {Id} ({DisposedInfo})", id, disposedInfo);
+        }
+
+        usageLogger.LogInformation("+--------------------------------");
+        usageLogger.LogInformation(" ");
     }
 
     /// <inheritdoc/>
@@ -215,6 +244,16 @@ internal sealed class Browser : IBrowser
     }
 
     /// <summary>
+    /// Shows the object in the debugger.
+    /// </summary>
+    /// <returns>A representative plain text string.</returns>
+    [ExcludeFromCodeCoverage]
+    private string GetDebuggerDisplay()
+    {
+        return $"Broswer object created {this.driver} - content: {this.contentFolder}";
+    }
+
+    /// <summary>
     /// Implementation of the disposal as called by IDisposable.Dispose.
     /// </summary>
     /// <param name="disposing">True if called by Dispose; False if called by Destructor.</param>
@@ -231,38 +270,5 @@ internal sealed class Browser : IBrowser
 
             this.disposedValue = true;
         }
-    }
-
-    /// <summary>
-    /// Prints the usage statistics of the browser objects.
-    /// </summary>
-    public static void PrintBrowserUsageStatistic()
-    {
-        var loggerFactory = TestBase.Container.Resolve<ILoggerFactory>();
-        var usageLogger = loggerFactory.CreateLogger<TestBase>();
-        usageLogger.LogInformation("+--------------------------------");
-        usageLogger.LogInformation("| Tests Including Browsers: {Count}", Browser.TestsIncludingBrowsers.Count);
-
-        foreach (var id in Browser.TestsIncludingBrowsers)
-        {
-            var disposedInfo = Browser.TestsDisposingBrowsers.Contains(id)
-                                    ? "disposed"
-                                    : "leak";
-            usageLogger.LogInformation("| {Id} ({DisposedInfo})", id, disposedInfo);
-        }
-
-        usageLogger.LogInformation("+--------------------------------");
-        usageLogger.LogInformation(" ");
-    }
-
-
-    /// <summary>
-    /// Shows the object in the debugger.
-    /// </summary>
-    /// <returns>A representative plain text string.</returns>
-    [ExcludeFromCodeCoverage]
-    private string GetDebuggerDisplay()
-    {
-        return $"Broswer object created {this.driver} - content: {this.contentFolder}";
     }
 }

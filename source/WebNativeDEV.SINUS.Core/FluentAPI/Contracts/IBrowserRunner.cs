@@ -106,7 +106,6 @@ public interface IBrowserRunner : IRunner
     IGivenBrowser GivenASystemAndABrowserAt<TProgram>(string endpoint, string url, BrowserFactoryOptions? options = null)
         where TProgram : class;
 
-
     /// <summary>
     /// Allows to define the Browser-based Given-Action in a Given-When-Then sequence.
     /// </summary>
@@ -156,7 +155,6 @@ public interface IBrowserRunner : IRunner
     /// </returns>
     IGivenBrowser GivenASystemAndABrowserAtDefaultEndpoint<TProgram>(string? humanReadablePageName, string? browserPageToStart = null, BrowserFactoryOptions? options = null)
         where TProgram : class;
-
 
     /// <summary>
     /// Allows to define the Browser-based Given-Action in a Given-When-Then sequence.

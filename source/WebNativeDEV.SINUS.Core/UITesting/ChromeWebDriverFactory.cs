@@ -17,6 +17,9 @@ using WebNativeDEV.SINUS.Core.Ioc;
 using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 using WebNativeDEV.SINUS.MsTest;
 
+/// <summary>
+/// WebDriverFactory creating Chrome based web drivers.
+/// </summary>
 internal sealed class ChromeWebDriverFactory : IWebDriverFactory
 {
     private readonly ILogger logger;

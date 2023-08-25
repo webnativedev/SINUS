@@ -9,40 +9,32 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebNativeDEV.SINUS.Core.Events.Contracts;
 
 /// <summary>
 /// Implementation of a simple event bus.
 /// </summary>
-public static class EventBus
+public class EventBus : IEventBus
 {
-    private static readonly Dictionary<string, List<EventHandler<EventBusEventArgs>>> Handlers = new();
+    private readonly Dictionary<string, List<EventHandler<EventBusEventArgs>>> handlers = new();
 
-    /// <summary>
-    /// Publishes an event.
-    /// </summary>
-    /// <param name="sender">The sender of the event.</param>
-    /// <param name="eventName">The eventname.</param>
-    /// <param name="e">The eventargs used to transport data.</param>
-    public static void Publish(object sender, string eventName, EventBusEventArgs e)
+    /// <inheritdoc/>
+    public void Publish(object sender, string eventName, EventBusEventArgs e)
     {
-        foreach (EventHandler<EventBusEventArgs> handler in Handlers[eventName])
+        foreach (EventHandler<EventBusEventArgs> handler in this.handlers[eventName])
         {
             handler(sender, e);
         }
     }
 
-    /// <summary>
-    /// Subscribe to an event.
-    /// </summary>
-    /// <param name="eventName">Eventname to subscribe to.</param>
-    /// <param name="handler">The handler that is called when a corresponding event is raised.</param>
-    public static void Subscribe(string eventName, EventHandler<EventBusEventArgs> handler)
+    /// <inheritdoc/>
+    public void Subscribe(string eventName, EventHandler<EventBusEventArgs> handler)
     {
-        if (!Handlers.ContainsKey(eventName))
+        if (!this.handlers.ContainsKey(eventName))
         {
-            Handlers.Add(eventName, new List<EventHandler<EventBusEventArgs>>());
+            this.handlers.Add(eventName, new List<EventHandler<EventBusEventArgs>>());
         }
 
-        Handlers[eventName].Add(handler);
+        this.handlers[eventName].Add(handler);
     }
 }

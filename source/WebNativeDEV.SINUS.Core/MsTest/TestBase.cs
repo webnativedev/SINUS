@@ -36,14 +36,14 @@ public abstract class TestBase
     }
 
     /// <summary>
-    /// Gets or sets the TestContext injected by the framework.
-    /// </summary>
-    public TestContext? TestContext { get; set; }
-
-    /// <summary>
     /// Gets the IoC Container.
     /// </summary>
     public static IContainer Container { get; } = new Container();
+
+    /// <summary>
+    /// Gets or sets the TestContext injected by the framework.
+    /// </summary>
+    public TestContext? TestContext { get; set; }
 
     /// <summary>
     /// Gets the run directory where tests are executed.
@@ -59,29 +59,6 @@ public abstract class TestBase
     /// Gets the name of the current test.
     /// </summary>
     public string TestName => this.TestContext?.TestName ?? "<unnamed>";
-
-    /// <summary>
-    /// Creates a Runner object to run Tests on.
-    /// </summary>
-    /// <returns>An object of runner.</returns>
-    protected IBrowserRunner Test() => new Runner(this);
-
-    /// <summary>
-    /// Creates a runner and uses the action to execute the test.
-    /// </summary>
-    /// <param name="action">The action to execute.</param>
-    protected void Test(Action<IBrowserRunner> action)
-    {
-        Ensure.NotNull(action);
-
-        IBrowserRunner runner = this.Test();
-        action.Invoke(runner);
-
-        if(runner is IDisposable disposable)
-        {
-            disposable.Dispose();
-        }
-    }
 
     /// <summary>
     /// Sets up the TestBase.
@@ -123,5 +100,28 @@ public abstract class TestBase
     protected static void TearDown()
     {
         Browser.PrintBrowserUsageStatistic();
+    }
+
+    /// <summary>
+    /// Creates a Runner object to run Tests on.
+    /// </summary>
+    /// <returns>An object of runner.</returns>
+    protected IBrowserRunner Test() => new Runner(this);
+
+    /// <summary>
+    /// Creates a runner and uses the action to execute the test.
+    /// </summary>
+    /// <param name="action">The action to execute.</param>
+    protected void Test(Action<IBrowserRunner> action)
+    {
+        Ensure.NotNull(action);
+
+        IBrowserRunner runner = this.Test();
+        action.Invoke(runner);
+
+        if(runner is IDisposable disposable)
+        {
+            disposable.Dispose();
+        }
     }
 }

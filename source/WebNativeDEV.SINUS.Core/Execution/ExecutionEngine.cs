@@ -32,6 +32,7 @@ public sealed class ExecutionEngine : IExecutionEngine
     /// <summary>
     /// Initializes a new instance of the <see cref="ExecutionEngine"/> class.
     /// </summary>
+    /// <param name="loggerFactory">A factory to create a logger.</param>
     public ExecutionEngine(ILoggerFactory loggerFactory)
     {
         this.logger = loggerFactory.CreateLogger<ExecutionEngine>();

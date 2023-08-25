@@ -25,4 +25,30 @@ public class ArgumentValidationException : Exception
         : base($"Validation Exception: {validationMethod} for {name ?? "unknown"} with value {item ?? "<null>"}")
     {
     }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ArgumentValidationException"/> class.
+    /// </summary>
+    public ArgumentValidationException()
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ArgumentValidationException"/> class.
+    /// </summary>
+    /// <param name="message">A plain text message to add.</param>
+    public ArgumentValidationException(string message)
+        : base(message)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ArgumentValidationException"/> class.
+    /// </summary>
+    /// <param name="message">A plain text message to add.</param>
+    /// <param name="innerException">An inner exception.</param>
+    public ArgumentValidationException(string message, Exception innerException)
+        : base(message, innerException)
+    {
+    }
 }
