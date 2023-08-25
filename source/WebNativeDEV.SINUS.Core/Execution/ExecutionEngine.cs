@@ -66,7 +66,6 @@ public sealed class ExecutionEngine : IExecutionEngine
 
     private void RunActions(ExecutionParameter parameter, ExecutionOutput returnValue)
     {
-        var testBase = Ensure.NotNull(parameter.TestBase);
         var namings = Ensure.NotNull(parameter.Namings);
 
         if (!parameter.RunActions || parameter.Actions == null || !parameter.Actions.Any(x => x != null))

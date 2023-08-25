@@ -41,9 +41,8 @@ internal sealed class SinusWebApplicationFactory<TEntryPoint> : WebApplicationFa
         this.InMemory = string.IsNullOrWhiteSpace(this.HostUrl);
 
         logger.LogInformation("Try to get mutex and create SinusWebApplicationFactory object");
-        Mutex.WaitOne(TimeSpan.FromMinutes(5));
+        this.LockUsage();
         logger.LogInformation("   mutex acquired");
-
     }
 
     /// <summary>
@@ -112,12 +111,22 @@ internal sealed class SinusWebApplicationFactory<TEntryPoint> : WebApplicationFa
                 this.customHost = null;
 
                 this.logger.LogInformation("release mutex to allow other instances of a system under test.");
-                Mutex.ReleaseMutex();
+                this.UnLockUsage();
             }
         }
         catch
         {
             throw;
         }
+    }
+
+    private void LockUsage()
+    {
+        //Mutex.WaitOne(TimeSpan.FromMinutes(5));
+    }
+
+    private void UnLockUsage()
+    {
+        //Mutex.ReleaseMutex();
     }
 }
