@@ -41,7 +41,7 @@ public sealed class GoogleBrowserTests : TestBase
     [TestMethod]
     [TestCategory("external")]
     [BusinessRequirement("001:Read Title")]
-    public void Given_ABrowserLoadingGoogle_When_CheckTitle_Then_TitleIsNotNull_Debug_AllStoredValues()
+    public void Given_ABrowserLoadingGoogle_When_CheckTitle_Then_TitleIsNotNullWithDebug()
      => this.Test()
             .GivenABrowserAt(this.Google)
             .When(
@@ -71,7 +71,7 @@ public sealed class GoogleBrowserTests : TestBase
     [TestMethod]
     [TestCategory("external")]
     [BusinessRequirement("001:Read Title")]
-    public void Given_ABrowserLoadingGoogleWithUsing_When_CheckTitle_Then_TitleIsNotNull_Debug_AllStoredValues()
+    public void Given_ABrowserLoadingGoogleWithUsing_When_CheckTitle_Then_TitleIsNotNullWithDebug()
     {
         using var runner = this.Test()
                 .GivenABrowserAt(this.Google)
@@ -83,7 +83,7 @@ public sealed class GoogleBrowserTests : TestBase
     [TestMethod]
     [TestCategory("external")]
     [BusinessRequirement("001:Read Title")]
-    public void Given_ABrowserLoadingGoogleWithUsingBlock_When_CheckTitle_Then_TitleIsNotNull_Debug_AllStoredValues()
+    public void Given_ABrowserLoadingGoogleWithUsingBlock_When_CheckTitle_Then_TitleIsNotNull()
     {
         #pragma warning disable IDE0063 // Use simple using-Statement.
 

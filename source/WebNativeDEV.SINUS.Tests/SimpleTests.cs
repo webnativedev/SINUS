@@ -33,7 +33,7 @@ public class SimpleTests : TestBase
 
     [TestMethod]
     [ExpectedException(typeof(AssertInconclusiveException))]
-    public void Given_TheMockTimeProvider_When_GettingTheCurrentSeconds_Then_ValueEquals59_AsGherkinPreparation()
+    public void Given_TheMockTimeProvider_When_GettingTheCurrentSeconds_Then_ValueEquals59AsGherkinPreparation()
     {
         this.Test()
             .Given("The Mock Time Provider")
@@ -43,7 +43,7 @@ public class SimpleTests : TestBase
     }
 
     [TestMethod]
-    public void Given_TheMockTimeProvider_When_GettingTheCurrentSeconds_Then_ValueEquals59_AsGherkin()
+    public void Given_TheMockTimeProvider_When_GettingTheCurrentSeconds_Then_ValueEquals59AsGherkin()
     {
         this.Test()
             .Given(
@@ -58,7 +58,7 @@ public class SimpleTests : TestBase
     }
 
     [TestMethod]
-    public void Given_TheMockTimeProviderViaHttp_When_GettingTheCurrentSeconds_Then_ValueEquals59_AsGherkin()
+    public void Given_TheMockTimeProviderViaHttp_When_GettingTheCurrentSeconds_Then_ValueEquals59AsGherkin()
     {
         this.Test()
             .GivenASystem<Program>("The Mock Time Provider via http")

@@ -32,6 +32,16 @@ public class RunStoreTests : TestBase
         new object?[] { DateTime.Now, "DateTimeTest" },
     };
 
+    /// <summary>
+    /// Dynamic Data Display Name calculator proxying to TestNamingConventionManager.
+    /// This works when the test naming conventions are met.
+    /// </summary>
+    /// <param name="methodInfo">The method to work on.</param>
+    /// <param name="data">The arguments, but with the convention that the last object contains the testname.</param>
+    /// <returns>A calculated name of the test.</returns>
+    public static string DefaultDataDisplayName(MethodInfo methodInfo, object[] data)
+        => TestNamingConventionManager.DynamicDataDisplayNameAddValueFromLastArgument(methodInfo, data);
+
     [TestMethod]
     [DynamicData(
         nameof(ValidValues),

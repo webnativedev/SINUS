@@ -58,7 +58,7 @@ public class TestInitializer : TestBase
     /// Maintenance Print Meta-Data.
     /// </summary>
     [TestMethod]
-    public void Maintenance_PrintData()
+    public void Given_ASolidTestBase_When_CheckingVariables_Then_NonShouldBeNull()
     {
         this.Test()
             .Given("solid testbase")

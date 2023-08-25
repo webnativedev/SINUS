@@ -34,7 +34,7 @@ public class TestNamingConventionManager : ITestNamingConventionManager
             throw new InvalidOperationException("Given_X_When_Y_Then_Z - naming convention has not right count of elements");
         }
 
-        if (nameparts[0] != "Given" || nameparts[2] == "When" || nameparts[4] == "Then")
+        if (nameparts[0] != "Given" || nameparts[2] != "When" || nameparts[4] != "Then")
         {
             throw new InvalidOperationException("Given_X_When_Y_Then_Z - naming convention has not used right keywords");
         }

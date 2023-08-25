@@ -23,7 +23,7 @@ public sealed partial class SystemUnderTestTests : TestBase
     private readonly (string?, string?) simpleView = ("SimpleView", "/simpleView");
 
     [TestMethod]
-    public void Given_Sut_When_CallingView_Then_SeleniumBrowsable_WithRunner()
+    public void Given_Sut_When_CallingView_Then_SeleniumBrowsableWithRunner()
         => this.Test()
             .GivenASystemAndABrowserAtDefaultEndpoint<Program>(this.simpleView)
             .When("making a screenshot", (browser, data) => browser.TakeScreenshot())

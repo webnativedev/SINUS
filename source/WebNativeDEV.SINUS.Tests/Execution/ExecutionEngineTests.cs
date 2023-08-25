@@ -33,15 +33,26 @@ public class ExecutionEngineTests : TestBase
             {
                 Actions = new List<Action?>() { () => { } },
                 TestBase = new ExecutionEngineTests(),
+                Namings = new TestNamingConventionManager("Given_X_When_Y_Then_Z"),
             },
             "MinimalTest",
         },
     };
 
+    /// <summary>
+    /// Dynamic Data Display Name calculator proxying to TestNamingConventionManager.
+    /// This works when the test naming conventions are met.
+    /// </summary>
+    /// <param name="methodInfo">The method to work on.</param>
+    /// <param name="data">The arguments, but with the convention that the last object contains the testname.</param>
+    /// <returns>A calculated name of the test.</returns>
+    public static string DefaultDataDisplayName(MethodInfo methodInfo, object[] data)
+        => TestNamingConventionManager.DynamicDataDisplayNameAddValueFromLastArgument(methodInfo, data);
+
     [TestMethod]
     [DynamicData(
-    nameof(ValidValues),
-    DynamicDataDisplayName = nameof(DefaultDataDisplayName))]
+        nameof(ValidValues),
+        DynamicDataDisplayName = nameof(DefaultDataDisplayName))]
     public void Given_AValue_When_CallingArgumentValidationNotNullWithValues_Then_NoExceptionShouldBeThrown(object? value, string scenario)
     => this.Test(r => r
         .Given(data => data.StoreSut(new ExecutionEngine(Substitute.For<ILoggerFactory>())))
