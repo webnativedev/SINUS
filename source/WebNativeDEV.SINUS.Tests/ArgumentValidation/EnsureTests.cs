@@ -39,9 +39,6 @@ public class EnsureTests : TestBase
             new object?[] { DateTime.Now, "DateTimeNow" },
         };
 
-    public static string DataDisplayName(MethodInfo methodInfo, object[] data)
-        => TestNamingConventionManager.DynamicDataDisplayNameAddValueFromLastArgument(methodInfo, data);
-
     [TestMethod]
     [ExpectedException(typeof(AssertFailedException), "ArgumentValidationException")]
     public void Given_AValue_When_CallingArgumentValidationNotNullWithNull_Then_AnExceptionShouldHaveBeenThrown()
@@ -53,7 +50,7 @@ public class EnsureTests : TestBase
     [TestMethod]
     [DynamicData(
         nameof(ValidValues),
-        DynamicDataDisplayName = nameof(DataDisplayName))]
+        DynamicDataDisplayName = nameof(DefaultDataDisplayName))]
     public void Given_AValue_When_CallingArgumentValidationNotNullWithValues_Then_NoExceptionShouldBeThrown(object? value, string scenario)
         => this.Test(r => r
             .Given(data => data["value"] = value)

@@ -12,8 +12,10 @@ using System.Threading.Tasks;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
 using WebNativeDEV.SINUS.Core.Ioc.Contracts;
 
-// RegisteredType is supposed to be a short lived object tying an item to its container
-// and allowing users to mark it as a singleton or per-scope item
+/// <summary>
+/// RegisteredType is supposed to be a short lived object tying an item to its container
+/// and allowing users to mark it as a singleton or per-scope item.
+/// </summary>
 public sealed class RegisteredType : IRegisteredType
 {
     private readonly Type itemType;
@@ -35,9 +37,11 @@ public sealed class RegisteredType : IRegisteredType
         this.registerFactory(this.factory);
     }
 
+    /// <inheritdoc/>
     public void AsSingleton()
         => this.registerFactory(lifetime => lifetime.GetServiceAsSingleton(this.itemType, this.factory));
 
+    /// <inheritdoc/>
     public void PerScope()
         => this.registerFactory(lifetime => lifetime.GetServicePerScope(this.itemType, this.factory));
 }

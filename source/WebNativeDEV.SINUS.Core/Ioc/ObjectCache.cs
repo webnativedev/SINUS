@@ -28,6 +28,9 @@ public abstract class ObjectCache : IDisposable
     /// </summary>
     private bool disposedValue;
 
+    /// <summary>
+    /// Finalizes an instance of the <see cref="ObjectCache"/> class.
+    /// </summary>
     [ExcludeFromCodeCoverage]
     ~ObjectCache()
     {
@@ -53,6 +56,10 @@ public abstract class ObjectCache : IDisposable
     protected object? GetCached(Type type, Func<ILifetime, object?> factory, ILifetime lifetime)
         => this.instanceCache.GetOrAdd(type, _ => factory(lifetime));
 
+    /// <summary>
+    /// Implementation of the disposal as called by IDisposable.Dispose.
+    /// </summary>
+    /// <param name="disposing">True if called by Dispose; False if called by Destructor.</param>
     protected virtual void Dispose(bool disposing)
     {
         if (!this.disposedValue)

@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WebNativeDEV.SINUS.Core.FluentAPI;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
+using WebNativeDEV.SINUS.Core.MsTest.Contracts;
 using WebNativeDEV.SINUS.MsTest;
 
 /// <summary>
@@ -47,6 +48,11 @@ public sealed class ExecutionParameter
     /// Gets the reference to the runner.
     /// </summary>
     public IRunner? Runner { get; init; }
+
+    /// <summary>
+    /// Gets the reference to the Naming Conventions manager.
+    /// </summary>
+    public ITestNamingConventionManager? Namings { get; init; }
 
     /// <summary>
     /// Gets a value indicating whether a System under test should be created.

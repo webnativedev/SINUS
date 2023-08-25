@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging.Console;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
 using WebNativeDEV.SINUS.Core.Execution;
 using WebNativeDEV.SINUS.Core.Execution.Contracts;
@@ -17,7 +18,8 @@ using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 using WebNativeDEV.SINUS.Core.Ioc;
 using WebNativeDEV.SINUS.Core.Ioc.Contracts;
 using WebNativeDEV.SINUS.Core.Logging;
-using WebNativeDEV.SINUS.Core.MsTest.Context;
+using WebNativeDEV.SINUS.Core.MsTest;
+using WebNativeDEV.SINUS.Core.MsTest.Contracts;
 using WebNativeDEV.SINUS.Core.UITesting;
 using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 
@@ -122,4 +124,14 @@ public abstract class TestBase
     {
         Browser.PrintBrowserUsageStatistic();
     }
+
+    /// <summary>
+    /// Dynamic Data Display Name calculator proxying to TestNamingConventionManager.
+    /// This works when the test naming conventions are met.
+    /// </summary>
+    /// <param name="methodInfo">The method to work on.</param>
+    /// <param name="data">The arguments, but with the convention that the last object contains the testname.</param>
+    /// <returns>A calculated name of the test.</returns>
+    protected static string DefaultDataDisplayName(MethodInfo methodInfo, object[] data)
+        => TestNamingConventionManager.DynamicDataDisplayNameAddValueFromLastArgument(methodInfo, data);
 }

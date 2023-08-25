@@ -49,6 +49,7 @@ internal sealed partial class Runner : IRunner, IGiven, IGivenWithSut, IWhen, IT
         this.logger = TestBase.Container.Resolve<ILoggerFactory>().CreateLogger<Runner>();
         this.executionEngine = TestBase.Container.Resolve<IExecutionEngine>();
         this.browserFactory = TestBase.Container.Resolve<IBrowserFactory>();
+        this.NamingConventionManager = new TestNamingConventionManager(testBase.TestName);
 
         this.logger.LogDebug("Created a log for base-runner");
     }
@@ -79,6 +80,11 @@ internal sealed partial class Runner : IRunner, IGiven, IGivenWithSut, IWhen, IT
     public TestBase TestBase { get; }
 
     /// <summary>
+    /// Gets the reference to the naming convention manager.
+    /// </summary>
+    public TestNamingConventionManager NamingConventionManager { get; }
+
+    /// <summary>
     /// Disposes the object as defined in IDisposable.
     /// </summary>
     public void Dispose()
@@ -102,6 +108,7 @@ internal sealed partial class Runner : IRunner, IGiven, IGivenWithSut, IWhen, IT
             // Dependencies
             TestBase = this.TestBase,
             Runner = this,
+            Namings = this.NamingConventionManager,
 
             // Meta information
             RunCategory = runCategory,

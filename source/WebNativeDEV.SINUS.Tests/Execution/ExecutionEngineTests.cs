@@ -38,13 +38,10 @@ public class ExecutionEngineTests : TestBase
         },
     };
 
-    public static string DataDisplayName(MethodInfo methodInfo, object[] data)
-        => TestNamingConventionManager.DynamicDataDisplayNameAddValueFromLastArgument(methodInfo, data);
-
     [TestMethod]
     [DynamicData(
     nameof(ValidValues),
-    DynamicDataDisplayName = nameof(DataDisplayName))]
+    DynamicDataDisplayName = nameof(DefaultDataDisplayName))]
     public void Given_AValue_When_CallingArgumentValidationNotNullWithValues_Then_NoExceptionShouldBeThrown(object? value, string scenario)
     => this.Test(r => r
         .Given(data => data.StoreSut(new ExecutionEngine(Substitute.For<ILoggerFactory>())))

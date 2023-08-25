@@ -16,7 +16,14 @@ using WebNativeDEV.SINUS.MsTest;
 /// </summary>
 public class RunStore
 {
+    /// <summary>
+    /// Standard Key name for the actual value.
+    /// </summary>
     public const string KeyActual = "actual";
+
+    /// <summary>
+    /// Standard Key name for the system-under-test value.
+    /// </summary>
     public const string KeySut = "SystemUnderTest";
 
     private readonly Dictionary<string, object?> store = new();

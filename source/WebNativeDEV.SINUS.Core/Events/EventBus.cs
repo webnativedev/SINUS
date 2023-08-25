@@ -10,10 +10,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+/// <summary>
+/// Implementation of a simple event bus.
+/// </summary>
 public static class EventBus
 {
     private static readonly Dictionary<string, List<EventHandler<EventBusEventArgs>>> Handlers = new();
 
+    /// <summary>
+    /// Publishes an event.
+    /// </summary>
+    /// <param name="sender">The sender of the event.</param>
+    /// <param name="eventName">The eventname.</param>
+    /// <param name="e">The eventargs used to transport data.</param>
     public static void Publish(object sender, string eventName, EventBusEventArgs e)
     {
         foreach (EventHandler<EventBusEventArgs> handler in Handlers[eventName])
@@ -22,6 +31,11 @@ public static class EventBus
         }
     }
 
+    /// <summary>
+    /// Subscribe to an event.
+    /// </summary>
+    /// <param name="eventName">Eventname to subscribe to.</param>
+    /// <param name="handler">The handler that is called when a corresponding event is raised.</param>
     public static void Subscribe(string eventName, EventHandler<EventBusEventArgs> handler)
     {
         if (!Handlers.ContainsKey(eventName))

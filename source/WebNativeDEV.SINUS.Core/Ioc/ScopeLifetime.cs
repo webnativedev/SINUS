@@ -28,24 +28,19 @@ public sealed class ScopeLifetime : ObjectCache, ILifetime
     public ScopeLifetime(ContainerLifetime parentContainer)
         => this.parentLifetime = parentContainer;
 
+    /// <summary>
+    /// Gets the service.
+    /// </summary>
+    /// <param name="serviceType">Type identifier.</param>
+    /// <returns>Created or cached object.</returns>
     public object? GetService(Type serviceType)
         => this.parentLifetime.GetFactory(serviceType)(this);
 
-    /// <summary>
-    /// Singleton resolution is delegated to parent lifetime.
-    /// </summary>
-    /// <param name="type"></param>
-    /// <param name="factory"></param>
-    /// <returns></returns>
+    ///<inheritdoc/>
     public object? GetServiceAsSingleton(Type type, Func<ILifetime, object?> factory)
         => this.parentLifetime.GetServiceAsSingleton(type, factory);
 
-    /// <summary>
-    /// Per-scope objects get cached.
-    /// </summary>
-    /// <param name="type"></param>
-    /// <param name="factory"></param>
-    /// <returns></returns>
+    /// <inheritdoc/>
     public object? GetServicePerScope(Type type, Func<ILifetime, object?> factory)
         => this.GetCached(type, factory, this);
 }

@@ -43,12 +43,24 @@ public sealed class Container : IContainer, IDisposable
         this.lifetime = new ContainerLifetime(t => this.registeredTypes[t]);
     }
 
+    /// <summary>
+    /// Finalizes an instance of the <see cref="Container"/> class.
+    /// </summary>
     [ExcludeFromCodeCoverage]
     ~Container()
     {
         this.Dispose(disposing: false);
     }
 
+    /// <summary>
+    /// Registers a factory to create an instance.
+    /// </summary>
+    /// <param name="interfaceType">Interface to register.</param>
+    /// <param name="factory">The factory method to create an instance.</param>
+    /// <returns>
+    /// An object pointing to a <see cref="IRegisteredType"/>
+    /// that allows further configuration.
+    /// </returns>
     public IRegisteredType Register(Type interfaceType, Func<object> factory)
         => this.RegisterType(interfaceType, _ => factory());
 
@@ -66,6 +78,15 @@ public sealed class Container : IContainer, IDisposable
             Ensure.NotNull(interfaceType, nameof(interfaceType)),
             FactoryFromType(Ensure.NotNull(implementation, nameof(implementation))));
 
+    /// <summary>
+    /// Registers a factory to create an instance.
+    /// </summary>
+    /// <param name="itemType">Type to register.</param>
+    /// <param name="factory">The factory method to create an instance.</param>
+    /// <returns>
+    /// An object pointing to a <see cref="IRegisteredType"/>
+    /// that allows further configuration.
+    /// </returns>
     public IRegisteredType RegisterType(Type itemType, Func<ILifetime, object?> factory)
         => new RegisteredType(itemType, f => this.registeredTypes[itemType] = f, factory);
 
@@ -173,6 +194,10 @@ public sealed class Container : IContainer, IDisposable
             arg).Compile();
     }
 
+    /// <summary>
+    /// Implementation of the disposal as called by IDisposable.Dispose.
+    /// </summary>
+    /// <param name="disposing">True if called by Dispose; False if called by Destructor.</param>
     private void Dispose(bool disposing)
     {
         if (!this.disposedValue)

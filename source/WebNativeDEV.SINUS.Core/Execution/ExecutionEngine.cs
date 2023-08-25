@@ -63,57 +63,18 @@ public sealed class ExecutionEngine : IExecutionEngine
         return returnValue;
     }
 
-    private static string CalculateDescription(int index, int count, string? description, string testName, RunCategory category)
-    {
-        string prefix = count == 1
-                    ? string.Empty
-                    : $"{index + 1:00}: ";
-
-        string newDescription = string.Empty;
-        if (!string.IsNullOrWhiteSpace(description))
-        {
-            newDescription = description;
-        }
-        else
-        {
-            var items = testName.Split('_', ' ');
-            for (int i = 0; i < items.Length; i++)
-            {
-                if (items[i] == category.ToString())
-                {
-                    newDescription = items[i + 1];
-                }
-            }
-
-            var builder = new StringBuilder();
-            for (int i = 0; i < newDescription.Length; i++)
-            {
-                if (char.IsUpper(newDescription[i]) && i > 0)
-                {
-                    builder.Append(' ');
-                }
-
-                builder.Append(newDescription[i]);
-            }
-
-            newDescription = builder.ToString();
-        }
-
-        return $"{prefix}{newDescription}";
-    }
-
     private void RunActions(ExecutionParameter parameter, ExecutionOutput returnValue)
     {
         var testBase = Ensure.NotNull(parameter.TestBase);
+        var namings = Ensure.NotNull(parameter.Namings);
 
         if (!parameter.RunActions || parameter.Actions == null || !parameter.Actions.Any(x => x != null))
         {
-            string skipDescription = CalculateDescription(
-                1,
-                1,
+            string skipDescription = namings.GetReadableDescription(
+                parameter.RunCategory,
                 parameter.Description,
-                testBase.TestName,
-                parameter.RunCategory);
+                1,
+                1);
             PerformanceDataScope.WriteSkip(this.logger, parameter.RunCategory.ToString(), skipDescription);
             return;
         }
@@ -127,12 +88,11 @@ public sealed class ExecutionEngine : IExecutionEngine
                 continue;
             }
 
-            string description = CalculateDescription(
-                i,
-                actionCount,
+            string description = namings.GetReadableDescription(
+                parameter.RunCategory,
                 parameter.Description,
-                testBase.TestName,
-                parameter.RunCategory);
+                i,
+                actionCount);
 
             using (new PerformanceDataScope(this.logger, parameter.RunCategory.ToString(), description))
             {

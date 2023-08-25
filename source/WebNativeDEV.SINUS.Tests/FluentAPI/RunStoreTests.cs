@@ -32,13 +32,10 @@ public class RunStoreTests : TestBase
         new object?[] { DateTime.Now, "DateTimeTest" },
     };
 
-    public static string DataDisplayName(MethodInfo methodInfo, object[] data)
-        => TestNamingConventionManager.DynamicDataDisplayNameAddValueFromLastArgument(methodInfo, data);
-
     [TestMethod]
     [DynamicData(
         nameof(ValidValues),
-        DynamicDataDisplayName = nameof(DataDisplayName))]
+        DynamicDataDisplayName = nameof(DefaultDataDisplayName))]
     public void Given_ARunStore_When_AddingValues_Then_TheyShouldBeStored(object? value, string scenario)
         => this.Test(r => r
             .Given()

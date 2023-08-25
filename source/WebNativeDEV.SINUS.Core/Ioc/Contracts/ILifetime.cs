@@ -15,7 +15,19 @@ using System.Threading.Tasks;
 /// </summary>
 public interface ILifetime : IScope
 {
+    /// <summary>
+    /// Gets the service as singleton.
+    /// </summary>
+    /// <param name="type">Defines which object should be generated or queried.</param>
+    /// <param name="factory">Creation factory.</param>
+    /// <returns>An instance to a service.</returns>
     object? GetServiceAsSingleton(Type type, Func<ILifetime, object?> factory);
 
+    /// <summary>
+    /// Get the service driven by the given scope.
+    /// </summary>
+    /// <param name="type">Defines which object should be generated or queried.</param>
+    /// <param name="factory">Creation factory.</param>
+    /// <returns>An instance to a service.</returns>
     object? GetServicePerScope(Type type, Func<ILifetime, object?> factory);
 }

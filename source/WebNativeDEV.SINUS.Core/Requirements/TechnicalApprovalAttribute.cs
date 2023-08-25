@@ -19,7 +19,7 @@ public sealed class TechnicalApprovalAttribute : Attribute
     /// <summary>
     /// Initializes a new instance of the <see cref="TechnicalApprovalAttribute"/> class.
     /// </summary>
-    /// <param name="description"></param>
+    /// <param name="description">A description that shows the purpose.</param>
     public TechnicalApprovalAttribute(string description)
     {
         this.Description = description;

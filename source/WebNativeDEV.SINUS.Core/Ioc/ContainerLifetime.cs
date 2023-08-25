@@ -29,14 +29,19 @@ public sealed class ContainerLifetime : ObjectCache, ILifetime
     /// </summary>
     public Func<Type, Func<ILifetime, object?>> GetFactory { get; private set; }
 
+    /// <summary>
+    /// Gets the service factory and calls it.
+    /// </summary>
+    /// <param name="serviceType"></param>
+    /// <returns></returns>
     public object? GetService(Type serviceType)
         => this.GetFactory(serviceType)(this);
 
-    // Singletons get cached per container
+    /// <inheritdoc/>
     public object? GetServiceAsSingleton(Type type, Func<ILifetime, object?> factory)
         => this.GetCached(type, factory, this);
 
-    // At container level, per-scope items are equivalent to singletons
+    /// <inheritdoc/>
     public object? GetServicePerScope(Type type, Func<ILifetime, object?> factory)
         => this.GetServiceAsSingleton(type, factory);
 }
