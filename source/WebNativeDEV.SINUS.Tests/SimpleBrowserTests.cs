@@ -29,9 +29,25 @@ public class SimpleBrowserTests : TestBase
             .Dispose();
 
     [TestMethod]
+    public void Given_AWebsiteOnRandomEndpoint_When_CreatingScreenshot_Then_NoExceptionShouldOccur()
+        => this.Test()
+            .GivenASystemAndABrowserAtRandomEndpoint<Program>(this.simpleView)
+            .When((browser, data) => browser.TakeScreenshot())
+            .Then()
+            .Dispose();
+
+    [TestMethod]
     public void Given_AWebsite_When_StoringTheTitle_Then_ItShouldBeCorrect()
         => this.Test()
             .GivenASystemAndABrowserAtDefaultEndpoint<Program>(this.simpleView)
+            .When("storing the title", (browser, data) => data.StoreActual(browser?.Title))
+            .Then("it should equal to the real title", (browser, data) => data.Should().ActualBe(SimpleViewTitle))
+            .Dispose();
+
+    [TestMethod]
+    public void Given_AWebsiteOnRandomEndpoint_When_StoringTheTitle_Then_ItShouldBeCorrect()
+        => this.Test()
+            .GivenASystemAndABrowserAtRandomEndpoint<Program>(this.simpleView)
             .When("storing the title", (browser, data) => data.StoreActual(browser?.Title))
             .Then("it should equal to the real title", (browser, data) => data.Should().ActualBe(SimpleViewTitle))
             .Dispose();
@@ -75,10 +91,35 @@ public class SimpleBrowserTests : TestBase
             .Dispose();
 
     [TestMethod]
+    public void Given_AWebsiteOnRandomEndpoint_When_CallingPrintUsageStatistic_Then_ItShouldReturnOneLeakingBecauseDisposeCalledAfterwards()
+        => this.Test()
+            .GivenASystemAndABrowserAtRandomEndpoint<Program>(this.simpleView)
+            .When("storing the title", (browser, data) => data.StoreActual(browser?.Title))
+            .Then("it should print usage statistics", (browser, data) => { }) // TODO: print usage statistics
+            .Dispose();
+
+    [TestMethod]
     public void Given_ABrowser_When_StoreData_Then_NoThrow()
     {
         this.Test()
             .GivenASystemAndABrowserAtDefaultEndpoint<Program>(this.simpleView)
+            .When("Calling Browser", (browser, data) =>
+            {
+                data.Store(browser.PageSource);
+                data.Store(browser.Title);
+                data.Store(browser.Url);
+                data.Store("element active: " + (browser.FindActiveElement()?.Text ?? "<none>"));
+            })
+            .Then("no exception should be thrown")
+            .DebugPrint()
+            .Dispose();
+    }
+
+    [TestMethod]
+    public void Given_ABrowserOnRandomEndpoint_When_StoreData_Then_NoThrow()
+    {
+        this.Test()
+            .GivenASystemAndABrowserAtRandomEndpoint<Program>(this.simpleView)
             .When("Calling Browser", (browser, data) =>
             {
                 data.Store(browser.PageSource);

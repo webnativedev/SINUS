@@ -16,6 +16,8 @@ using WebNativeDEV.SINUS.MsTest;
 [TestClass]
 public class TestInitializer : TestBase
 {
+    private const int MaxAgeOfProessInMinutes = 2;
+
     /// <summary>
     /// Method that is called by the MS-Test Framework on assmebly startup.
     /// </summary>
@@ -36,6 +38,7 @@ public class TestInitializer : TestBase
     public static void AssemblyCleanup()
     {
         TestBase.TearDown();
+        TestBaseExtensions.KillChromeZombieProcesses(null!, MaxAgeOfProessInMinutes);
     }
 
     /// <summary>
@@ -52,7 +55,7 @@ public class TestInitializer : TestBase
     /// </summary>
     [TestMethod]
     public void Maintenance_ProcessesKilled()
-        => new Action(() => this.CountChromeZombieProcesses(maxAgeOfProessInMinutes: 2)).Should().NotThrow();
+        => new Action(() => this.CountChromeZombieProcesses(MaxAgeOfProessInMinutes)).Should().NotThrow();
 
     /// <summary>
     /// Maintenance Print Meta-Data.

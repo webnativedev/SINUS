@@ -82,11 +82,12 @@ public sealed class PerformanceDataScope : IDisposable
     /// <param name="logger">The logger.</param>
     /// <param name="prefix">The prefix.</param>
     /// <param name="description">The description.</param>
-    public static void WriteSkip(ILogger<ExecutionEngine> logger, string prefix, object description)
+    /// <param name="actionsCount">Count of actions that are skipped.</param>
+    public static void WriteSkip(ILogger<ExecutionEngine> logger, string prefix, object description, int actionsCount)
     {
         var prefixCalculated = prefix == null ? string.Empty : prefix + ": ";
 
-        logger.LogInformation("{Prefix}-> skip ({Description})\n", prefixCalculated, description ?? string.Empty);
+        logger.LogInformation("{Prefix}-> skip {Count} actions ({Description})\n", prefixCalculated, actionsCount, description ?? string.Empty);
     }
 
     /// <summary>

@@ -11,7 +11,7 @@ using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 /// especially with focus on browser usage.
 /// This interface allows to create a proper Fluent API.
 /// </summary>
-public interface IThenBrowser : IDisposable
+public interface IThenBrowser : IThen, IDisposable
 {
     /// <summary>
     /// Method that can be used to write further debug information in case we want to write more details
@@ -20,10 +20,4 @@ public interface IThenBrowser : IDisposable
     /// <param name="action">Pass in your debug code here.</param>
     /// <returns>An instance to the runner, so it can be disposed.</returns>
     IDisposable Debug(Action<IBrowser, RunStore>? action = null);
-
-    /// <summary>
-    /// Method that can be used to print full RunStore-instance.
-    /// </summary>
-    /// <returns>An instance to the runner, so it can be disposed.</returns>
-    IDisposable DebugPrint();
 }

@@ -10,8 +10,10 @@ using OpenQA.Selenium.Interactions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
+using System.Globalization;
 using System.Linq;
 using System.Reflection.Metadata;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
@@ -26,7 +28,15 @@ using WebNativeDEV.SINUS.MsTest;
 /// </summary>
 public sealed class ExecutionEngine : IExecutionEngine
 {
-    private const int RetryCountCreatingSut = 6;
+    /// <summary>
+    /// Random Endpoint placeholder/template that will be used later for string replacement.
+    /// </summary>
+    public const string RandomEndpoint = "https://localhost:" + RandomEndpointPlaceholder;
+
+    private const string RandomEndpointPlaceholder = "{RANDOMENDPOINT}";
+    private const int RetryCountCreatingSut = 10;
+    private const int RetryDelay = 60;
+    private static readonly object LockerSutStatic = new();
     private readonly ILogger<ExecutionEngine> logger;
 
     /// <summary>
@@ -58,7 +68,14 @@ public sealed class ExecutionEngine : IExecutionEngine
             },
         };
 
-        this.CreateSut(parameter, returnValue);
+        if (parameter.CreateSut)
+        {
+            lock (LockerSutStatic)
+            {
+                this.CreateSut(parameter, returnValue);
+            }
+        }
+
         this.RunActions(parameter, returnValue);
 
         return returnValue;
@@ -66,23 +83,33 @@ public sealed class ExecutionEngine : IExecutionEngine
 
     private void RunActions(ExecutionParameter parameter, ExecutionOutput returnValue)
     {
+        parameter = Ensure.NotNull(parameter);
         var namings = Ensure.NotNull(parameter.Namings);
 
-        if (!parameter.RunActions || parameter.Actions == null || !parameter.Actions.Any(x => x != null))
+        List<Action> actions = new();
+        actions.AddRange(parameter.SetupActions?.Select<Action<ExecutionSetupParameters>?, Action>(action =>
+            () => action?.Invoke(new ExecutionSetupParameters()
+            {
+                Endpoint = returnValue.SutEndpoint,
+            })) ?? Array.Empty<Action>());
+        actions.AddRange(parameter.Actions?.Where(action => action != null).Cast<Action>()
+            ?? Array.Empty<Action>());
+
+        if (!parameter.RunActions || !actions.Any(x => x != null))
         {
             string skipDescription = namings.GetReadableDescription(
                 parameter.RunCategory,
                 parameter.Description,
                 1,
                 1);
-            PerformanceDataScope.WriteSkip(this.logger, parameter.RunCategory.ToString(), skipDescription);
+            PerformanceDataScope.WriteSkip(this.logger, parameter.RunCategory.ToString(), skipDescription, actions.Count);
             return;
         }
 
-        var actionCount = parameter.Actions.Count;
+        var actionCount = actions.Count;
         for (int i = 0; i < actionCount; i++)
         {
-            var action = parameter.Actions?[i];
+            var action = actions?[i];
             if (action == null)
             {
                 continue;
@@ -141,12 +168,21 @@ public sealed class ExecutionEngine : IExecutionEngine
             try
             {
                 var sutType = Ensure.NotNull(parameter.SutType, nameof(parameter.SutType));
+                returnValue.SutEndpoint = parameter.SutEndpoint;
+                if (returnValue.SutEndpoint == RandomEndpoint)
+                {
+                    int port = 10001 + RandomNumberGenerator.GetInt32(100);
+                    returnValue.SutEndpoint = returnValue.SutEndpoint.Replace(
+                        RandomEndpointPlaceholder,
+                        port.ToString(CultureInfo.InvariantCulture),
+                        StringComparison.InvariantCulture);
+                }
 
                 // if endpoint is null then in-memory, else public
                 var wafType = typeof(SinusWebApplicationFactory<>).MakeGenericType(sutType);
                 ISinusWebApplicationFactory? waf = Activator.CreateInstance(
                     wafType,
-                    args: new object?[] { parameter.SutEndpoint, this.logger })
+                    args: new object?[] { returnValue.SutEndpoint })
                     as ISinusWebApplicationFactory;
 
                 returnValue.WebApplicationFactory = waf;
@@ -168,8 +204,12 @@ public sealed class ExecutionEngine : IExecutionEngine
             }
             catch (IOException exception)
             {
-                this.logger.LogError(exception, "retry attempt {Attempt}", retryIndex + 1);
-                Thread.Sleep(TimeSpan.FromSeconds(10));
+                this.logger.LogError(
+                    exception,
+                    "retry attempt {Attempt}\n{Exception}",
+                    retryIndex + 1,
+                    exception.Message);
+                Thread.Sleep(TimeSpan.FromSeconds(RetryDelay));
             }
         }
 

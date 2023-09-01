@@ -31,9 +31,27 @@ public sealed partial class SystemUnderTestTests : TestBase
             .Dispose();
 
     [TestMethod]
+    public void Given_SutOnRandomEndpoint_When_CallingView_Then_SeleniumBrowsableWithRunner()
+        => this.Test()
+            .GivenASystemAndABrowserAtRandomEndpoint<Program>(this.simpleView)
+            .When("making a screenshot", (browser, data) => browser.TakeScreenshot())
+            .ThenNoError()
+            .Dispose();
+
+    [TestMethod]
     public void Given_Sut_When_CallingView_Then_TitleShouldBeRight()
         => this.Test()
             .GivenASystemAndABrowserAtDefaultEndpoint<Program>(this.simpleView)
+            .When("checking the title", (browser, data) => data.StoreActual(browser.Title ?? string.Empty))
+            .Then(
+                "Title should be 'SINUS TestSystem'",
+                (browser, data) => data.Should().ActualBe("SINUS TestSystem"))
+            .Dispose();
+
+    [TestMethod]
+    public void Given_SutOnRandomEndpoint_When_CallingView_Then_TitleShouldBeRight()
+        => this.Test()
+            .GivenASystemAndABrowserAtRandomEndpoint<Program>(this.simpleView)
             .When("checking the title", (browser, data) => data.StoreActual(browser.Title ?? string.Empty))
             .Then(
                 "Title should be 'SINUS TestSystem'",

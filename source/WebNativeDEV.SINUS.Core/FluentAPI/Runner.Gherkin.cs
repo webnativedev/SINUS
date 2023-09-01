@@ -298,6 +298,36 @@ internal sealed partial class Runner
                 sutEndpoint: DefaultEndpoint);
 
     /// <inheritdoc/>
+    public IGivenBrowser GivenASystemAndABrowserAtRandomEndpoint<TProgram>((string? humanReadablePageName, string? browserPageToStart) page, BrowserFactoryOptions? options = null)
+        where TProgram : class
+        => this.Run(
+                runCategory: RunCategory.Given,
+                setupAction: this.InvokeCreateBrowserForRandomSutAction(page.browserPageToStart, page.humanReadablePageName, options),
+                createSut: true,
+                sutType: typeof(TProgram),
+                sutEndpoint: ExecutionEngine.RandomEndpoint);
+
+    /// <inheritdoc/>
+    public IGivenBrowser GivenASystemAndABrowserAtRandomEndpoint<TProgram>(string? humanReadablePageName, string? browserPageToStart = null, BrowserFactoryOptions? options = null)
+        where TProgram : class
+        => this.Run(
+                runCategory: RunCategory.Given,
+                setupAction: this.InvokeCreateBrowserForRandomSutAction(browserPageToStart, humanReadablePageName, options),
+                createSut: true,
+                sutType: typeof(TProgram),
+                sutEndpoint: ExecutionEngine.RandomEndpoint);
+
+    /// <inheritdoc/>
+    public IGivenBrowser GivenASystemAndABrowserAtRandomEndpoint<TProgram>(string? browserPageToStart = null, BrowserFactoryOptions? options = null)
+        where TProgram : class
+        => this.Run(
+                runCategory: RunCategory.Given,
+                setupAction: this.InvokeCreateBrowserForRandomSutAction(browserPageToStart, options),
+                createSut: true,
+                sutType: typeof(TProgram),
+                sutEndpoint: ExecutionEngine.RandomEndpoint);
+
+    /// <inheritdoc/>
     public IWhenBrowser When(string description, Action<IBrowser, RunStore>? action = null)
         => this.Run(
                 runCategory: RunCategory.When,

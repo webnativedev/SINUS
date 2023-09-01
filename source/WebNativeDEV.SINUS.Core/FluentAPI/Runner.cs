@@ -98,6 +98,7 @@ internal sealed partial class Runner : IRunner, IGiven, IGivenWithSut, IWhen, IT
             string? description = null,
             bool runActions = true,
             Action? action = null,
+            Action<ExecutionSetupParameters>? setupAction = null,
             IList<Action?>? actions = null,
             bool createSut = false,
             Type? sutType = null,
@@ -116,7 +117,10 @@ internal sealed partial class Runner : IRunner, IGiven, IGivenWithSut, IWhen, IT
             ExceptionsCount = this.Exceptions.Count,
 
             // Actual action
-            RunActions = runActions && ((actions?.Any() ?? false) || action != null),
+            RunActions = runActions && ((actions?.Any() ?? false) || action != null || setupAction != null),
+            SetupActions = setupAction != null
+                    ? new List<Action<ExecutionSetupParameters>?>() { setupAction }
+                    : new List<Action<ExecutionSetupParameters>?>() { },
             Actions = actions ?? (
                 action != null
                     ? new List<Action?>() { action }
@@ -218,6 +222,17 @@ internal sealed partial class Runner : IRunner, IGiven, IGivenWithSut, IWhen, IT
             url: new Uri(DefaultEndpoint + (browserPageToStart ?? string.Empty)),
             humanReadablePageName: humanReadablePageName,
             options: options);
+
+    private Action<ExecutionSetupParameters> InvokeCreateBrowserForRandomSutAction(string? browserPageToStart, BrowserFactoryOptions? options)
+        => (param) => this.InvokeCreateBrowserAction(
+            url: new Uri(param.Endpoint + (browserPageToStart ?? string.Empty)),
+            options: options)?.Invoke();
+
+    private Action<ExecutionSetupParameters> InvokeCreateBrowserForRandomSutAction(string? browserPageToStart, string? humanReadablePageName, BrowserFactoryOptions? options)
+        => (param) => this.InvokeCreateBrowserAction(
+                url: new Uri(param.Endpoint + (browserPageToStart ?? string.Empty)),
+                humanReadablePageName: humanReadablePageName,
+                options: options)?.Invoke();
 
     private Action InvokeCreateBrowserAction(Uri url, BrowserFactoryOptions? options)
         => this.InvokeCreateBrowserAction(url, null, options);

@@ -25,24 +25,16 @@ using Microsoft.Extensions.Logging;
 internal sealed class SinusWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPoint>, ISinusWebApplicationFactory
     where TEntryPoint : class
 {
-    private static readonly Mutex Mutex = new(false, "SinusWebApplicationFactoryMutex");
-    private readonly ILogger logger;
     private IHost? customHost;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SinusWebApplicationFactory{TEntryPoint}"/> class.
     /// </summary>
     /// <param name="hostUrl">The endpoint of the system under test. </param>
-    /// <param name="logger">A logger object of the creater.</param>
-    public SinusWebApplicationFactory(string? hostUrl, ILogger logger)
+    public SinusWebApplicationFactory(string? hostUrl)
     {
         this.HostUrl = hostUrl;
-        this.logger = logger;
         this.InMemory = string.IsNullOrWhiteSpace(this.HostUrl);
-
-        logger.LogInformation("Try to get mutex and create SinusWebApplicationFactory object");
-        this.LockUsage();
-        logger.LogInformation("   mutex acquired");
     }
 
     /// <summary>
@@ -109,24 +101,11 @@ internal sealed class SinusWebApplicationFactory<TEntryPoint> : WebApplicationFa
                 this.customHost.StopAsync().GetAwaiter().GetResult();
                 this.customHost.Dispose();
                 this.customHost = null;
-
-                this.logger.LogInformation("release mutex to allow other instances of a system under test.");
-                this.UnLockUsage();
             }
         }
         catch
         {
             throw;
         }
-    }
-
-    private void LockUsage()
-    {
-        //Mutex.WaitOne(TimeSpan.FromMinutes(5));
-    }
-
-    private void UnLockUsage()
-    {
-        //Mutex.ReleaseMutex();
     }
 }

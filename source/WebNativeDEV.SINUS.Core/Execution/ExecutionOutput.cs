@@ -39,4 +39,9 @@ public sealed class ExecutionOutput
     /// Gets a value indicating whether the execution should run if exceptions were already raised.
     /// </summary>
     public bool ShouldRunIfAlreadyExceptionOccured { get; internal set; }
+
+    /// <summary>
+    /// Gets a system under test endpoint.
+    /// </summary>
+    public string? SutEndpoint { get; internal set; }
 }

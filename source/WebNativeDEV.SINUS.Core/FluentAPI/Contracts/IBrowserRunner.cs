@@ -188,4 +188,56 @@ public interface IBrowserRunner : IRunner
     /// </returns>
     IGivenBrowser GivenASystemAndABrowserAtDefaultEndpoint<TProgram>((string? humanReadablePageName, string? browserPageToStart) page, BrowserFactoryOptions? options = null)
         where TProgram : class;
+
+    /// <summary>
+    /// Allows to define the Browser-based Given-Action in a Given-When-Then sequence.
+    /// The System under test will be started at a random endpoint.
+    /// </summary>
+    /// <typeparam name="TProgram">Generic pointing to the class that bootstraps the Sut.</typeparam>
+    /// <param name="humanReadablePageName">The logical information about the page.</param>
+    /// <param name="browserPageToStart">
+    /// The location where the browser should be started realtive to the server startup random address.
+    /// Example "/view".
+    /// </param>
+    /// <param name="options">Configures the browser factory.</param>
+    /// <returns>
+    /// An object that will point to the runner.
+    /// The interface helps to reduce the set of options to only
+    /// the appropriate in the sequence.
+    /// </returns>
+    IGivenBrowser GivenASystemAndABrowserAtRandomEndpoint<TProgram>(string? humanReadablePageName, string? browserPageToStart = null, BrowserFactoryOptions? options = null)
+        where TProgram : class;
+
+    /// <summary>
+    /// Allows to define the Browser-based Given-Action in a Given-When-Then sequence.
+    /// The System under test will be started at a random endpoint.
+    /// </summary>
+    /// <typeparam name="TProgram">Generic pointing to the class that bootstraps the Sut.</typeparam>
+    /// <param name="browserPageToStart">
+    /// The location where the browser should be started realtive to the server startup random address.
+    /// Example "/view".
+    /// </param>
+    /// <param name="options">Configures the browser factory.</param>
+    /// <returns>
+    /// An object that will point to the runner.
+    /// The interface helps to reduce the set of options to only
+    /// the appropriate in the sequence.
+    /// </returns>
+    IGivenBrowser GivenASystemAndABrowserAtRandomEndpoint<TProgram>(string? browserPageToStart = null, BrowserFactoryOptions? options = null)
+        where TProgram : class;
+
+    /// <summary>
+    /// Allows to define the Browser-based Given-Action in a Given-When-Then sequence.
+    /// The System under test will be started at a random endpoint.
+    /// </summary>
+    /// <typeparam name="TProgram">Generic pointing to the class that bootstraps the Sut.</typeparam>
+    /// <param name="page">The human readable page bame and its relative location.</param>
+    /// <param name="options">Configures the browser factory.</param>
+    /// <returns>
+    /// An object that will point to the runner.
+    /// The interface helps to reduce the set of options to only
+    /// the appropriate in the sequence.
+    /// </returns>
+    IGivenBrowser GivenASystemAndABrowserAtRandomEndpoint<TProgram>((string? humanReadablePageName, string? browserPageToStart) page, BrowserFactoryOptions? options = null)
+        where TProgram : class;
 }

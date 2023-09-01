@@ -12,7 +12,7 @@ using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 /// This interface allows to create a proper Fluent API.
 /// </summary>
 [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1716", Justification = "Required by pattern")]
-public interface IWhenBrowser
+public interface IWhenBrowser : IWhen
 {
     /// <summary>
     /// Allows to define the Then-Action in a Given-When-Then sequence.

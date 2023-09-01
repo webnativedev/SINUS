@@ -6,6 +6,7 @@ namespace WebNativeDEV.SINUS.Core.MsTest.Extensions;
 
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
 using WebNativeDEV.SINUS.Core.Ioc;
 using WebNativeDEV.SINUS.MsTest;
@@ -51,10 +52,7 @@ public static class TestBaseExtensions
 
         ILogger<TestBase> logger = TestBase.Container.Resolve<ILoggerFactory>().CreateLogger<TestBase>();
 
-        var processes = System.Diagnostics.Process.GetProcesses().Where(
-            x => x.ProcessName.Contains("chromedriver", StringComparison.InvariantCultureIgnoreCase)
-            && x.StartTime < DateTime.Now.AddMinutes(-maxAgeOfProessInMinutes))
-            .ToList();
+        var processes = GetChromeDriverProcesses(maxAgeOfProessInMinutes);
 
         processes.Should().BeEmpty($"zombie drivers should not exist, but count: {processes.Count}");
 
@@ -64,4 +62,32 @@ public static class TestBaseExtensions
             processes.Count,
             maxAgeOfProessInMinutes);
     }
+
+    /// <summary>
+    /// Kills zombie processes older as defined parameter.
+    /// </summary>
+    /// <param name="testBase">Reference to the test base object that is extended.</param>
+    /// <param name="maxAgeOfProessInMinutes">Max age for old a process should be to identify it as zombie.</param>
+    public static void KillChromeZombieProcesses(this TestBase testBase, int maxAgeOfProessInMinutes)
+    {
+        ILogger<TestBase> logger = TestBase.Container.Resolve<ILoggerFactory>().CreateLogger<TestBase>();
+
+        var processes = GetChromeDriverProcesses(maxAgeOfProessInMinutes);
+        foreach(var process in processes)
+        {
+            process.Kill(entireProcessTree: true);
+        }
+
+        logger.LogInformation(
+            "{TestName} - Kill Process: {Count} processes older than {AgeInMin} min killed",
+            testBase?.TestName ?? "global",
+            processes.Count,
+            maxAgeOfProessInMinutes);
+    }
+
+    private static IList<Process> GetChromeDriverProcesses(int maxAgeOfProessInMinutes)
+        => Process.GetProcesses().Where(
+            x => x.ProcessName.Contains("chromedriver", StringComparison.InvariantCultureIgnoreCase)
+            && x.StartTime < DateTime.Now.AddMinutes(-maxAgeOfProessInMinutes))
+            .ToList();
 }

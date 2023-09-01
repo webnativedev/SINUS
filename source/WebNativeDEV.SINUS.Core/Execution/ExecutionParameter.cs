@@ -42,6 +42,11 @@ public sealed class ExecutionParameter
     /// <summary>
     /// Gets the actions to execute.
     /// </summary>
+    public IList<Action<ExecutionSetupParameters>?>? SetupActions { get; init; }
+
+    /// <summary>
+    /// Gets the actions to execute.
+    /// </summary>
     public IList<Action?>? Actions { get; init; }
 
     /// <summary>
