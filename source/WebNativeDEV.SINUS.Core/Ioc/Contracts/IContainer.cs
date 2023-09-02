@@ -4,6 +4,8 @@
 
 namespace WebNativeDEV.SINUS.Core.Ioc.Contracts;
 
+using System.Diagnostics.CodeAnalysis;
+
 /// <summary>
 /// Interface representing an IoC container.
 /// </summary>
@@ -28,6 +30,7 @@ public interface IContainer : IScope
     /// <summary>
     /// Registers a type which will be instantiated..
     /// </summary>
+    /// <typeparam name="T">Interface to register.</typeparam>
     /// <param name="type">Type of implementation that is not abstracted.</param>
     /// <returns>The registered type instance.</returns>
     IRegisteredType Register<T>(Type type);

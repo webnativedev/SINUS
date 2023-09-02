@@ -27,12 +27,15 @@ public interface IThen : IDisposable
     /// <summary>
     /// Method that is used to write all debug information and additional data to the logger.
     /// </summary>
+    /// <param name="additionalData">Data that needs to be printed for information additionally.</param>
     /// <returns>An instance to the runner, so it can be disposed.</returns>
-    IDisposable DebugPrint(params Tuple<string, object?>[] additionalData);
+    IDisposable DebugPrint((string, object?)[] additionalData);
 
     /// <summary>
     /// Method that is used to write all debug information and additional data to the logger.
     /// </summary>
+    /// <param name="key">The key from a key-value pair to add in the debug printing.</param>
+    /// <param name="value">The value from a key-value pair to add in the debug printing.</param>
     /// <returns>An instance to the runner, so it can be disposed.</returns>
     IDisposable DebugPrint(string key, object? value);
 }

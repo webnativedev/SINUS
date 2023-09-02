@@ -6,6 +6,7 @@ namespace WebNativeDEV.SINUS.Core.Ioc;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,12 +16,13 @@ using WebNativeDEV.SINUS.Core.Ioc.Contracts;
 /// <summary>
 /// Container lifetime management.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public sealed class ContainerLifetime : ObjectCache, ILifetime
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="ContainerLifetime"/> class.
     /// </summary>
-    /// <param name="getFactory"></param>
+    /// <param name="getFactory">Function to get the factory to be called.</param>
     public ContainerLifetime(Func<Type, Func<ILifetime, object?>> getFactory)
         => this.GetFactory = Ensure.NotNull(getFactory);
 
@@ -32,8 +34,8 @@ public sealed class ContainerLifetime : ObjectCache, ILifetime
     /// <summary>
     /// Gets the service factory and calls it.
     /// </summary>
-    /// <param name="serviceType"></param>
-    /// <returns></returns>
+    /// <param name="serviceType">The service type specifying the interface.</param>
+    /// <returns>A created instance by using the factory.</returns>
     public object? GetService(Type serviceType)
         => this.GetFactory(serviceType)(this);
 

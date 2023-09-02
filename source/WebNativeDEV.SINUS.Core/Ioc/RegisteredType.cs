@@ -6,6 +6,7 @@ namespace WebNativeDEV.SINUS.Core.Ioc;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ using WebNativeDEV.SINUS.Core.Ioc.Contracts;
 /// RegisteredType is supposed to be a short lived object tying an item to its container
 /// and allowing users to mark it as a singleton or per-scope item.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public sealed class RegisteredType : IRegisteredType
 {
     private readonly Type itemType;
@@ -25,9 +27,9 @@ public sealed class RegisteredType : IRegisteredType
     /// <summary>
     /// Initializes a new instance of the <see cref="RegisteredType"/> class.
     /// </summary>
-    /// <param name="itemType"></param>
-    /// <param name="registerFactory"></param>
-    /// <param name="factory"></param>
+    /// <param name="itemType">Type to create.</param>
+    /// <param name="registerFactory">Action to store factory.</param>
+    /// <param name="factory">The factory.</param>
     public RegisteredType(Type itemType, Action<Func<ILifetime, object?>> registerFactory, Func<ILifetime, object?> factory)
     {
         this.itemType = itemType;

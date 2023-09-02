@@ -6,6 +6,7 @@ namespace WebNativeDEV.SINUS.Core.Ioc;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,7 @@ using WebNativeDEV.SINUS.Core.Ioc.Contracts;
 /// <summary>
 /// Per-scope lifetime management.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public sealed class ScopeLifetime : ObjectCache, ILifetime
 {
     /// <summary>
@@ -24,7 +26,7 @@ public sealed class ScopeLifetime : ObjectCache, ILifetime
     /// <summary>
     /// Initializes a new instance of the <see cref="ScopeLifetime"/> class.
     /// </summary>
-    /// <param name="parentContainer"></param>
+    /// <param name="parentContainer">The parent container.</param>
     public ScopeLifetime(ContainerLifetime parentContainer)
         => this.parentLifetime = parentContainer;
 
@@ -36,7 +38,7 @@ public sealed class ScopeLifetime : ObjectCache, ILifetime
     public object? GetService(Type serviceType)
         => this.parentLifetime.GetFactory(serviceType)(this);
 
-    ///<inheritdoc/>
+    /// <inheritdoc/>
     public object? GetServiceAsSingleton(Type type, Func<ILifetime, object?> factory)
         => this.parentLifetime.GetServiceAsSingleton(type, factory);
 

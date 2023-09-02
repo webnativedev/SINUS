@@ -7,6 +7,7 @@ namespace WebNativeDEV.SINUS.Core.UITesting;
 using Microsoft.Extensions.Logging;
 using OpenQA.Selenium;
 using System.Diagnostics.CodeAnalysis;
+using WebNativeDEV.SINUS.Core.ArgumentValidation;
 using WebNativeDEV.SINUS.Core.Ioc;
 using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 using WebNativeDEV.SINUS.MsTest;
@@ -39,6 +40,8 @@ public sealed class BrowserFactory : IBrowserFactory, IDisposable
     /// <inheritdoc/>
     public IBrowser CreateBrowser(Uri url, TestBase testBase, string? humanReadablePageName = null, BrowserFactoryOptions? options = null)
     {
+        testBase = Ensure.NotNull(testBase);
+
         this.logger.LogInformation("Create Browser requested for {Url}", url);
         var driver = TestBase.Container.Resolve<IWebDriverFactory>().CreateWebDriver(
             options ?? new BrowserFactoryOptions()
@@ -66,7 +69,6 @@ public sealed class BrowserFactory : IBrowserFactory, IDisposable
         this.Dispose(disposing: true);
         GC.SuppressFinalize(this);
     }
-
 
     /// <summary>
     /// Implementation of the disposal as called by IDisposable.Dispose.

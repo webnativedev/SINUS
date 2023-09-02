@@ -7,6 +7,7 @@ namespace WebNativeDEV.SINUS.Tests;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebNativeDEV.SINUS.Core.Assertions;
+using WebNativeDEV.SINUS.Core.MsTest.Extensions;
 using WebNativeDEV.SINUS.Core.UITesting;
 using WebNativeDEV.SINUS.MsTest;
 using WebNativeDEV.SINUS.SystemUnderTest;
@@ -30,11 +31,10 @@ public class SimpleBrowserTests : TestBase
 
     [TestMethod]
     public void Given_AWebsiteOnRandomEndpoint_When_CreatingScreenshot_Then_NoExceptionShouldOccur()
-        => this.Test()
+        => this.Test(r => r
             .GivenASystemAndABrowserAtRandomEndpoint<Program>(this.simpleView)
             .When((browser, data) => browser.TakeScreenshot())
-            .Then()
-            .Dispose();
+            .Then()).Should().BeSuccessful();
 
     [TestMethod]
     public void Given_AWebsite_When_StoringTheTitle_Then_ItShouldBeCorrect()
@@ -87,7 +87,8 @@ public class SimpleBrowserTests : TestBase
         => this.Test()
             .GivenASystemAndABrowserAtDefaultEndpoint<Program>(this.simpleView)
             .When("storing the title", (browser, data) => data.StoreActual(browser?.Title))
-            .Then("it should print usage statistics", (browser, data) => { }) // TODO: print usage statistics
+            .Then("it should print usage statistics", (browser, data) => { })
+            .Debug((browser, data) => this.PrintBrowserUsageStatistic(this.TestName))
             .Dispose();
 
     [TestMethod]
@@ -95,7 +96,8 @@ public class SimpleBrowserTests : TestBase
         => this.Test()
             .GivenASystemAndABrowserAtRandomEndpoint<Program>(this.simpleView)
             .When("storing the title", (browser, data) => data.StoreActual(browser?.Title))
-            .Then("it should print usage statistics", (browser, data) => { }) // TODO: print usage statistics
+            .Then("it should print usage statistics", (browser, data) => { })
+            .Debug((browser, data) => this.PrintBrowserUsageStatistic(this.TestName))
             .Dispose();
 
     [TestMethod]

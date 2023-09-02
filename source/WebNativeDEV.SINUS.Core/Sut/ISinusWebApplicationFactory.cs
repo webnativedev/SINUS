@@ -7,11 +7,16 @@ namespace WebNativeDEV.SINUS.Core.Sut;
 /// <summary>
 /// Non generic interface that can be used as a reference for generated systems.
 /// </summary>
-internal interface ISinusWebApplicationFactory : IDisposable
+public interface ISinusWebApplicationFactory : IDisposable
 {
     /// <summary>
     /// Creates a client related to the web application that is created in memory.
     /// </summary>
     /// <returns>An http client communicating with the SUT.</returns>
     HttpClient? CreateClient();
+
+    /// <summary>
+    /// Closes the additional public hosts created.
+    /// </summary>
+    void CloseCreatedHost();
 }

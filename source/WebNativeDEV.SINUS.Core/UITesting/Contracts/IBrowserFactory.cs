@@ -2,9 +2,9 @@
 // Copyright (c) Daniel Kienböck. All Rights Reserved. Licensed under the MIT License. See LICENSE in the project root for license information.
 // </copyright>
 
-using WebNativeDEV.SINUS.MsTest;
-
 namespace WebNativeDEV.SINUS.Core.UITesting.Contracts;
+
+using WebNativeDEV.SINUS.MsTest;
 
 /// <summary>
 /// This interface represents a factory for creating Browsers of a given type (e.g.: Chrome).

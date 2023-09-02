@@ -112,16 +112,15 @@ public abstract class TestBase
     /// Creates a runner and uses the action to execute the test.
     /// </summary>
     /// <param name="action">The action to execute.</param>
-    protected void Test(Action<IBrowserRunner> action)
+    /// <returns>The current object for usage as Fluent API.</returns>
+    protected TestBaseResult Test(Action<IBrowserRunner> action)
     {
         Ensure.NotNull(action);
 
         IBrowserRunner runner = this.Test();
         action.Invoke(runner);
+        runner.Dispose();
 
-        if(runner is IDisposable disposable)
-        {
-            disposable.Dispose();
-        }
+        return new TestBaseResult(true, this);
     }
 }

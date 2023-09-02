@@ -4,6 +4,7 @@
 
 namespace WebNativeDEV.SINUS.Tests.FluentAPI;
 
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using WebNativeDEV.SINUS.MsTest;
@@ -138,7 +139,7 @@ public class RunnerTests : TestBase
             })
             .Then(
                 "All data could be read",
-                data => Assert.AreEqual((double)1.555, data.Read<double>()),
+                data => Assert.AreEqual(1.555d, data.Read<double>()),
                 data => Assert.AreEqual(2, data.Read<int>("key2")),
                 data => Assert.AreEqual("sut", data.ReadSut<string>()),
                 data => Assert.AreEqual("sut3", data.ReadActual<string>()),
@@ -150,14 +151,21 @@ public class RunnerTests : TestBase
     [TestMethod]
     public void Given_ARunnerWithRunStore_When_StoringActualWithNoMethod_Then_NoError()
     {
-        this.Test()
-            .Given("A RunStore")
-            .When(
-                "saving some data with null as calculation function",
-                data => data.StoreActual<string>(null!))
-            .ThenNoError()
-            .DebugPrint()
-            .Dispose();
+        try
+        {
+            this.Test()
+                .Given("A RunStore")
+                .When(
+                    "saving some data with null as calculation function",
+                    data => data.StoreActual<string>(null!))
+                .ThenNoError()
+                .DebugPrint()
+                .Dispose();
+        }
+        catch
+        {
+            Assert.Fail("Exception thrown while storing null");
+        }
     }
 
     [TestMethod]
@@ -170,6 +178,7 @@ public class RunnerTests : TestBase
             {
                 data.StoreActual("3");
                 var check = data.ReadActual<int>();
+                check.Should().NotBe(3);
             })
             .Then("exception occurs")
             .DebugPrint()
@@ -186,7 +195,10 @@ public class RunnerTests : TestBase
             {
                 data.Store(item: "1");
                 data.Store(item: "2");
+
                 var check = data.Read<string>();
+                check.Should().NotBe("1");
+                check.Should().NotBe("2");
             })
             .Then("exception occurs")
             .DebugPrint()

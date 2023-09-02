@@ -16,6 +16,7 @@ using WebNativeDEV.SINUS.Core.Ioc.Contracts;
 /// <summary>
 /// ObjectCache provides common caching logic for lifetimes.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public abstract class ObjectCache : IDisposable
 {
     /// <summary>
@@ -49,10 +50,10 @@ public abstract class ObjectCache : IDisposable
     /// <summary>
     /// Get from cache or create and cache object.
     /// </summary>
-    /// <param name="type"></param>
-    /// <param name="factory"></param>
-    /// <param name="lifetime"></param>
-    /// <returns></returns>
+    /// <param name="type">Type to store.</param>
+    /// <param name="factory">Function to create.</param>
+    /// <param name="lifetime">Lifetype as singleton or per scope.</param>
+    /// <returns>An instance based on type.</returns>
     protected object? GetCached(Type type, Func<ILifetime, object?> factory, ILifetime lifetime)
         => this.instanceCache.GetOrAdd(type, _ => factory(lifetime));
 

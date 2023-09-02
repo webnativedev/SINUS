@@ -11,7 +11,7 @@ using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 /// especially with focus on browser usage.
 /// This interface allows to create a proper Fluent API.
 /// </summary>
-public interface IThenBrowser : IThen, IDisposable
+public interface IThenBrowser : IThen
 {
     /// <summary>
     /// Method that can be used to write further debug information in case we want to write more details

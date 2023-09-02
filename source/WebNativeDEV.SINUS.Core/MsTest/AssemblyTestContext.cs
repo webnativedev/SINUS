@@ -23,7 +23,7 @@ public class AssemblyTestContext : IAssemblyTestContext
     /// <param name="testContext">The object to store.</param>
     public AssemblyTestContext(TestContext testContext)
     {
-        TestContext = testContext;
+        this.TestContext = testContext;
     }
 
     /// <summary>

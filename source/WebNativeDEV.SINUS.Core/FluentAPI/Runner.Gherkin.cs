@@ -106,7 +106,7 @@ internal sealed partial class Runner
                 {
                     if (this.Exceptions.Any())
                     {
-                        throw new InvalidDataException("Exception was not thrown.");
+                        Assert.Fail("Exception was not thrown.");
                     }
                 });
 
@@ -118,7 +118,7 @@ internal sealed partial class Runner
                 {
                     if (this.Exceptions.Any())
                     {
-                        throw new InvalidDataException("Exception was not thrown.");
+                        Assert.Fail("Exception was not thrown.");
                     }
                 });
 
@@ -130,7 +130,7 @@ internal sealed partial class Runner
                 {
                     if (!this.Exceptions.Any())
                     {
-                        throw new InvalidDataException("Expected exception was not thrown.");
+                        Assert.Fail("Expected exception was not thrown.");
                     }
                 });
 
@@ -143,7 +143,7 @@ internal sealed partial class Runner
                 {
                     if (!this.Exceptions.Any())
                     {
-                        throw new InvalidDataException("Expected exception was not thrown.");
+                        Assert.Fail("Expected exception was not thrown.");
                     }
                 });
 
@@ -158,9 +158,15 @@ internal sealed partial class Runner
                             .Select(x => x.Item2)
                             .Any(e => e is T))
                     {
-                        throw new InvalidDataException("Expected exception was not thrown.");
+                        Assert.Fail("Expected exception was not thrown.");
                     }
                 });
+
+    /// <inheritdoc/>
+    public IDisposable Debug(Action<IBrowser, RunStore>? action = null)
+        => this.Run(
+                runCategory: RunCategory.Debug,
+                action: this.InvokeAction(action));
 
     /// <inheritdoc/>
     public IDisposable Debug(Action<RunStore>? action = null)
@@ -175,7 +181,7 @@ internal sealed partial class Runner
                 action: () => this.DataBag.PrintStore());
 
     /// <inheritdoc/>
-    public IDisposable DebugPrint(params Tuple<string, object?>[] additionalData)
+    public IDisposable DebugPrint((string, object?)[] additionalData)
         => this.Run(
                 runCategory: RunCategory.Debug,
                 action: () =>
@@ -352,10 +358,4 @@ internal sealed partial class Runner
         => this.Run(
                 runCategory: RunCategory.Then,
                 actions: this.InvokeAction(actions));
-
-    /// <inheritdoc/>
-    public IDisposable Debug(Action<IBrowser, RunStore>? action = null)
-        => this.Run(
-                runCategory: RunCategory.Debug,
-                action: this.InvokeAction(action));
 }

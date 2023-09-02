@@ -69,6 +69,6 @@ public class AssertionTests : TestBase
         => this.Test()
             .Given("Assertions extended and actual value available", data => data.StoreActual(null))
             .When("Running assert with not null", data => data.Should().ActualBeNull())
-            .ThenNoError()
+            .ThenNoError("no error expected")
             .Dispose();
 }

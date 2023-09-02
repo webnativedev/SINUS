@@ -58,5 +58,9 @@ public class ExecutionEngineTests : TestBase
         .Given(data => data.StoreSut(new ExecutionEngine(Substitute.For<ILoggerFactory>())))
         .When(data => data.StoreActual<ExecutionEngine>(ex => ex.Run(value as ExecutionParameter)))
         .Then(data => data.ReadActual<ExecutionOutput>().Exceptions.Should().BeNullOrEmpty())
-        .DebugPrint("scenario", scenario));
+        .DebugPrint(new (string, object?)[]
+        {
+            ("scenario", scenario),
+            ("test", 123),
+        }));
 }

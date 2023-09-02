@@ -9,6 +9,7 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using WebNativeDEV.SINUS.Core.ArgumentValidation;
 using WebNativeDEV.SINUS.Core.Ioc;
 using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 using WebNativeDEV.SINUS.MsTest;
@@ -45,12 +46,12 @@ internal sealed class Browser : IBrowser
             this.Logger.GetType().ToString(),
             contentFolder);
 
-        this.driver = driver ?? throw new ArgumentNullException(nameof(driver), "driver null");
+        this.driver = Ensure.NotNull(driver, nameof(driver));
         this.contentFolder = contentFolder;
         this.HumanReadablePageName = humanReadablePageName;
         this.id = id ?? "<no id>";
 
-        if(id != null)
+        if (id != null)
         {
             TestsIncludingBrowsers.Add(id);
         }
@@ -81,7 +82,7 @@ internal sealed class Browser : IBrowser
         get
         {
             this.Logger.LogInformation("Title requested {Title}", this.driver.Title ?? "null");
-            return this.driver?.Title;
+            return this.driver.Title;
         }
     }
 
@@ -91,9 +92,7 @@ internal sealed class Browser : IBrowser
         get
         {
             this.Logger.LogInformation("Url requested {Url}", this.driver.Url ?? "null");
-            return this.driver?.Url == null
-                ? null
-                : new Uri(this.driver.Url);
+            return new Uri(this.driver.Url ?? throw new InvalidOperationException("no Url available"));
         }
     }
 
@@ -129,9 +128,11 @@ internal sealed class Browser : IBrowser
     /// <summary>
     /// Prints the usage statistics of the browser objects.
     /// </summary>
-    public static void PrintBrowserUsageStatistic()
+    /// <param name="filter">a Filter to search for.</param>
+    public static void PrintBrowserUsageStatistic(string? filter = null)
     {
-        if (!Browser.TestsIncludingBrowsers.Any())
+        var including = Browser.TestsIncludingBrowsers.Where(x => filter == null || x == filter).ToList();
+        if (!including.Any())
         {
             return;
         }
@@ -139,14 +140,14 @@ internal sealed class Browser : IBrowser
         var loggerFactory = TestBase.Container.Resolve<ILoggerFactory>();
         var usageLogger = loggerFactory.CreateLogger<TestBase>();
         usageLogger.LogInformation("+--------------------------------");
-        usageLogger.LogInformation("| Tests Including Browsers: {Count}", Browser.TestsIncludingBrowsers.Count);
+        usageLogger.LogInformation("| Tests Including Browsers: {Count}", including.Count);
 
-        foreach (var id in Browser.TestsIncludingBrowsers)
+        foreach (var testIdsIncludingBrowsers in including)
         {
-            var disposedInfo = Browser.TestsDisposingBrowsers.Contains(id)
+            var disposedInfo = Browser.TestsDisposingBrowsers.Contains(testIdsIncludingBrowsers)
                                     ? "disposed"
                                     : "leak";
-            usageLogger.LogInformation("| {Id} ({DisposedInfo})", id, disposedInfo);
+            usageLogger.LogInformation("| {Id} ({DisposedInfo})", testIdsIncludingBrowsers, disposedInfo);
         }
 
         usageLogger.LogInformation("+--------------------------------");
@@ -264,7 +265,10 @@ internal sealed class Browser : IBrowser
             if (disposing)
             {
                 this.Logger.LogInformation("Driver quitted");
+
                 this.driver?.Quit();
+                this.driver?.Dispose();
+
                 TestsDisposingBrowsers.Add(this.id);
             }
 

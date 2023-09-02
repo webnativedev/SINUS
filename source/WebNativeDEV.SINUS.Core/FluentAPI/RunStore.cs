@@ -155,16 +155,6 @@ public class RunStore
     }
 
     /// <summary>
-    /// Gets the instance from store based on the key as object.
-    /// </summary>
-    /// <param name="key">Identifier for the instance to get.</param>
-    /// <returns>An instance from the store as object.</returns>
-    public object? ReadObject(string key)
-    {
-        return this.store[key];
-    }
-
-    /// <summary>
     /// Gets the instance from store based on the type (that can only appear once in the store).
     /// </summary>
     /// <typeparam name="T">Type the result is searched for, checked against and casted into.</typeparam>
@@ -178,6 +168,16 @@ public class RunStore
         }
 
         return result[0];
+    }
+
+    /// <summary>
+    /// Gets the instance from store based on the key as object.
+    /// </summary>
+    /// <param name="key">Identifier for the instance to get.</param>
+    /// <returns>An instance from the store as object.</returns>
+    public object? ReadObject(string key)
+    {
+        return this.store[key];
     }
 
     /// <summary>

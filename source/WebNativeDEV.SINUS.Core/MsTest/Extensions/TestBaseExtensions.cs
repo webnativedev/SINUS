@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
 using WebNativeDEV.SINUS.Core.Ioc;
+using WebNativeDEV.SINUS.Core.UITesting;
 using WebNativeDEV.SINUS.MsTest;
 
 /// <summary>
@@ -16,6 +17,17 @@ using WebNativeDEV.SINUS.MsTest;
 /// </summary>
 public static class TestBaseExtensions
 {
+    /// <summary>
+    /// Prints the usage statistics of the browser objects.
+    /// </summary>
+    /// <param name="testBase">Required to use the function as extension method.</param>
+    /// <param name="filter">Optional filter to search for.</param>
+    public static void PrintBrowserUsageStatistic(this TestBase testBase, string? filter = null)
+    {
+        Ensure.NotNull(testBase);
+        Browser.PrintBrowserUsageStatistic(filter);
+    }
+
     /// <summary>
     /// Counts the result folders based on trusted parameters.
     /// This method should avoid unneeded amount of garbage.

@@ -10,7 +10,7 @@ using System;
 /// Represents an interface that manages the execution of a test based on a given-when-then sequence.
 /// This interface allows to create a proper Fluent API.
 /// </summary>
-public interface IRunner
+public interface IRunner : IDisposable
 {
     /// <summary>
     /// Allows to define the Then-Action in a Given-When-Then sequence.

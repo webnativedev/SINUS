@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebNativeDEV.SINUS.Core.Sut;
 
 /// <summary>
 /// Represents a class used as output for the execution engine implementation.
@@ -28,7 +29,7 @@ public sealed class ExecutionOutput
     /// <summary>
     /// Gets the Web Application Factory as IDisposable.
     /// </summary>
-    public IDisposable? WebApplicationFactory { get; internal set; }
+    public ISinusWebApplicationFactory? WebApplicationFactory { get; internal set; }
 
     /// <summary>
     /// Gets a value indicating whether the execution is only prepared.

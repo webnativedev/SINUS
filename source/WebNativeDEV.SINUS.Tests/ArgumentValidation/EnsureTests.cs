@@ -58,6 +58,30 @@ public class EnsureTests : TestBase
              .ThenShouldHaveFailedWith<ArgumentValidationException>());
 
     [TestMethod]
+    [ExpectedException(typeof(AssertFailedException))]
+    public void Given_AFailingTest_When_Fail_Then_WrongExceptionExpectedShouldThrow()
+        => this.Test(r => r
+            .Given(data => data["value"] = null)
+             .When(data => Ensure.NotNull(data["value"]))
+             .ThenShouldHaveFailedWith<IOException>());
+
+    [TestMethod]
+    [ExpectedException(typeof(AssertFailedException))]
+    public void Given_AValue_When_CallingArgumentValidationNotNullWithNull_Then_AGeneralExceptionShouldHaveBeenThrown()
+        => this.Test(r => r
+            .Given(data => data["value"] = null)
+             .When(data => Ensure.NotNull(data["value"]))
+             .ThenShouldHaveFailed());
+
+    [TestMethod]
+    [ExpectedException(typeof(AssertFailedException))]
+    public void Given_AValue_When_CallingArgumentValidationNotNullWithNull_Then_AnExceptionWithDescriptionShouldHaveBeenThrown()
+        => this.Test(r => r
+            .Given(data => data["value"] = null)
+             .When(data => Ensure.NotNull(data["value"]))
+             .ThenShouldHaveFailed("check for not null should identify null value."));
+
+    [TestMethod]
     [DynamicData(
         nameof(ValidValues),
         DynamicDataDisplayName = nameof(DefaultDataDisplayName))]

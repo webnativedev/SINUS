@@ -26,7 +26,10 @@ using WebNativeDEV.SINUS.MsTest;
 /// <summary>
 /// Base Class for Runners.
 /// </summary>
-internal sealed partial class Runner : IRunner, IGiven, IGivenWithSut, IWhen, IThen, IBrowserRunner, IGivenBrowser, IWhenBrowser, IThenBrowser, IDisposable
+internal sealed partial class Runner : IBrowserRunner,
+    IGiven, IGivenWithSut, IGivenBrowser,
+    IWhenBrowser,
+    IThenBrowser
 {
     private const string DefaultEndpoint = "https://localhost:10001";
 
@@ -36,7 +39,7 @@ internal sealed partial class Runner : IRunner, IGiven, IGivenWithSut, IWhen, IT
 
     private bool disposedValue;
 
-    private IDisposable? webApplicationFactory;
+    private ISinusWebApplicationFactory? webApplicationFactory;
     private IBrowser? browser;
 
     /// <summary>
@@ -267,6 +270,7 @@ internal sealed partial class Runner : IRunner, IGiven, IGivenWithSut, IWhen, IT
                         this.browser?.Dispose();
                         this.browser = null;
 
+                        this.webApplicationFactory?.CloseCreatedHost();
                         this.webApplicationFactory?.Dispose();
                         this.webApplicationFactory = null;
 

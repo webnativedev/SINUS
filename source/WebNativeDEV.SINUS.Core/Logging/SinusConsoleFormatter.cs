@@ -77,7 +77,7 @@ public class SinusConsoleFormatter : ConsoleFormatter, IDisposable
             return;
         }
 
-        if (RunCategoryIsStartOf(message) || 
+        if (RunCategoryIsStartOf(message) ||
             message.StartsWith("The test result is evaluated as", StringComparison.InvariantCulture))
         {
             textWriter.WriteLine(message);

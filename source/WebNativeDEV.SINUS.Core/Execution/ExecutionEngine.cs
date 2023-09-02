@@ -87,15 +87,24 @@ public sealed class ExecutionEngine : IExecutionEngine
         var namings = Ensure.NotNull(parameter.Namings);
 
         List<Action> actions = new();
-        actions.AddRange(parameter.SetupActions?.Select<Action<ExecutionSetupParameters>?, Action>(action =>
-            () => action?.Invoke(new ExecutionSetupParameters()
-            {
-                Endpoint = returnValue.SutEndpoint,
-            })) ?? Array.Empty<Action>());
-        actions.AddRange(parameter.Actions?.Where(action => action != null).Cast<Action>()
-            ?? Array.Empty<Action>());
+        actions.AddRange(
+            parameter
+                .SetupActions
+                ?.Select<Action<ExecutionSetupParameters>?, Action>(
+                    action =>
+                        () => action?.Invoke(new ExecutionSetupParameters()
+                        {
+                            Endpoint = returnValue.SutEndpoint,
+                        })) ?? Array.Empty<Action>());
 
-        if (!parameter.RunActions || !actions.Any(x => x != null))
+        actions.AddRange(
+            parameter
+                .Actions
+                ?.Cast<Action>() ?? Array.Empty<Action>());
+
+        var actionCount = actions.Count;
+
+        if (!parameter.RunActions || actionCount == 0)
         {
             string skipDescription = namings.GetReadableDescription(
                 parameter.RunCategory,
@@ -106,15 +115,9 @@ public sealed class ExecutionEngine : IExecutionEngine
             return;
         }
 
-        var actionCount = actions.Count;
         for (int i = 0; i < actionCount; i++)
         {
-            var action = actions?[i];
-            if (action == null)
-            {
-                continue;
-            }
-
+            var action = actions[i];
             string description = namings.GetReadableDescription(
                 parameter.RunCategory,
                 parameter.Description,
@@ -182,7 +185,7 @@ public sealed class ExecutionEngine : IExecutionEngine
                 var wafType = typeof(SinusWebApplicationFactory<>).MakeGenericType(sutType);
                 ISinusWebApplicationFactory? waf = Activator.CreateInstance(
                     wafType,
-                    args: new object?[] { returnValue.SutEndpoint })
+                    returnValue.SutEndpoint)
                     as ISinusWebApplicationFactory;
 
                 returnValue.WebApplicationFactory = waf;
@@ -193,6 +196,8 @@ public sealed class ExecutionEngine : IExecutionEngine
                     returnValue.HttpClient?.CancelPendingRequests();
                     returnValue.HttpClient?.Dispose();
                     returnValue.HttpClient = null;
+
+                    returnValue.WebApplicationFactory?.CloseCreatedHost();
                     returnValue.WebApplicationFactory?.Dispose();
                     returnValue.WebApplicationFactory = null;
                 }

@@ -7,6 +7,7 @@ namespace WebNativeDEV.SINUS.Tests.Sut;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebNativeDEV.SINUS.Core.Assertions;
+using WebNativeDEV.SINUS.Core.Requirements;
 using WebNativeDEV.SINUS.MsTest;
 using WebNativeDEV.SINUS.SystemUnderTest;
 using WebNativeDEV.SINUS.SystemUnderTest.Controllers;
@@ -32,11 +33,10 @@ public sealed partial class SystemUnderTestTests : TestBase
 
     [TestMethod]
     public void Given_SutOnRandomEndpoint_When_CallingView_Then_SeleniumBrowsableWithRunner()
-        => this.Test()
+        => this.Test(r => r
             .GivenASystemAndABrowserAtRandomEndpoint<Program>(this.simpleView)
             .When("making a screenshot", (browser, data) => browser.TakeScreenshot())
-            .ThenNoError()
-            .Dispose();
+            .ThenNoError()).Should().BeSuccessful();
 
     [TestMethod]
     public void Given_Sut_When_CallingView_Then_TitleShouldBeRight()
@@ -49,6 +49,7 @@ public sealed partial class SystemUnderTestTests : TestBase
             .Dispose();
 
     [TestMethod]
+    [TechnicalRequirement("public available system")]
     public void Given_SutOnRandomEndpoint_When_CallingView_Then_TitleShouldBeRight()
         => this.Test()
             .GivenASystemAndABrowserAtRandomEndpoint<Program>(this.simpleView)
@@ -59,16 +60,25 @@ public sealed partial class SystemUnderTestTests : TestBase
             .Dispose();
 
     [TestMethod]
+    [TechnicalRequirement("in memory system")]
+    [OutOfScope("reachable from outside via selenium")]
     public void Given_Sut_When_CallingCalcToSquareMyNumberWith2_Then_ResultShouldBe4()
         => this.Test()
             .GivenASystem<Program>("Calculation REST-Service")
             .When(
-                "checking the title",
+                "calculate square",
                 (client, data) => data.StoreActual(client.GetStringAsync("/calc/2").GetAwaiter().GetResult()))
             .Then(
                 "Title should be 'SINUS TestSystem'",
                 (data) => data.Should().ActualBe("4"))
             .Dispose();
+
+    [TestMethod]
+    public void Given_Sut_When_CallingCalcToSquareMyNumberWithMinus2_Then_ResultShouldBe4()
+        => this.Test(r => r
+            .GivenASystem<Program>()
+            .When((client, data) => data.StoreActual(client.GetStringAsync("/calc/-2").GetAwaiter().GetResult()))
+            .Then((data) => data.Should().ActualBe("4")));
 
     [TestMethod]
     public void Given_SutClass_When_CallingCalcToSquareMyNumberWith2_Then_ResultShouldBe4()

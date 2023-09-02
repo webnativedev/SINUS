@@ -67,11 +67,7 @@ public sealed class PerformanceDataScope : IDisposable
     public static string ReduceLogMessage(string message)
     {
         var idx = Ensure.NotNull(message).IndexOf(MainMessageBody, StringComparison.InvariantCulture) + MainMessageBody.Length;
-        var result = "= " + message[idx..].Trim();
-        if (result == "= 0 ms")
-        {
-            // return string.Empty;
-        }
+        var result = "= " + message[idx..].Trim(); // "= 0 ms" might require special handling.
 
         return result;
     }

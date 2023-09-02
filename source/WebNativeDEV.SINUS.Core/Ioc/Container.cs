@@ -22,7 +22,8 @@ using WebNativeDEV.SINUS.Core.Ioc.Contracts;
 /// <remarks>
 /// based on Microsoft's MinIoc https://github.com/microsoft/MinIoC/blob/main/Container.cs.
 /// </remarks>
-public sealed class Container : IContainer, IDisposable
+[ExcludeFromCodeCoverage]
+public sealed class Container : IContainer
 {
     /// <summary>
     /// Map of registered types.
@@ -79,18 +80,6 @@ public sealed class Container : IContainer, IDisposable
             FactoryFromType(Ensure.NotNull(implementation, nameof(implementation))));
 
     /// <summary>
-    /// Registers a factory to create an instance.
-    /// </summary>
-    /// <param name="itemType">Type to register.</param>
-    /// <param name="factory">The factory method to create an instance.</param>
-    /// <returns>
-    /// An object pointing to a <see cref="IRegisteredType"/>
-    /// that allows further configuration.
-    /// </returns>
-    public IRegisteredType RegisterType(Type itemType, Func<ILifetime, object?> factory)
-        => new RegisteredType(itemType, f => this.registeredTypes[itemType] = f, factory);
-
-    /// <summary>
     /// Registers an implementation type for the specified interface.
     /// </summary>
     /// <typeparam name="T">Interface to register.</typeparam>
@@ -127,6 +116,18 @@ public sealed class Container : IContainer, IDisposable
     /// <returns>IRegisteredType object.</returns>
     public IRegisteredType Register<T>()
         => this.Register(typeof(T), typeof(T));
+
+    /// <summary>
+    /// Registers a factory to create an instance.
+    /// </summary>
+    /// <param name="itemType">Type to register.</param>
+    /// <param name="factory">The factory method to create an instance.</param>
+    /// <returns>
+    /// An object pointing to a <see cref="IRegisteredType"/>
+    /// that allows further configuration.
+    /// </returns>
+    public IRegisteredType RegisterType(Type itemType, Func<ILifetime, object?> factory)
+        => new RegisteredType(itemType, f => this.registeredTypes[itemType] = f, factory);
 
     /// <summary>
     /// Returns an implementation of the specified interface.
@@ -173,11 +174,16 @@ public sealed class Container : IContainer, IDisposable
         var constructors = itemType.GetConstructors();
         if (constructors.Length == 0)
         {
+#pragma warning disable IDE0079 // remove unnecessary supression
+#pragma warning disable SA1614  // Make sure that this accessibility bypass is safe here
+
             // If no public constructor found, search for an internal constructor
             constructors = itemType.GetConstructors(BindingFlags.Instance | BindingFlags.NonPublic);
+#pragma warning restore SA1614  // Make sure that this accessibility bypass is safe here
+#pragma warning restore IDE0079 // remove unnecessary supression
         }
 
-        var constructor = constructors.First();
+        var constructor = constructors[0];
 
         // Compile constructor call as a lambda expression
         var arg = Expression.Parameter(typeof(ILifetime));

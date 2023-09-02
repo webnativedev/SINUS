@@ -47,6 +47,17 @@ internal sealed class SinusWebApplicationFactory<TEntryPoint> : WebApplicationFa
     /// </summary>
     public bool InMemory { get; }
 
+    /// <inheritdoc/>
+    public void CloseCreatedHost()
+    {
+        if (this.customHost != null)
+        {
+            this.customHost.StopAsync().GetAwaiter().GetResult();
+            this.customHost.Dispose();
+            this.customHost = null;
+        }
+    }
+
     /// <summary>
     /// Sets the urls to use.
     /// </summary>
@@ -93,19 +104,6 @@ internal sealed class SinusWebApplicationFactory<TEntryPoint> : WebApplicationFa
     protected override void Dispose(bool disposing)
     {
         base.Dispose(disposing);
-
-        try
-        {
-            if (this.customHost != null)
-            {
-                this.customHost.StopAsync().GetAwaiter().GetResult();
-                this.customHost.Dispose();
-                this.customHost = null;
-            }
-        }
-        catch
-        {
-            throw;
-        }
+        this.CloseCreatedHost();
     }
 }

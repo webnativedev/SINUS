@@ -6,6 +6,7 @@ namespace WebNativeDEV.SINUS.Core.ArgumentValidation;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,6 +30,7 @@ public class ArgumentValidationException : Exception
     /// <summary>
     /// Initializes a new instance of the <see cref="ArgumentValidationException"/> class.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public ArgumentValidationException()
     {
     }
@@ -37,6 +39,7 @@ public class ArgumentValidationException : Exception
     /// Initializes a new instance of the <see cref="ArgumentValidationException"/> class.
     /// </summary>
     /// <param name="message">A plain text message to add.</param>
+    [ExcludeFromCodeCoverage]
     public ArgumentValidationException(string message)
         : base(message)
     {
@@ -47,6 +50,7 @@ public class ArgumentValidationException : Exception
     /// </summary>
     /// <param name="message">A plain text message to add.</param>
     /// <param name="innerException">An inner exception.</param>
+    [ExcludeFromCodeCoverage]
     public ArgumentValidationException(string message, Exception innerException)
         : base(message, innerException)
     {
