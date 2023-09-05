@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using WebNativeDEV.SINUS.Core.UITesting;
+using WebNativeDEV.SINUS.MsTest;
 
 /// <summary>
 /// Spawns a publicly available application that can be tested via Selenium.
@@ -25,16 +27,24 @@ using Microsoft.Extensions.Logging;
 internal sealed class SinusWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPoint>, ISinusWebApplicationFactory
     where TEntryPoint : class
 {
+    private readonly string id;
     private IHost? customHost;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SinusWebApplicationFactory{TEntryPoint}"/> class.
     /// </summary>
-    /// <param name="hostUrl">The endpoint of the system under test. </param>
-    public SinusWebApplicationFactory(string? hostUrl)
+    /// <param name="hostUrl">The endpoint of the system under test.</param>
+    /// <param name="id">Id of the test (test name).</param>
+    public SinusWebApplicationFactory(string? hostUrl, string? id)
     {
         this.HostUrl = hostUrl;
         this.InMemory = string.IsNullOrWhiteSpace(this.HostUrl);
+        this.id = id ?? "<no id>";
+
+        if (id != null)
+        {
+            SinusWafUsageStatisticsManager.TestsIncludingWaf.Add(id);
+        }
     }
 
     /// <summary>
@@ -105,5 +115,6 @@ internal sealed class SinusWebApplicationFactory<TEntryPoint> : WebApplicationFa
     {
         base.Dispose(disposing);
         this.CloseCreatedHost();
+        SinusWafUsageStatisticsManager.TestsDisposingWaf.Add(this.id);
     }
 }

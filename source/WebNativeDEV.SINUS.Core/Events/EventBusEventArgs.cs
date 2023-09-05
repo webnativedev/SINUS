@@ -18,19 +18,12 @@ public class EventBusEventArgs : EventArgs
     /// <summary>
     /// Initializes a new instance of the <see cref="EventBusEventArgs"/> class.
     /// </summary>
-    /// <param name="value">The value to transport.</param>
-    public EventBusEventArgs(object? value = null)
+    public EventBusEventArgs()
     {
-        this.Value = value;
     }
 
     /// <summary>
     /// Gets an empty object to reduce allocations.
     /// </summary>
     public static new EventBusEventArgs Empty { get; } = new();
-
-    /// <summary>
-    /// Gets the value to transport via the arg class.
-    /// </summary>
-    public object? Value { get; }
 }

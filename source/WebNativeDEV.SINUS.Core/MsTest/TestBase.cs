@@ -11,6 +11,8 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
+using WebNativeDEV.SINUS.Core.Events;
+using WebNativeDEV.SINUS.Core.Events.Contracts;
 using WebNativeDEV.SINUS.Core.Execution;
 using WebNativeDEV.SINUS.Core.Execution.Contracts;
 using WebNativeDEV.SINUS.Core.FluentAPI;
@@ -20,6 +22,7 @@ using WebNativeDEV.SINUS.Core.Ioc.Contracts;
 using WebNativeDEV.SINUS.Core.Logging;
 using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.Core.MsTest.Contracts;
+using WebNativeDEV.SINUS.Core.Sut;
 using WebNativeDEV.SINUS.Core.UITesting;
 using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 
@@ -81,6 +84,7 @@ public abstract class TestBase
                     });
                 });
         }).AsSingleton();
+        Container.Register<IEventBus, EventBus>().AsSingleton();
         Container.Register<IWebDriverFactory>(() => new ChromeWebDriverFactory()).AsSingleton();
         Container.Register<IBrowserFactory>(() => new BrowserFactory()).AsSingleton();
         Container.Register<IExecutionEngine, ExecutionEngine>().AsSingleton();
@@ -100,6 +104,7 @@ public abstract class TestBase
     protected static void TearDown()
     {
         Browser.PrintBrowserUsageStatistic();
+        SinusWafUsageStatisticsManager.PrintWafUsageStatistic();
     }
 
     /// <summary>
@@ -122,5 +127,21 @@ public abstract class TestBase
         runner.Dispose();
 
         return new TestBaseResult(true, this);
+    }
+
+    /// <summary>
+    /// Registers an event handler.
+    /// </summary>
+    /// <typeparam name="TEventBusEventArgs">Type of the event args.</typeparam>
+    /// <param name="handler">The event handler.</param>
+    /// <returns>The current test base instance.</returns>
+    protected TestBase Listen<TEventBusEventArgs>(Action<object, TEventBusEventArgs> handler)
+        where TEventBusEventArgs : EventBusEventArgs
+    {
+        Container.Resolve<IEventBus>().Subscribe<TEventBusEventArgs>(
+            (sender, e) => handler.Invoke(
+                                sender,
+                                (e as TEventBusEventArgs) ?? throw new InvalidCastException()));
+        return this;
     }
 }

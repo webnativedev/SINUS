@@ -6,14 +6,18 @@ namespace WebNativeDEV.SINUS.Core.FluentAPI;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.VisualStudio.TestPlatform.Utilities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata;
+using WebNativeDEV.SINUS.Core.Events;
+using WebNativeDEV.SINUS.Core.Events.Contracts;
 using WebNativeDEV.SINUS.Core.Execution;
 using WebNativeDEV.SINUS.Core.Execution.Contracts;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
+using WebNativeDEV.SINUS.Core.FluentAPI.Events;
 using WebNativeDEV.SINUS.Core.Ioc;
 using WebNativeDEV.SINUS.Core.Logging;
 using WebNativeDEV.SINUS.Core.MsTest;
@@ -36,6 +40,7 @@ internal sealed partial class Runner : IBrowserRunner,
     private readonly IBrowserFactory browserFactory;
     private readonly IExecutionEngine executionEngine;
     private readonly ILogger logger;
+    private readonly IEventBus eventBus;
 
     private bool disposedValue;
 
@@ -50,6 +55,7 @@ internal sealed partial class Runner : IBrowserRunner,
     {
         this.TestBase = testBase;
         this.logger = TestBase.Container.Resolve<ILoggerFactory>().CreateLogger<Runner>();
+        this.eventBus = TestBase.Container.Resolve<IEventBus>();
         this.executionEngine = TestBase.Container.Resolve<IExecutionEngine>();
         this.browserFactory = TestBase.Container.Resolve<IBrowserFactory>();
         this.NamingConventionManager = new TestNamingConventionManager(testBase.TestName);
@@ -96,51 +102,157 @@ internal sealed partial class Runner : IBrowserRunner,
         GC.SuppressFinalize(this);
     }
 
-    private Runner Run(
-            RunCategory runCategory,
-            string? description = null,
-            bool runActions = true,
-            Action? action = null,
-            Action<ExecutionSetupParameters>? setupAction = null,
-            IList<Action?>? actions = null,
-            bool createSut = false,
-            Type? sutType = null,
-            string? sutEndpoint = null)
+    /// <summary>
+    /// Shuts down all network components and sets them to null.
+    /// </summary>
+    public void Shutdown()
     {
-        var output = this.executionEngine.Run(new ExecutionParameter()
-        {
-            // Dependencies
-            TestBase = this.TestBase,
-            Runner = this,
-            Namings = this.NamingConventionManager,
+        this.HttpClient?.CancelPendingRequests();
+        this.HttpClient?.Dispose();
+        this.HttpClient = null;
 
-            // Meta information
-            RunCategory = runCategory,
-            Description = description,
-            ExceptionsCount = this.Exceptions.Count,
+        this.browser?.Dispose();
+        this.browser = null;
 
-            // Actual action
-            RunActions = runActions && ((actions?.Any() ?? false) || action != null || setupAction != null),
-            SetupActions = setupAction != null
-                    ? new List<Action<ExecutionSetupParameters>?>() { setupAction }
-                    : new List<Action<ExecutionSetupParameters>?>() { },
-            Actions = actions ?? (
-                action != null
-                    ? new List<Action?>() { action }
-                    : new List<Action?>()),
+        this.webApplicationFactory?.CloseCreatedHost();
+        this.webApplicationFactory?.Dispose(); // consider DisposeAsync()
+        this.webApplicationFactory = null;
 
-            // System under Test parameter
-            CreateSut = createSut,
-            SutType = sutType,
-            SutEndpoint = sutEndpoint,
-        });
+        this.DataBag.DisposeAllDisposables();
+
+#pragma warning disable S1215 // "GC.Collect" should not be called
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.WaitForFullGCComplete();
+#pragma warning restore S1215 // "GC.Collect" should not be called
+    }
+
+    private Runner RunCreateSut(
+            RunCategory runCategory,
+            Type? sutType,
+            string? sutEndpoint,
+            string? description = null)
+    {
+        return this.Run(
+            new ExecutionParameterBuilder(
+                this.TestBase,
+                this,
+                this.NamingConventionManager,
+                runCategory,
+                this.Exceptions.Count)
+            .AddDescription(description)
+            .AddRunActions(false)
+            .AddSetupActions(null)
+            .AddActions(null, null)
+            .AddCreateSut(true)
+            .AddSutType(sutType)
+            .AddSutEndpoint(sutEndpoint)
+            .Build());
+    }
+
+    private Runner RunCreateSut(
+            RunCategory runCategory,
+            Action<ExecutionSetupParameters>? setupAction,
+            Type? sutType,
+            string? sutEndpoint,
+            string? description = null)
+    {
+        return this.Run(
+            new ExecutionParameterBuilder(
+                this.TestBase,
+                this,
+                this.NamingConventionManager,
+                runCategory,
+                this.Exceptions.Count)
+            .AddDescription(description)
+            .AddRunActions(true)
+            .AddSetupActions(setupAction)
+            .AddActions(null, null)
+            .AddCreateSut(true)
+            .AddSutType(sutType)
+            .AddSutEndpoint(sutEndpoint)
+            .Build());
+    }
+
+    private Runner RunCreateSut(
+            RunCategory runCategory,
+            Action? action,
+            Type? sutType,
+            string? sutEndpoint,
+            string? description = null)
+    {
+        return this.Run(
+            new ExecutionParameterBuilder(
+                this.TestBase,
+                this,
+                this.NamingConventionManager,
+                runCategory,
+                this.Exceptions.Count)
+            .AddDescription(description)
+            .AddRunActions(true)
+            .AddSetupActions(null)
+            .AddActions(action, null)
+            .AddCreateSut(true)
+            .AddSutType(sutType)
+            .AddSutEndpoint(sutEndpoint)
+            .Build());
+    }
+
+    private Runner RunAction(
+            RunCategory runCategory,
+            Action? action,
+            string? description = null)
+    {
+        return this.Run(
+            new ExecutionParameterBuilder(
+                this.TestBase,
+                this,
+                this.NamingConventionManager,
+                runCategory,
+                this.Exceptions.Count)
+            .AddDescription(description)
+            .AddRunActions(true)
+            .AddSetupActions(null)
+            .AddActions(action, null)
+            .AddCreateSut(false)
+            .AddSutType(null)
+            .AddSutEndpoint(null)
+            .Build());
+    }
+
+    private Runner RunAction(
+            RunCategory runCategory,
+            IList<Action?>? actions,
+            string? description = null)
+    {
+        return this.Run(
+            new ExecutionParameterBuilder(
+                this.TestBase,
+                this,
+                this.NamingConventionManager,
+                runCategory,
+                this.Exceptions.Count)
+            .AddDescription(description)
+            .AddRunActions(true)
+            .AddSetupActions(null)
+            .AddActions(null, actions)
+            .AddCreateSut(false)
+            .AddSutType(null)
+            .AddSutEndpoint(null)
+            .Build());
+    }
+
+    private Runner Run(ExecutionParameter parameter)
+    {
+        var output = this.executionEngine.Run(parameter);
 
         this.HttpClient = output.HttpClient;
         this.webApplicationFactory = output.WebApplicationFactory;
-        this.Exceptions.AddRange(output.Exceptions.Select(exc => (runCategory, exc)));
+        this.Exceptions.AddRange(output.Exceptions.Select(exc => (parameter.RunCategory, exc)));
         this.IsPreparedOnly = this.IsPreparedOnly ||
-            (output.IsPreparedOnly && runCategory == RunCategory.When);
+            (output.IsPreparedOnly && parameter.RunCategory == RunCategory.When);
 
+        this.eventBus.Publish(this, new ExecutedEventBusEventArgs(output));
         return this;
     }
 
@@ -259,22 +371,11 @@ internal sealed partial class Runner : IBrowserRunner,
         {
             if (disposing)
             {
-                this.Run(
+                this.RunAction(
                     runCategory: RunCategory.Dispose,
                     action: () =>
                     {
-                        this.HttpClient?.CancelPendingRequests();
-                        this.HttpClient?.Dispose();
-                        this.HttpClient = null;
-
-                        this.browser?.Dispose();
-                        this.browser = null;
-
-                        this.webApplicationFactory?.CloseCreatedHost();
-                        this.webApplicationFactory?.Dispose();
-                        this.webApplicationFactory = null;
-
-                        this.DataBag.DisposeAllDisposables();
+                        this.Shutdown();
                     });
             }
 

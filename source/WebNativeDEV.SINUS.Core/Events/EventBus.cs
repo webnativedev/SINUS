@@ -16,25 +16,32 @@ using WebNativeDEV.SINUS.Core.Events.Contracts;
 /// </summary>
 public class EventBus : IEventBus
 {
-    private readonly Dictionary<string, List<EventHandler<EventBusEventArgs>>> handlers = new();
+    private readonly Dictionary<Type, List<Action<object, EventBusEventArgs>>> handlers = new();
 
     /// <inheritdoc/>
-    public void Publish(object sender, string eventName, EventBusEventArgs e)
+    public void Publish<TEventBusEventArgs>(object sender, TEventBusEventArgs e)
+            where TEventBusEventArgs : EventBusEventArgs
     {
-        foreach (EventHandler<EventBusEventArgs> handler in this.handlers[eventName])
+        if(!this.handlers.ContainsKey(typeof(TEventBusEventArgs)))
+        {
+            return;
+        }
+
+        foreach (Action<object, EventBusEventArgs> handler in this.handlers[typeof(TEventBusEventArgs)])
         {
             handler(sender, e);
         }
     }
 
     /// <inheritdoc/>
-    public void Subscribe(string eventName, EventHandler<EventBusEventArgs> handler)
+    public void Subscribe<TEventBusEventArgs>(Action<object, EventBusEventArgs> handler)
+            where TEventBusEventArgs : EventBusEventArgs
     {
-        if (!this.handlers.ContainsKey(eventName))
+        if (!this.handlers.ContainsKey(typeof(TEventBusEventArgs)))
         {
-            this.handlers.Add(eventName, new List<EventHandler<EventBusEventArgs>>());
+            this.handlers.Add(typeof(TEventBusEventArgs), new List<Action<object, EventBusEventArgs>>());
         }
 
-        this.handlers[eventName].Add(handler);
+        this.handlers[typeof(TEventBusEventArgs)].Add(handler);
     }
 }

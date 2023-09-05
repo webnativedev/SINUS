@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
 using WebNativeDEV.SINUS.Core.Ioc;
+using WebNativeDEV.SINUS.Core.Sut;
 using WebNativeDEV.SINUS.Core.UITesting;
 using WebNativeDEV.SINUS.MsTest;
 
@@ -22,10 +23,11 @@ public static class TestBaseExtensions
     /// </summary>
     /// <param name="testBase">Required to use the function as extension method.</param>
     /// <param name="filter">Optional filter to search for.</param>
-    public static void PrintBrowserUsageStatistic(this TestBase testBase, string? filter = null)
+    public static void PrintUsageStatistic(this TestBase testBase, string? filter = null)
     {
         Ensure.NotNull(testBase);
         Browser.PrintBrowserUsageStatistic(filter);
+        SinusWafUsageStatisticsManager.PrintWafUsageStatistic(filter);
     }
 
     /// <summary>

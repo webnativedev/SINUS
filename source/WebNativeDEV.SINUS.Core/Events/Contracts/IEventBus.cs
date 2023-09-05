@@ -12,16 +12,18 @@ namespace WebNativeDEV.SINUS.Core.Events.Contracts
         /// <summary>
         /// Publishes an event.
         /// </summary>
+        /// <typeparam name="TEventBusEventArgs">Type of event.</typeparam>
         /// <param name="sender">The sender of the event.</param>
-        /// <param name="eventName">The eventname.</param>
         /// <param name="e">The eventargs used to transport data.</param>
-        void Publish(object sender, string eventName, EventBusEventArgs e);
+        void Publish<TEventBusEventArgs>(object sender, TEventBusEventArgs e)
+            where TEventBusEventArgs : EventBusEventArgs;
 
         /// <summary>
         /// Subscribe to an event.
         /// </summary>
-        /// <param name="eventName">Eventname to subscribe to.</param>
+        /// <typeparam name="TEventBusEventArgs">Type of event.</typeparam>
         /// <param name="handler">The handler that is called when a corresponding event is raised.</param>
-        void Subscribe(string eventName, EventHandler<EventBusEventArgs> handler);
+        void Subscribe<TEventBusEventArgs>(Action<object, EventBusEventArgs> handler)
+            where TEventBusEventArgs : EventBusEventArgs;
     }
 }

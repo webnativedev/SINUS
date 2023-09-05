@@ -55,9 +55,9 @@
   <ItemGroup>
     <Folder Include="IoC\" />
     <Folder Include="MsTest\" />
-    <Folder Include="Events\" />
     <Folder Include="UITesting\" />
     <Folder Include="Requirements\" />
+    <Folder Include="ZTests\" />
   </ItemGroup>
 
 </Project>

@@ -17,65 +17,65 @@ using WebNativeDEV.SINUS.MsTest;
 /// <summary>
 /// Represents a class used as input for the execution engine implementation.
 /// </summary>
-public sealed class ExecutionParameter
+public class ExecutionParameter
 {
     /// <summary>
-    /// Gets the reference to the test executed.
+    /// Gets or sets the reference to the test executed.
     /// </summary>
-    public TestBase? TestBase { get; init; }
+    public TestBase? TestBase { get; set; }
 
     /// <summary>
-    /// Gets the category or section in which the test is currently.
+    /// Gets or sets the category or section in which the test is currently.
     /// </summary>
-    public RunCategory RunCategory { get; init; }
+    public RunCategory RunCategory { get; set; }
 
     /// <summary>
-    /// Gets the description passed in by the test.
+    /// Gets or sets the description passed in by the test.
     /// </summary>
-    public string? Description { get; init; }
+    public string? Description { get; set; }
 
     /// <summary>
-    /// Gets a value indicating whether the actions should be executed or not.
+    /// Gets or sets a value indicating whether the actions should be executed or not.
     /// </summary>
-    public bool RunActions { get; init; }
+    public bool RunActions { get; set; } = true;
 
     /// <summary>
-    /// Gets the actions to execute.
+    /// Gets or sets the actions to execute.
     /// </summary>
-    public IList<Action<ExecutionSetupParameters>?>? SetupActions { get; init; }
+    public IList<Action<ExecutionSetupParameters>?>? SetupActions { get; set; }
 
     /// <summary>
-    /// Gets the actions to execute.
+    /// Gets or sets the actions to execute.
     /// </summary>
-    public IList<Action?>? Actions { get; init; }
+    public IList<Action?>? Actions { get; set; }
 
     /// <summary>
-    /// Gets the reference to the runner.
+    /// Gets or sets the reference to the runner.
     /// </summary>
-    public IRunner? Runner { get; init; }
+    public IRunner? Runner { get; set; }
 
     /// <summary>
-    /// Gets the reference to the Naming Conventions manager.
+    /// Gets or sets the reference to the Naming Conventions manager.
     /// </summary>
-    public ITestNamingConventionManager? Namings { get; init; }
+    public ITestNamingConventionManager? Namings { get; set; }
 
     /// <summary>
-    /// Gets a value indicating whether a System under test should be created.
+    /// Gets or sets a value indicating whether a System under test should be created.
     /// </summary>
-    public bool CreateSut { get; init; }
+    public bool CreateSut { get; set; }
 
     /// <summary>
-    /// Gets a type that represents the class which needs to be instantiated to create a system under test.
+    /// Gets or sets a type that represents the class which needs to be instantiated to create a system under test.
     /// </summary>
-    public Type? SutType { get; init; }
+    public Type? SutType { get; set; }
 
     /// <summary>
-    /// Gets an endpoint address for the system under test.
+    /// Gets or sets an endpoint address for the system under test.
     /// </summary>
-    public string? SutEndpoint { get; init; }
+    public string? SutEndpoint { get; set; }
 
     /// <summary>
-    /// Gets the count of exceptions that already happend in earlier execution stages.
+    /// Gets or sets the count of exceptions that already happend in earlier execution stages.
     /// </summary>
-    public int ExceptionsCount { get; init; }
+    public int ExceptionsCount { get; set; }
 }

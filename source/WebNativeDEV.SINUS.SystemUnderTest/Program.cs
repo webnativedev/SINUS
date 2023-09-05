@@ -37,10 +37,11 @@ public partial class Program
         args ??= Array.Empty<string>();
 
         Console.WriteLine("    +-----------------------------");
-        Console.WriteLine("    | Args: ");
-        args.ToList().ForEach(x => Console.WriteLine($"    |     * {x}"));
+        Console.WriteLine("    | Start: ");
+        Console.WriteLine("    |      Args: ");
+        args.ToList().ForEach(x => Console.WriteLine($"    |          * {x}"));
         ShouldMock = args.Contains("--ExecutionMode=Mock");
-        Console.WriteLine("    | Mocking: " + (ShouldMock ? "activated" : "deactivated"));
+        Console.WriteLine("    |      Mocking: " + (ShouldMock ? "activated" : "deactivated"));
         Console.WriteLine("    +-----------------------------");
 
         var builder = WebApplication.CreateBuilder(args);
@@ -78,5 +79,13 @@ public partial class Program
         app.MapControllers();
 
         app.Run();
+
+        Console.WriteLine("    +-----------------------------");
+        Console.WriteLine("    | Shutdown: ");
+        Console.WriteLine("    |      Args: ");
+        args.ToList().ForEach(x => Console.WriteLine($"    |          * {x}"));
+        ShouldMock = args.Contains("--ExecutionMode=Mock");
+        Console.WriteLine("    |      Mocking: " + (ShouldMock ? "activated" : "deactivated"));
+        Console.WriteLine("    +-----------------------------");
     }
 }

@@ -28,78 +28,76 @@ internal sealed partial class Runner
 {
     /// <inheritdoc/>
     public IGiven Given(string description, Action<RunStore>? action = null)
-        => this.Run(
+        => this.RunAction(
                 runCategory: RunCategory.Given,
                 description: description,
                 action: this.InvokeAction(action));
 
     /// <inheritdoc/>
     public IGiven Given(Action<RunStore>? action = null)
-        => this.Run(
+        => this.RunAction(
                 runCategory: RunCategory.Given,
                 action: this.InvokeAction(action));
 
     /// <inheritdoc/>
     public IGivenWithSut GivenASystem<TProgram>(string description)
         where TProgram : class
-        => this.Run(
+        => this.RunCreateSut(
                 runCategory: RunCategory.Given,
                 description: description,
-                runActions: false,
-                createSut: true,
-                sutType: typeof(TProgram));
+                sutType: typeof(TProgram),
+                sutEndpoint: null);
 
     /// <inheritdoc/>
     public IGivenWithSut GivenASystem<TProgram>()
         where TProgram : class
-        => this.Run(
+        => this.RunCreateSut(
                 runCategory: RunCategory.Given,
-                runActions: false,
-                createSut: true,
-                sutType: typeof(TProgram));
+                sutType: typeof(TProgram),
+                sutEndpoint: null);
 
     /// <inheritdoc/>
     public IWhen When(string? description, Action<RunStore>? action = null)
-        => this.Run(
+        => this.RunAction(
                 runCategory: RunCategory.When,
                 description: description,
                 action: this.InvokeAction(action));
 
     /// <inheritdoc/>
     public IWhen When(Action<RunStore>? action = null)
-        => this.Run(
+        => this.RunAction(
                 runCategory: RunCategory.When,
                 action: this.InvokeAction(action));
 
     /// <inheritdoc/>
     public IWhen When(string description, Action<HttpClient, RunStore>? action)
-        => this.Run(
+        => this.RunAction(
                 runCategory: RunCategory.When,
                 description: description,
                 action: this.InvokeAction(action));
 
     /// <inheritdoc/>
     public IWhen When(Action<HttpClient, RunStore>? action)
-        => this.Run(
+        => this.RunAction(
                 runCategory: RunCategory.When,
                 action: this.InvokeAction(action));
 
     /// <inheritdoc/>
     public IThen Then(string? description, params Action<RunStore>[] actions)
-        => this.Run(
+        => this.RunAction(
                 runCategory: RunCategory.Then,
                 description: description,
                 actions: this.InvokeAction(actions));
 
     /// <inheritdoc/>
     public IThen Then(params Action<RunStore>[] actions)
-        => this.Run(
+        => this.RunAction(
                 runCategory: RunCategory.Then,
                 actions: this.InvokeAction(actions));
 
     /// <inheritdoc/>
     public IThen ThenNoError(string? description)
-        => this.Run(
+        => this.RunAction(
                 runCategory: RunCategory.Then,
                 description: description,
                 action: () =>
@@ -112,7 +110,7 @@ internal sealed partial class Runner
 
     /// <inheritdoc/>
     public IThen ThenNoError()
-        => this.Run(
+        => this.RunAction(
                 runCategory: RunCategory.Then,
                 action: () =>
                 {
@@ -124,7 +122,7 @@ internal sealed partial class Runner
 
     /// <inheritdoc/>
     public IThen ThenShouldHaveFailed()
-        => this.Run(
+        => this.RunAction(
                 runCategory: RunCategory.Then,
                 action: () =>
                 {
@@ -136,7 +134,7 @@ internal sealed partial class Runner
 
     /// <inheritdoc/>
     public IThen ThenShouldHaveFailed(string description)
-        => this.Run(
+        => this.RunAction(
                 runCategory: RunCategory.Then,
                 description: description,
                 action: () =>
@@ -150,7 +148,7 @@ internal sealed partial class Runner
     /// <inheritdoc/>
     public IThen ThenShouldHaveFailedWith<T>()
         where T : Exception
-        => this.Run(
+        => this.RunAction(
                 runCategory: RunCategory.Then,
                 action: () =>
                 {
@@ -164,25 +162,25 @@ internal sealed partial class Runner
 
     /// <inheritdoc/>
     public IDisposable Debug(Action<IBrowser, RunStore>? action = null)
-        => this.Run(
+        => this.RunAction(
                 runCategory: RunCategory.Debug,
                 action: this.InvokeAction(action));
 
     /// <inheritdoc/>
     public IDisposable Debug(Action<RunStore>? action = null)
-        => this.Run(
+        => this.RunAction(
                 runCategory: RunCategory.Debug,
                 action: this.InvokeAction(action));
 
     /// <inheritdoc/>
     public IDisposable DebugPrint()
-        => this.Run(
+        => this.RunAction(
                 runCategory: RunCategory.Debug,
                 action: () => this.DataBag.PrintStore());
 
     /// <inheritdoc/>
     public IDisposable DebugPrint((string, object?)[] additionalData)
-        => this.Run(
+        => this.RunAction(
                 runCategory: RunCategory.Debug,
                 action: () =>
                 {
@@ -195,7 +193,7 @@ internal sealed partial class Runner
 
     /// <inheritdoc/>
     public IDisposable DebugPrint(string key, object? value)
-        => this.Run(
+        => this.RunAction(
                 runCategory: RunCategory.Debug,
                 action: () =>
                 {
@@ -205,157 +203,147 @@ internal sealed partial class Runner
 
     /// <inheritdoc/>
     public IGivenBrowser GivenABrowserAt(string? humanReadablePageName, string url, BrowserFactoryOptions? options = null)
-        => this.Run(
+        => this.RunAction(
                 runCategory: RunCategory.Given,
                 action: this.InvokeCreateBrowserAction(new Uri(url), humanReadablePageName, options));
 
     /// <inheritdoc/>
     public IGivenBrowser GivenABrowserAt(string url, BrowserFactoryOptions? options = null)
-        => this.Run(
+        => this.RunAction(
                 runCategory: RunCategory.Given,
                 action: this.InvokeCreateBrowserAction(new Uri(url), options));
 
     /// <inheritdoc/>
     public IGivenBrowser GivenABrowserAt((string? humanReadablePageName, string url) website, BrowserFactoryOptions? options = null)
-        => this.Run(
+        => this.RunAction(
                 runCategory: RunCategory.Given,
                 action: this.InvokeCreateBrowserAction(new Uri(website.url), website.humanReadablePageName, options));
 
     /// <inheritdoc/>
     public IGivenBrowser GivenABrowserAt(string? humanReadablePageName, Uri url, BrowserFactoryOptions? options = null)
-        => this.Run(
+        => this.RunAction(
                 runCategory: RunCategory.Given,
                 action: this.InvokeCreateBrowserAction(url, humanReadablePageName, options));
 
     /// <inheritdoc/>
     public IGivenBrowser GivenABrowserAt(Uri url, BrowserFactoryOptions? options = null)
-        => this.Run(
+        => this.RunAction(
                 runCategory: RunCategory.Given,
                 action: this.InvokeCreateBrowserAction(url, options));
 
     /// <inheritdoc/>
     public IGivenBrowser GivenASystemAndABrowserAt<TProgram>(string? humanReadablePageName, string endpoint, string url, BrowserFactoryOptions? options = null)
         where TProgram : class
-        => this.Run(
+        => this.RunCreateSut(
                 runCategory: RunCategory.Given,
                 action: this.InvokeCreateBrowserAction(new Uri(url), humanReadablePageName, options),
-                createSut: true,
                 sutType: typeof(TProgram),
                 sutEndpoint: endpoint);
 
     /// <inheritdoc/>
     public IGivenBrowser GivenASystemAndABrowserAt<TProgram>(string endpoint, string url, BrowserFactoryOptions? options = null)
         where TProgram : class
-        => this.Run(
+        => this.RunCreateSut(
                 runCategory: RunCategory.Given,
                 action: this.InvokeCreateBrowserAction(new Uri(url), options),
-                createSut: true,
                 sutType: typeof(TProgram),
                 sutEndpoint: endpoint);
 
     /// <inheritdoc/>
     public IGivenBrowser GivenASystemAndABrowserAt<TProgram>(string? humanReadablePageName, string endpoint, Uri url, BrowserFactoryOptions? options = null)
         where TProgram : class
-        => this.Run(
+        => this.RunCreateSut(
                 runCategory: RunCategory.Given,
                 action: this.InvokeCreateBrowserAction(url, humanReadablePageName, options),
-                createSut: true,
                 sutType: typeof(TProgram),
                 sutEndpoint: endpoint);
 
     /// <inheritdoc/>
     public IGivenBrowser GivenASystemAndABrowserAt<TProgram>(string endpoint, Uri url, BrowserFactoryOptions? options = null)
         where TProgram : class
-        => this.Run(
+        => this.RunCreateSut(
                 runCategory: RunCategory.Given,
                 action: this.InvokeCreateBrowserAction(url, options),
-                createSut: true,
                 sutType: typeof(TProgram),
                 sutEndpoint: endpoint);
 
     /// <inheritdoc/>
     public IGivenBrowser GivenASystemAndABrowserAtDefaultEndpoint<TProgram>((string? humanReadablePageName, string? browserPageToStart) page, BrowserFactoryOptions? options = null)
         where TProgram : class
-        => this.Run(
+        => this.RunCreateSut(
                 runCategory: RunCategory.Given,
                 action: this.InvokeCreateBrowserForDefaultSutAction(page.browserPageToStart, page.humanReadablePageName, options),
-                createSut: true,
                 sutType: typeof(TProgram),
                 sutEndpoint: DefaultEndpoint);
 
     /// <inheritdoc/>
     public IGivenBrowser GivenASystemAndABrowserAtDefaultEndpoint<TProgram>(string? humanReadablePageName, string? browserPageToStart = null, BrowserFactoryOptions? options = null)
         where TProgram : class
-        => this.Run(
+        => this.RunCreateSut(
                 runCategory: RunCategory.Given,
                 action: this.InvokeCreateBrowserForDefaultSutAction(browserPageToStart, humanReadablePageName, options),
-                createSut: true,
                 sutType: typeof(TProgram),
                 sutEndpoint: DefaultEndpoint);
 
     /// <inheritdoc/>
     public IGivenBrowser GivenASystemAndABrowserAtDefaultEndpoint<TProgram>(string? browserPageToStart = null, BrowserFactoryOptions? options = null)
         where TProgram : class
-        => this.Run(
+        => this.RunCreateSut(
                 runCategory: RunCategory.Given,
                 action: this.InvokeCreateBrowserForDefaultSutAction(browserPageToStart, options),
-                createSut: true,
                 sutType: typeof(TProgram),
                 sutEndpoint: DefaultEndpoint);
 
     /// <inheritdoc/>
     public IGivenBrowser GivenASystemAndABrowserAtRandomEndpoint<TProgram>((string? humanReadablePageName, string? browserPageToStart) page, BrowserFactoryOptions? options = null)
         where TProgram : class
-        => this.Run(
+        => this.RunCreateSut(
                 runCategory: RunCategory.Given,
                 setupAction: this.InvokeCreateBrowserForRandomSutAction(page.browserPageToStart, page.humanReadablePageName, options),
-                createSut: true,
                 sutType: typeof(TProgram),
                 sutEndpoint: ExecutionEngine.RandomEndpoint);
 
     /// <inheritdoc/>
     public IGivenBrowser GivenASystemAndABrowserAtRandomEndpoint<TProgram>(string? humanReadablePageName, string? browserPageToStart = null, BrowserFactoryOptions? options = null)
         where TProgram : class
-        => this.Run(
+        => this.RunCreateSut(
                 runCategory: RunCategory.Given,
                 setupAction: this.InvokeCreateBrowserForRandomSutAction(browserPageToStart, humanReadablePageName, options),
-                createSut: true,
                 sutType: typeof(TProgram),
                 sutEndpoint: ExecutionEngine.RandomEndpoint);
 
     /// <inheritdoc/>
     public IGivenBrowser GivenASystemAndABrowserAtRandomEndpoint<TProgram>(string? browserPageToStart = null, BrowserFactoryOptions? options = null)
         where TProgram : class
-        => this.Run(
+        => this.RunCreateSut(
                 runCategory: RunCategory.Given,
                 setupAction: this.InvokeCreateBrowserForRandomSutAction(browserPageToStart, options),
-                createSut: true,
                 sutType: typeof(TProgram),
                 sutEndpoint: ExecutionEngine.RandomEndpoint);
 
     /// <inheritdoc/>
     public IWhenBrowser When(string description, Action<IBrowser, RunStore>? action = null)
-        => this.Run(
+        => this.RunAction(
                 runCategory: RunCategory.When,
                 description: description,
                 action: this.InvokeAction(action));
 
     /// <inheritdoc/>
     public IWhenBrowser When(Action<IBrowser, RunStore>? action = null)
-        => this.Run(
+        => this.RunAction(
                 runCategory: RunCategory.When,
                 action: this.InvokeAction(action));
 
     /// <inheritdoc/>
     public IThenBrowser Then(string description, params Action<IBrowser, RunStore>[] actions)
-        => this.Run(
+        => this.RunAction(
                 runCategory: RunCategory.Then,
                 description: description,
                 actions: this.InvokeAction(actions));
 
     /// <inheritdoc/>
     public IThenBrowser Then(params Action<IBrowser, RunStore>[] actions)
-        => this.Run(
+        => this.RunAction(
                 runCategory: RunCategory.Then,
                 actions: this.InvokeAction(actions));
 }

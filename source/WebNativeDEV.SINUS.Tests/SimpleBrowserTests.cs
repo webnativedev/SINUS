@@ -88,7 +88,7 @@ public class SimpleBrowserTests : TestBase
             .GivenASystemAndABrowserAtDefaultEndpoint<Program>(this.simpleView)
             .When("storing the title", (browser, data) => data.StoreActual(browser?.Title))
             .Then("it should print usage statistics", (browser, data) => { })
-            .Debug((browser, data) => this.PrintBrowserUsageStatistic(this.TestName))
+            .Debug((browser, data) => this.PrintUsageStatistic(this.TestName))
             .Dispose();
 
     [TestMethod]
@@ -97,7 +97,7 @@ public class SimpleBrowserTests : TestBase
             .GivenASystemAndABrowserAtRandomEndpoint<Program>(this.simpleView)
             .When("storing the title", (browser, data) => data.StoreActual(browser?.Title))
             .Then("it should print usage statistics", (browser, data) => { })
-            .Debug((browser, data) => this.PrintBrowserUsageStatistic(this.TestName))
+            .Debug((browser, data) => this.PrintUsageStatistic(this.TestName))
             .Dispose();
 
     [TestMethod]

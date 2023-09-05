@@ -23,9 +23,9 @@ using WebNativeDEV.SINUS.MsTest;
 internal sealed class Browser : IBrowser
 #pragma warning restore CA1724
 {
-    private readonly IWebDriver driver;
     private readonly string contentFolder;
     private readonly string id;
+    private IWebDriver? driver;
     private bool disposedValue;
     private ILogger? logger;
 
@@ -81,8 +81,8 @@ internal sealed class Browser : IBrowser
     {
         get
         {
-            this.Logger.LogInformation("Title requested {Title}", this.driver.Title ?? "null");
-            return this.driver.Title;
+            this.Logger.LogInformation("Title requested {Title}", this.driver?.Title ?? "null");
+            return this.driver?.Title;
         }
     }
 
@@ -91,8 +91,8 @@ internal sealed class Browser : IBrowser
     {
         get
         {
-            this.Logger.LogInformation("Url requested {Url}", this.driver.Url ?? "null");
-            return new Uri(this.driver.Url ?? throw new InvalidOperationException("no Url available"));
+            this.Logger.LogInformation("Url requested {Url}", this.driver?.Url ?? "null");
+            return new Uri(this.driver?.Url ?? throw new InvalidOperationException("no Url available"));
         }
     }
 
@@ -101,8 +101,8 @@ internal sealed class Browser : IBrowser
     {
         get
         {
-            this.Logger.LogInformation("PageSource requested {Source}", this.driver.PageSource ?? "null");
-            return this.driver.PageSource;
+            this.Logger.LogInformation("PageSource requested {Source}", this.driver?.PageSource ?? "null");
+            return this.driver?.PageSource;
         }
     }
 
@@ -146,8 +146,8 @@ internal sealed class Browser : IBrowser
         {
             var disposedInfo = Browser.TestsDisposingBrowsers.Contains(testIdsIncludingBrowsers)
                                     ? "disposed"
-                                    : "leak";
-            usageLogger.LogInformation("| {Id} ({DisposedInfo})", testIdsIncludingBrowsers, disposedInfo);
+                                    : "leak    ";
+            usageLogger.LogInformation("| ({DisposedInfo}) {Id}", disposedInfo, testIdsIncludingBrowsers);
         }
 
         usageLogger.LogInformation("+--------------------------------");
@@ -166,9 +166,9 @@ internal sealed class Browser : IBrowser
     {
         this.Logger.LogInformation("Find Elements based on xpath: {XPath}", xpath);
 
-        return this.driver
-            .FindElements(By.XPath(xpath))
-            .Select(webElement => new Content(webElement));
+        return Ensure.NotNull(this.driver)
+                .FindElements(By.XPath(xpath))
+                .Select(webElement => new Content(webElement));
     }
 
     /// <inheritdoc/>
@@ -180,7 +180,7 @@ internal sealed class Browser : IBrowser
             timeoutInSeconds);
         if (timeoutInSeconds <= 0)
         {
-            return new Content(this.driver.FindElement(By.Id(id)));
+            return new Content(Ensure.NotNull(this.driver).FindElement(By.Id(id)));
         }
 
         var wait = new WebDriverWait(this.driver, TimeSpan.FromSeconds(timeoutInSeconds));
@@ -194,7 +194,7 @@ internal sealed class Browser : IBrowser
     {
         this.Logger.LogInformation("Navigate to {Url}", url?.ToString() ?? "null");
 
-        this.driver.Navigate().GoToUrl(url);
+        this.driver?.Navigate()?.GoToUrl(url);
         return this;
     }
 
@@ -206,7 +206,7 @@ internal sealed class Browser : IBrowser
     public IContent FindActiveElement()
     {
         this.Logger.LogInformation("Find Active Element");
-        return new Content(this.driver.SwitchTo().ActiveElement());
+        return new Content(Ensure.NotNull(this.driver).SwitchTo().ActiveElement());
     }
 
     /// <inheritdoc/>
@@ -214,7 +214,7 @@ internal sealed class Browser : IBrowser
     {
         this.Logger.LogInformation("Execute Javascript {JS} on {Count} items", js, content?.Length ?? 0);
 
-        ((IJavaScriptExecutor)this.driver).ExecuteScript(
+        (this.driver as IJavaScriptExecutor)?.ExecuteScript(
             js,
             content?.Select(x => x.GetBaseObject()) ?? Array.Empty<object>());
         return this;
@@ -268,6 +268,7 @@ internal sealed class Browser : IBrowser
 
                 this.driver?.Quit();
                 this.driver?.Dispose();
+                this.driver = null;
 
                 TestsDisposingBrowsers.Add(this.id);
             }

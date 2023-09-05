@@ -66,6 +66,8 @@ public sealed class ExecutionEngine : IExecutionEngine
                 RunCategory.Dispose => true,
                 _ => throw new InvalidDataException("this list should completely be handled"),
             },
+            RunCategory = parameter.RunCategory,
+            TestBase = parameter.TestBase,
         };
 
         if (parameter.CreateSut)
@@ -170,8 +172,8 @@ public sealed class ExecutionEngine : IExecutionEngine
         {
             try
             {
-                var sutType = Ensure.NotNull(parameter.SutType, nameof(parameter.SutType));
-                returnValue.SutEndpoint = parameter.SutEndpoint;
+                var sutType = Ensure.NotNull(parameter?.SutType, nameof(parameter.SutType));
+                returnValue.SutEndpoint = parameter?.SutEndpoint;
                 if (returnValue.SutEndpoint == RandomEndpoint)
                 {
                     int port = 10001 + RandomNumberGenerator.GetInt32(100);
@@ -185,7 +187,8 @@ public sealed class ExecutionEngine : IExecutionEngine
                 var wafType = typeof(SinusWebApplicationFactory<>).MakeGenericType(sutType);
                 ISinusWebApplicationFactory? waf = Activator.CreateInstance(
                     wafType,
-                    returnValue.SutEndpoint)
+                    returnValue.SutEndpoint,
+                    parameter?.TestBase?.TestName)
                     as ISinusWebApplicationFactory;
 
                 returnValue.WebApplicationFactory = waf;

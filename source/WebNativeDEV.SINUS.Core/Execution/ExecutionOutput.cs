@@ -9,7 +9,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 using WebNativeDEV.SINUS.Core.Sut;
+using WebNativeDEV.SINUS.MsTest;
 
 /// <summary>
 /// Represents a class used as output for the execution engine implementation.
@@ -45,4 +47,14 @@ public sealed class ExecutionOutput
     /// Gets a system under test endpoint.
     /// </summary>
     public string? SutEndpoint { get; internal set; }
+
+    /// <summary>
+    /// Gets the run category.
+    /// </summary>
+    public RunCategory RunCategory { get; internal set; }
+
+    /// <summary>
+    /// Gets the reference to the test.
+    /// </summary>
+    public TestBase? TestBase { get; internal set; }
 }

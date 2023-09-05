@@ -7,7 +7,7 @@ namespace WebNativeDEV.SINUS.Core.Sut;
 /// <summary>
 /// Non generic interface that can be used as a reference for generated systems.
 /// </summary>
-public interface ISinusWebApplicationFactory : IDisposable
+public interface ISinusWebApplicationFactory : IDisposable, IAsyncDisposable
 {
     /// <summary>
     /// Creates a client related to the web application that is created in memory.

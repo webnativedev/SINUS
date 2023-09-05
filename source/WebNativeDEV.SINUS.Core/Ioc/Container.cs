@@ -175,11 +175,11 @@ public sealed class Container : IContainer
         if (constructors.Length == 0)
         {
 #pragma warning disable IDE0079 // remove unnecessary supression
-#pragma warning disable SA1614  // Make sure that this accessibility bypass is safe here
+#pragma warning disable S3011  // Make sure that this accessibility bypass is safe here
 
             // If no public constructor found, search for an internal constructor
             constructors = itemType.GetConstructors(BindingFlags.Instance | BindingFlags.NonPublic);
-#pragma warning restore SA1614  // Make sure that this accessibility bypass is safe here
+#pragma warning restore S3011  // Make sure that this accessibility bypass is safe here
 #pragma warning restore IDE0079 // remove unnecessary supression
         }
 
