@@ -22,6 +22,7 @@ using WebNativeDEV.SINUS.Core.Ioc.Contracts;
 using WebNativeDEV.SINUS.Core.Logging;
 using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.Core.MsTest.Contracts;
+using WebNativeDEV.SINUS.Core.MsTest.Extensions;
 using WebNativeDEV.SINUS.Core.Sut;
 using WebNativeDEV.SINUS.Core.UITesting;
 using WebNativeDEV.SINUS.Core.UITesting.Contracts;
@@ -84,7 +85,7 @@ public abstract class TestBase
                     });
                 });
         }).AsSingleton();
-        Container.Register<IEventBus, EventBus>().AsSingleton();
+        Container.Register<IEventBus, EventBus>(); // new instance per resolve
         Container.Register<IWebDriverFactory>(() => new ChromeWebDriverFactory()).AsSingleton();
         Container.Register<IBrowserFactory>(() => new BrowserFactory()).AsSingleton();
         Container.Register<IExecutionEngine, ExecutionEngine>().AsSingleton();
@@ -101,10 +102,10 @@ public abstract class TestBase
     /// <summary>
     /// Tear down for the test base.
     /// </summary>
-    protected static void TearDown()
+    /// <param name="maxAgeOfProessInMinutes">Minutes to kill a zombie process after.</param>
+    protected static void TearDown(int maxAgeOfProessInMinutes = 2)
     {
-        Browser.PrintBrowserUsageStatistic();
-        SinusWafUsageStatisticsManager.PrintWafUsageStatistic();
+        TestBaseExtensions.KillChromeZombieProcesses(null!, maxAgeOfProessInMinutes);
     }
 
     /// <summary>
@@ -127,21 +128,5 @@ public abstract class TestBase
         runner.Dispose();
 
         return new TestBaseResult(true, this);
-    }
-
-    /// <summary>
-    /// Registers an event handler.
-    /// </summary>
-    /// <typeparam name="TEventBusEventArgs">Type of the event args.</typeparam>
-    /// <param name="handler">The event handler.</param>
-    /// <returns>The current test base instance.</returns>
-    protected TestBase Listen<TEventBusEventArgs>(Action<object, TEventBusEventArgs> handler)
-        where TEventBusEventArgs : EventBusEventArgs
-    {
-        Container.Resolve<IEventBus>().Subscribe<TEventBusEventArgs>(
-            (sender, e) => handler.Invoke(
-                                sender,
-                                (e as TEventBusEventArgs) ?? throw new InvalidCastException()));
-        return this;
     }
 }

@@ -8,13 +8,16 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using WebNativeDEV.SINUS.Core.Events.Contracts;
+using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
+using WebNativeDEV.SINUS.Core.FluentAPI.Events;
 using WebNativeDEV.SINUS.Core.Ioc;
 using WebNativeDEV.SINUS.MsTest;
 
 /// <summary>
 /// Represents the store that is used in test runners.
 /// </summary>
-public class RunStore
+public class RunStore : IRunStore
 {
     /// <summary>
     /// Standard Key name for the actual value.
@@ -28,13 +31,15 @@ public class RunStore
 
     private readonly Dictionary<string, object?> store = new();
     private readonly ILogger logger;
+    private readonly IEventBus eventBus;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RunStore"/> class.
     /// </summary>
-    public RunStore()
+    public RunStore(IEventBus eventBus)
     {
         this.logger = TestBase.Container.Resolve<ILoggerFactory>().CreateLogger<RunStore>();
+        this.eventBus = eventBus;
     }
 
     /// <summary>
@@ -82,7 +87,12 @@ public class RunStore
     /// <exception cref="ArgumentNullException">Item should not be null.</exception>
     public RunStore Store(string key, object? item)
     {
+        var containsKey = this.store.ContainsKey(key);
+        var oldValue = !containsKey ? null : this.store[key];
         this.store[key] = item;
+
+        this.eventBus.Publish(this, new RunStoreDataStoredEventBusEventArgs(key, item, !containsKey, oldValue));
+
         return this;
     }
 

@@ -20,7 +20,7 @@ using WebNativeDEV.SINUS.MsTest;
 /// </summary>
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 #pragma warning disable CA1724 // ignoring conflicting name with "OpenQA.Selenium.DevTools.V112.Browser"
-internal sealed class Browser : IBrowser
+public sealed class Browser : IBrowser
 #pragma warning restore CA1724
 {
     private readonly string contentFolder;

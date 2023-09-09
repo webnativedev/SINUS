@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata;
+using WebNativeDEV.SINUS.Core.Events;
+using WebNativeDEV.SINUS.Core.Events.Contracts;
 using WebNativeDEV.SINUS.Core.Execution;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 using WebNativeDEV.SINUS.Core.Ioc;
@@ -27,6 +29,29 @@ using WebNativeDEV.SINUS.MsTest;
 internal sealed partial class Runner
 {
     /// <inheritdoc/>
+    public IRunner Listen<TEventBusEventArgs>(string description, Action<object, RunStore, TEventBusEventArgs> handler, Predicate<TEventBusEventArgs>? filter = null)
+        where TEventBusEventArgs : EventBusEventArgs
+    {
+        this.eventBus.Subscribe<TEventBusEventArgs>(
+            (sender, e) => this.RunAction(
+                    runCategory: RunCategory.Listen,
+                    description: description,
+                    action: this.InvokeAction<TEventBusEventArgs>(sender, e as TEventBusEventArgs, handler, filter)));
+        return this;
+    }
+
+    /// <inheritdoc/>
+    public IRunner Listen<TEventBusEventArgs>(Action<object, RunStore, TEventBusEventArgs> handler, Predicate<TEventBusEventArgs>? filter = null)
+        where TEventBusEventArgs : EventBusEventArgs
+    {
+        this.eventBus.Subscribe<TEventBusEventArgs>(
+            (sender, e) => this.RunAction(
+                    runCategory: RunCategory.Listen,
+                    action: this.InvokeAction<TEventBusEventArgs>(sender, e as TEventBusEventArgs, handler, filter)));
+        return this;
+    }
+
+    /// <inheritdoc/>
     public IGiven Given(string description, Action<RunStore>? action = null)
         => this.RunAction(
                 runCategory: RunCategory.Given,
@@ -38,6 +63,32 @@ internal sealed partial class Runner
         => this.RunAction(
                 runCategory: RunCategory.Given,
                 action: this.InvokeAction(action));
+
+    /// <inheritdoc/>
+    public IGivenWithSimpleSut GivenASimpleSystem(string description, Func<object> sutFactory)
+        => this.RunAction(
+                runCategory: RunCategory.Given,
+                description: description,
+                action: this.InvokeAction((data) => data.StoreSut(sutFactory?.Invoke())));
+
+    /// <inheritdoc/>
+    public IGivenWithSimpleSut GivenASimpleSystem(Func<object> sutFactory)
+        => this.RunAction(
+                runCategory: RunCategory.Given,
+                action: this.InvokeAction((data) => data.StoreSut(sutFactory?.Invoke())));
+
+    /// <inheritdoc/>
+    public IGivenWithSimpleSut GivenASimpleSystem(string description, object sut)
+        => this.RunAction(
+                runCategory: RunCategory.Given,
+                description: description,
+                action: this.InvokeAction((data) => data.StoreSut(sut)));
+
+    /// <inheritdoc/>
+    public IGivenWithSimpleSut GivenASimpleSystem(object sut)
+        => this.RunAction(
+                runCategory: RunCategory.Given,
+                action: this.InvokeAction((data) => data.StoreSut(sut)));
 
     /// <inheritdoc/>
     public IGivenWithSut GivenASystem<TProgram>(string description)
@@ -333,6 +384,21 @@ internal sealed partial class Runner
         => this.RunAction(
                 runCategory: RunCategory.When,
                 action: this.InvokeAction(action));
+
+    /// <inheritdoc/>
+    public IWhen When<TSut>(Action<TSut, RunStore>? action)
+        where TSut : class
+        => this.RunAction(
+                runCategory: RunCategory.When,
+                action: this.InvokeAction<TSut>(action));
+
+    /// <inheritdoc/>
+    public IWhen When<TSut>(string description, Action<TSut, RunStore>? action)
+        where TSut : class
+        => this.RunAction(
+                runCategory: RunCategory.When,
+                description: description,
+                action: this.InvokeAction<TSut>(action));
 
     /// <inheritdoc/>
     public IThenBrowser Then(string description, params Action<IBrowser, RunStore>[] actions)

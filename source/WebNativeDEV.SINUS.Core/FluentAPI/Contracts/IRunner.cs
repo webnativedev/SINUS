@@ -5,6 +5,7 @@
 namespace WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 
 using System;
+using WebNativeDEV.SINUS.Core.Events;
 
 /// <summary>
 /// Represents an interface that manages the execution of a test based on a given-when-then sequence.
@@ -12,6 +13,27 @@ using System;
 /// </summary>
 public interface IRunner : IDisposable
 {
+    /// <summary>
+    /// Registers an event handler.
+    /// </summary>
+    /// <typeparam name="TEventBusEventArgs">Type of the event args.</typeparam>
+    /// <param name="description">Plain text description.</param>
+    /// <param name="handler">The event handler.</param>
+    /// <param name="filter">The execution filter.</param>
+    /// <returns>The current test base instance.</returns>
+    IRunner Listen<TEventBusEventArgs>(string description, Action<object, RunStore, TEventBusEventArgs> handler, Predicate<TEventBusEventArgs>? filter = null)
+        where TEventBusEventArgs : EventBusEventArgs;
+
+    /// <summary>
+    /// Registers an event handler.
+    /// </summary>
+    /// <typeparam name="TEventBusEventArgs">Type of the event args.</typeparam>
+    /// <param name="handler">The event handler.</param>
+    /// <param name="filter">The execution filter.</param>
+    /// <returns>The current test base instance.</returns>
+    IRunner Listen<TEventBusEventArgs>(Action<object, RunStore, TEventBusEventArgs> handler, Predicate<TEventBusEventArgs>? filter = null)
+        where TEventBusEventArgs : EventBusEventArgs;
+
     /// <summary>
     /// Allows to define the Then-Action in a Given-When-Then sequence.
     /// </summary>
@@ -32,6 +54,48 @@ public interface IRunner : IDisposable
     /// The interface helps to reduce the set of options to only the appropriate in the sequence.
     /// </returns>
     IGiven Given(Action<RunStore>? action = null);
+
+    /// <summary>
+    /// Allows to define the Given-Action in a Given-When-Then sequence.
+    /// </summary>
+    /// <param name="description">Plain text description.</param>
+    /// <param name="sutFactory">The factory that creates a simple Sut.</param>
+    /// <returns>
+    /// An object that will point to the runner.
+    /// The interface helps to reduce the set of options to only the appropriate in the sequence.
+    /// </returns>
+    IGivenWithSimpleSut GivenASimpleSystem(string description, Func<object> sutFactory);
+
+    /// <summary>
+    /// Allows to define the Given-Action in a Given-When-Then sequence.
+    /// </summary>
+    /// <param name="sutFactory">The factory that creates a simple Sut.</param>
+    /// <returns>
+    /// An object that will point to the runner.
+    /// The interface helps to reduce the set of options to only the appropriate in the sequence.
+    /// </returns>
+    IGivenWithSimpleSut GivenASimpleSystem(Func<object> sutFactory);
+
+    /// <summary>
+    /// Allows to define the Then-Action in a Given-When-Then sequence.
+    /// </summary>
+    /// <param name="description">Plain text description.</param>
+    /// <param name="sut">The instance pointing to the System under test.</param>
+    /// <returns>
+    /// An object that will point to the runner.
+    /// The interface helps to reduce the set of options to only the appropriate in the sequence.
+    /// </returns>
+    IGivenWithSimpleSut GivenASimpleSystem(string description, object sut);
+
+    /// <summary>
+    /// Allows to define the Then-Action in a Given-When-Then sequence.
+    /// </summary>
+    /// <param name="sut">The instance pointing to the System under test.</param>
+    /// <returns>
+    /// An object that will point to the runner.
+    /// The interface helps to reduce the set of options to only the appropriate in the sequence.
+    /// </returns>
+    IGivenWithSimpleSut GivenASimpleSystem(object sut);
 
     /// <summary>
     /// Allows to define the Then-Action in a Given-When-Then sequence.

@@ -25,6 +25,11 @@ public enum RunCategory
     Then,
 
     /// <summary>
+    /// Like a when block, but called asynchronously by the event bus.
+    /// </summary>
+    Listen,
+
+    /// <summary>
     /// Can be used to display further information for debugging.
     /// </summary>
     Debug,

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebNativeDEV.SINUS.Core.Events;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 using WebNativeDEV.SINUS.Core.FluentAPI.Events;
 using WebNativeDEV.SINUS.Core.Requirements;
@@ -32,8 +33,8 @@ public class EventTests : TestBase
     {
         var categories = new List<RunCategory>();
 
-        this.Listen<ExecutedEventBusEventArgs>((sender, e) => categories.Add(e.Output.RunCategory));
         this.Test(r => r
+            .Listen<ExecutedEventBusEventArgs>((sender, data, e) => categories.Add(e.Output.RunCategory))
             .Given()
             .When(data => data["Test"] = "true")
             .Then());
@@ -51,8 +52,8 @@ public class EventTests : TestBase
     {
         var categories = new List<RunCategory>();
 
-        this.Listen<ExecutedEventBusEventArgs>((sender, e) => categories.Add(e.Output.RunCategory));
         this.Test(r => r
+            .Listen<ExecutedEventBusEventArgs>((sender, data, e) => categories.Add(e.Output.RunCategory))
             .Given()
             .When(data => data["Test"] = "true")
             .Then()
@@ -65,5 +66,20 @@ public class EventTests : TestBase
             RunCategory.Debug,
             RunCategory.Dispose);
         categories.Count.Should().Be(5);
+    }
+
+    [TestMethod]
+    public void Given_ANormalTest_When_RunningWithDebug_Then_AllExecutionEventsShouldBeFilled()
+    {
+        List<ExecutedEventBusEventArgs> args = new ();
+
+        this.Test(r => r
+            .Listen<ExecutedEventBusEventArgs>((sender, data, e) => args.Add(e))
+            .Given()
+            .When(data => data["Test"] = "true")
+            .Then()
+            .DebugPrint());
+
+        args.Should().ContainItemsAssignableTo<ExecutedEventBusEventArgs>();
     }
 }

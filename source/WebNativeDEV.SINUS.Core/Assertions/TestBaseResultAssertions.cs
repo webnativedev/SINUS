@@ -9,6 +9,7 @@ using FluentAssertions.Execution;
 using FluentAssertions.Primitives;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,6 +32,7 @@ public class TestBaseResultAssertions :
     }
 
     /// <inheritdoc/>
+    [ExcludeFromCodeCoverage]
     protected override string Identifier => "testBaseResult";
 
     /// <summary>

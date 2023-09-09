@@ -62,6 +62,7 @@ public sealed class ExecutionEngine : IExecutionEngine
                 RunCategory.Given => false,
                 RunCategory.When => false,
                 RunCategory.Then => true,
+                RunCategory.Listen => true,
                 RunCategory.Debug => true,
                 RunCategory.Dispose => true,
                 _ => throw new InvalidDataException("this list should completely be handled"),
@@ -217,6 +218,12 @@ public sealed class ExecutionEngine : IExecutionEngine
                     "retry attempt {Attempt}\n{Exception}",
                     retryIndex + 1,
                     exception.Message);
+
+#pragma warning disable S1215 // "GC.Collect" should not be called
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.WaitForFullGCComplete();
+#pragma warning restore S1215 // "GC.Collect" should not be called
                 Thread.Sleep(TimeSpan.FromSeconds(RetryDelay));
             }
         }

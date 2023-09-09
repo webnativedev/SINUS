@@ -71,4 +71,12 @@ public class AssertionTests : TestBase
             .When("Running assert with not null", data => data.Should().ActualBeNull())
             .ThenNoError("no error expected")
             .Dispose();
+
+    [TestMethod]
+    public void Given_FluentAssertions_When_CheckActualAfterMethodStore_Then_CheckForNotNullWithActualBe()
+        => this.Test()
+            .Given(data => data.StoreActual(null))
+            .When(data => data.Should().ActualBe<string>(null!))
+            .ThenNoError()
+            .Dispose();
 }

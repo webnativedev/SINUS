@@ -6,6 +6,7 @@ namespace WebNativeDEV.SINUS.Core.MsTest.Extensions;
 
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Diagnostics;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
 using WebNativeDEV.SINUS.Core.Ioc;
@@ -18,6 +19,9 @@ using WebNativeDEV.SINUS.MsTest;
 /// </summary>
 public static class TestBaseExtensions
 {
+    private const int ReevaluationCount = 3;
+    private const int SecondsDelay = 3;
+
     /// <summary>
     /// Prints the usage statistics of the browser objects.
     /// </summary>
@@ -56,6 +60,49 @@ public static class TestBaseExtensions
     }
 
     /// <summary>
+    /// Asserts if a browser or a web application factory was not disposed.
+    /// </summary>
+    /// <param name="testBase">Reference to the test base object that is extended.</param>
+    public static void AssertOnDataLeak(this TestBase testBase)
+    {
+#pragma warning disable CA1031 // don't catch general exceptions
+#pragma warning disable S1215 // "GC.Collect" should not be called
+        Ensure.NotNull(testBase);
+
+        for (int i = 0; i < ReevaluationCount; i++)
+        {
+            try
+            {
+                Browser.TestsIncludingBrowsers.Should().AllSatisfy(element => Browser.TestsDisposingBrowsers.Contains(element));
+                Browser.TestsDisposingBrowsers.Should().AllSatisfy(element => Browser.TestsIncludingBrowsers.Contains(element));
+                Browser.TestsIncludingBrowsers.Should().HaveSameCount(Browser.TestsDisposingBrowsers);
+
+                SinusWafUsageStatisticsManager.TestsIncludingWaf.Should().AllSatisfy(element => SinusWafUsageStatisticsManager.TestsDisposingWaf.Contains(element));
+                SinusWafUsageStatisticsManager.TestsDisposingWaf.Should().AllSatisfy(element => SinusWafUsageStatisticsManager.TestsIncludingWaf.Contains(element));
+                SinusWafUsageStatisticsManager.TestsIncludingWaf.Should().HaveSameCount(SinusWafUsageStatisticsManager.TestsDisposingWaf);
+
+                Browser.PrintBrowserUsageStatistic();
+                SinusWafUsageStatisticsManager.PrintWafUsageStatistic();
+                return;
+            }
+            catch
+            {
+                i++;
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.WaitForFullGCComplete();
+                Thread.Sleep(TimeSpan.FromSeconds(SecondsDelay));
+            }
+        }
+
+        WebNativeDEV.SINUS.Core.UITesting.Browser.PrintBrowserUsageStatistic();
+        SinusWafUsageStatisticsManager.PrintWafUsageStatistic();
+        Assert.Fail("Leak found");
+#pragma warning restore S1215 // "GC.Collect" should not be called
+#pragma warning restore CA1031 // don't catch general exceptions
+    }
+
+    /// <summary>
     /// Checks for zombie processes older as defined parameter.
     /// </summary>
     /// <param name="testBase">Reference to the test base object that is extended.</param>
@@ -87,7 +134,7 @@ public static class TestBaseExtensions
         ILogger<TestBase> logger = TestBase.Container.Resolve<ILoggerFactory>().CreateLogger<TestBase>();
 
         var processes = GetChromeDriverProcesses(maxAgeOfProessInMinutes);
-        foreach(var process in processes)
+        foreach (var process in processes)
         {
             process.Kill(entireProcessTree: true);
         }

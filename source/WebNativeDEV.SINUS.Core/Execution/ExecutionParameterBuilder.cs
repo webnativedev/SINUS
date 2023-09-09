@@ -17,6 +17,14 @@ using WebNativeDEV.SINUS.MsTest;
 
 internal sealed class ExecutionParameterBuilder : ExecutionParameter
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ExecutionParameterBuilder"/> class.
+    /// </summary>
+    /// <param name="testBase">The testbase.</param>
+    /// <param name="runner">The runner.</param>
+    /// <param name="namings">The naming convention checker.</param>
+    /// <param name="runCategory">The run category.</param>
+    /// <param name="exceptionsCount">The count of exceptions.</param>
     internal ExecutionParameterBuilder(TestBase testBase, Runner runner, TestNamingConventionManager namings, RunCategory runCategory, int exceptionsCount)
     {
         this.TestBase = testBase;
@@ -26,6 +34,12 @@ internal sealed class ExecutionParameterBuilder : ExecutionParameter
         this.ExceptionsCount = exceptionsCount;
     }
 
+    /// <summary>
+    /// Adds actions.
+    /// </summary>
+    /// <param name="action">Single action to add if actions is null.</param>
+    /// <param name="actions">The actions to add. Action will be ignored if not null.</param>
+    /// <returns>A reference to the builder instance.</returns>
     internal ExecutionParameterBuilder AddActions(Action? action, IList<Action?>? actions)
     {
         this.Actions = actions ?? (
@@ -35,6 +49,11 @@ internal sealed class ExecutionParameterBuilder : ExecutionParameter
         return this;
     }
 
+    /// <summary>
+    /// Adds the flag to create a system under test.
+    /// </summary>
+    /// <param name="createSut">Indicates whether a system under test should be created.</param>
+    /// <returns>A reference to the builder instance.</returns>
     internal ExecutionParameterBuilder AddCreateSut(bool createSut)
     {
         this.CreateSut = createSut;
@@ -55,7 +74,15 @@ internal sealed class ExecutionParameterBuilder : ExecutionParameter
 
     internal ExecutionParameterBuilder AddSetupActions(Action<ExecutionSetupParameters>? setupAction)
     {
-        this.SetupActions = new List<Action<ExecutionSetupParameters>?>() { setupAction };
+        if (setupAction != null)
+        {
+            this.SetupActions = new List<Action<ExecutionSetupParameters>?>() { setupAction };
+        }
+        else
+        {
+            this.SetupActions = new List<Action<ExecutionSetupParameters>?>();
+        }
+
         return this;
     }
 

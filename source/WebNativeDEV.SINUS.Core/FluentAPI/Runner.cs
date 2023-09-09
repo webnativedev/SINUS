@@ -31,7 +31,7 @@ using WebNativeDEV.SINUS.MsTest;
 /// Base Class for Runners.
 /// </summary>
 internal sealed partial class Runner : IBrowserRunner,
-    IGiven, IGivenWithSut, IGivenBrowser,
+    IGiven, IGivenWithSut, IGivenWithSimpleSut, IGivenBrowser,
     IWhenBrowser,
     IThenBrowser
 {
@@ -56,6 +56,7 @@ internal sealed partial class Runner : IBrowserRunner,
         this.TestBase = testBase;
         this.logger = TestBase.Container.Resolve<ILoggerFactory>().CreateLogger<Runner>();
         this.eventBus = TestBase.Container.Resolve<IEventBus>();
+        this.DataBag = new RunStore(this.eventBus);
         this.executionEngine = TestBase.Container.Resolve<IExecutionEngine>();
         this.browserFactory = TestBase.Container.Resolve<IBrowserFactory>();
         this.NamingConventionManager = new TestNamingConventionManager(testBase.TestName);
@@ -81,7 +82,7 @@ internal sealed partial class Runner : IBrowserRunner,
     /// <summary>
     /// Gets the current state of the test run.
     /// </summary>
-    public RunStore DataBag { get; } = new();
+    public RunStore DataBag { get; }
 
     /// <summary>
     /// Gets the reference to the TestBase that creates the runner.
@@ -246,14 +247,47 @@ internal sealed partial class Runner : IBrowserRunner,
     {
         var output = this.executionEngine.Run(parameter);
 
-        this.HttpClient = output.HttpClient;
-        this.webApplicationFactory = output.WebApplicationFactory;
+        if (this.HttpClient == null && output.HttpClient != null)
+        {
+            this.HttpClient = output.HttpClient;
+        }
+        else if (this.HttpClient != null && output.HttpClient != null)
+        {
+            this.HttpClient.Dispose();
+            this.HttpClient = output.HttpClient;
+        }
+
+        if (this.webApplicationFactory == null && output.WebApplicationFactory != null)
+        {
+            this.webApplicationFactory = output.WebApplicationFactory;
+        }
+        else if (this.webApplicationFactory != null && output.WebApplicationFactory != null)
+        {
+            this.webApplicationFactory.Dispose();
+            this.webApplicationFactory = output.WebApplicationFactory;
+        }
+
         this.Exceptions.AddRange(output.Exceptions.Select(exc => (parameter.RunCategory, exc)));
         this.IsPreparedOnly = this.IsPreparedOnly ||
             (output.IsPreparedOnly && parameter.RunCategory == RunCategory.When);
 
-        this.eventBus.Publish(this, new ExecutedEventBusEventArgs(output));
+        if (output.RunCategory != RunCategory.Listen)
+        {
+            this.eventBus.Publish(this, new ExecutedEventBusEventArgs(output));
+        }
+
         return this;
+    }
+
+    private Action? InvokeAction<TSut>(Action<TSut, RunStore>? action)
+        where TSut : class
+    {
+        if (action == null)
+        {
+            return null;
+        }
+
+        return () => action.Invoke(this.DataBag.ReadSut<TSut>(), this.DataBag);
     }
 
     private IList<Action?>? InvokeAction(Action<RunStore>[] actions)
@@ -325,6 +359,28 @@ internal sealed partial class Runner : IBrowserRunner,
         return () => action?.Invoke(
                 this.browser ?? throw new InvalidOperationException("no browser created"),
                 this.DataBag);
+    }
+
+    private Action? InvokeAction<TEventBusEventArgs>(object sender, TEventBusEventArgs? e, Action<object, RunStore, TEventBusEventArgs> handler, Predicate<TEventBusEventArgs>? filter)
+        where TEventBusEventArgs : EventBusEventArgs
+    {
+        if (handler == null)
+        {
+            return null;
+        }
+
+        if (e == null)
+        {
+            throw new InvalidCastException();
+        }
+
+        return () =>
+        {
+            if (filter?.Invoke(e) ?? true)
+            {
+                handler.Invoke(sender, this.DataBag, e);
+            }
+        };
     }
 
     private Action InvokeCreateBrowserForDefaultSutAction(string? browserPageToStart, BrowserFactoryOptions? options)

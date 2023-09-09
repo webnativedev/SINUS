@@ -9,6 +9,7 @@ using FluentAssertions.Execution;
 using FluentAssertions.Primitives;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,6 +31,7 @@ public class RunStoreAssertions :
     }
 
     /// <inheritdoc/>
+    [ExcludeFromCodeCoverage]
     protected override string Identifier => "runStore";
 
     /// <summary>
@@ -42,10 +44,21 @@ public class RunStoreAssertions :
     /// <returns>Fluent API driven AndConstraint object.</returns>
     public AndConstraint<RunStoreAssertions> ActualBe<T>(T expected, string because = "", params object[] becauseArgs)
     {
+        var actual = this.Subject?.ReadActualObject();
+        if (actual is not T)
+        {
+            actual = null;
+        }
+
         Execute.Assertion
          .BecauseOf(because, becauseArgs)
-         .ForCondition(this.Subject?.ReadActual<T>()?.Equals(expected) ?? false)
-         .FailWith("Expected '{0}', but Actual '{1}'", expected, this.Subject?.Actual ?? "null");
+         .ForCondition(
+            (actual == null && expected == null) ||
+            (expected?.Equals(actual) ?? false))
+         .FailWith(
+            "Expected '{0}', but Actual '{1}'",
+            expected?.ToString() ?? "null",
+            actual?.ToString() ?? "null");
 
         return new AndConstraint<RunStoreAssertions>(this);
     }

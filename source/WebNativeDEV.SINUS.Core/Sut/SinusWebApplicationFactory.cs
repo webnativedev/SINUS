@@ -115,6 +115,9 @@ internal sealed class SinusWebApplicationFactory<TEntryPoint> : WebApplicationFa
     {
         base.Dispose(disposing);
         this.CloseCreatedHost();
-        SinusWafUsageStatisticsManager.TestsDisposingWaf.Add(this.id);
+        if (!SinusWafUsageStatisticsManager.TestsDisposingWaf.Contains(this.id))
+        {
+            SinusWafUsageStatisticsManager.TestsDisposingWaf.Add(this.id);
+        }
     }
 }
