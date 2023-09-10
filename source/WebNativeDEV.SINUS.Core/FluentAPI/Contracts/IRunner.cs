@@ -21,7 +21,7 @@ public interface IRunner : IDisposable
     /// <param name="handler">The event handler.</param>
     /// <param name="filter">The execution filter.</param>
     /// <returns>The current test base instance.</returns>
-    IRunner Listen<TEventBusEventArgs>(string description, Action<object, RunStore, TEventBusEventArgs> handler, Predicate<TEventBusEventArgs>? filter = null)
+    IRunner Listen<TEventBusEventArgs>(string description, Action<object, IRunStore, TEventBusEventArgs> handler, Func<object, IRunStore, TEventBusEventArgs, bool>? filter = null)
         where TEventBusEventArgs : EventBusEventArgs;
 
     /// <summary>
@@ -31,7 +31,7 @@ public interface IRunner : IDisposable
     /// <param name="handler">The event handler.</param>
     /// <param name="filter">The execution filter.</param>
     /// <returns>The current test base instance.</returns>
-    IRunner Listen<TEventBusEventArgs>(Action<object, RunStore, TEventBusEventArgs> handler, Predicate<TEventBusEventArgs>? filter = null)
+    IRunner Listen<TEventBusEventArgs>(Action<object, IRunStore, TEventBusEventArgs> handler, Func<object, IRunStore, TEventBusEventArgs, bool>? filter = null)
         where TEventBusEventArgs : EventBusEventArgs;
 
     /// <summary>
@@ -43,7 +43,7 @@ public interface IRunner : IDisposable
     /// An object that will point to the runner.
     /// The interface helps to reduce the set of options to only the appropriate in the sequence.
     /// </returns>
-    IGiven Given(string description, Action<RunStore>? action = null);
+    IGiven Given(string description, Action<IRunStore>? action = null);
 
     /// <summary>
     /// Allows to define the Then-Action in a Given-When-Then sequence.
@@ -53,7 +53,7 @@ public interface IRunner : IDisposable
     /// An object that will point to the runner.
     /// The interface helps to reduce the set of options to only the appropriate in the sequence.
     /// </returns>
-    IGiven Given(Action<RunStore>? action = null);
+    IGiven Given(Action<IRunStore>? action = null);
 
     /// <summary>
     /// Allows to define the Given-Action in a Given-When-Then sequence.

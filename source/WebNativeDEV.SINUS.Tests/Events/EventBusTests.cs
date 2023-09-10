@@ -50,7 +50,7 @@ public class EventBusTests : TestBase
     => this.Test(r => r
         .Listen<RunStoreDataStoredEventBusEventArgs>(
             (sender, data, e) => data.Actual = data.Sut,
-            e => e.Key == RunStore.KeySut)
+            (sender, data, e) => e.Key == data.KeySut)
         .Given()
         .When(data => data.Sut = 1)
         .Then(data => data.Actual.Should().Be(1)));
@@ -61,7 +61,7 @@ public class EventBusTests : TestBase
         .Listen<RunStoreDataStoredEventBusEventArgs>(
             "stored data",
             (sender, data, e) => data.StoreActual(e),
-            e => e.Key == RunStore.KeySut)
+            (sender, data, e) => e.Key == data.KeySut)
         .Given()
         .When(data => data.Sut = 1)
         .Then(data => data.Actual.Should().NotBeNull()));

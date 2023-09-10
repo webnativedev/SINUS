@@ -23,7 +23,7 @@ public interface IGivenWithSimpleSut
     /// An object that will point to the runner.
     /// The interface helps to reduce the set of options to only the appropriate in the sequence.
     /// </returns>
-    IWhen When<TSut>(string description, Action<TSut, RunStore>? action)
+    IWhen When<TSut>(string description, Action<TSut, IRunStore>? action)
         where TSut : class;
 
     /// <summary>
@@ -35,6 +35,6 @@ public interface IGivenWithSimpleSut
     /// An object that will point to the runner.
     /// The interface helps to reduce the set of options to only the appropriate in the sequence.
     /// </returns>
-    IWhen When<TSut>(Action<TSut, RunStore>? action)
+    IWhen When<TSut>(Action<TSut, IRunStore>? action)
         where TSut : class;
 }

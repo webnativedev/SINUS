@@ -22,7 +22,7 @@ public interface IGiven
     /// An object that will point to the runner.
     /// The interface helps to reduce the set of options to only the appropriate in the sequence.
     /// </returns>
-    IWhen When(string description, Action<RunStore>? action = null);
+    IWhen When(string description, Action<IRunStore>? action = null);
 
     /// <summary>
     /// Allows to define the When-Action in a Given-When-Then sequence.
@@ -32,5 +32,5 @@ public interface IGiven
     /// An object that will point to the runner.
     /// The interface helps to reduce the set of options to only the appropriate in the sequence.
     /// </returns>
-    IWhen When(Action<RunStore>? action = null);
+    IWhen When(Action<IRunStore>? action = null);
 }

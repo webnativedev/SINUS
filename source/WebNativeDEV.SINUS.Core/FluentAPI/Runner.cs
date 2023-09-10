@@ -82,7 +82,7 @@ internal sealed partial class Runner : IBrowserRunner,
     /// <summary>
     /// Gets the current state of the test run.
     /// </summary>
-    public RunStore DataBag { get; }
+    public IRunStore DataBag { get; }
 
     /// <summary>
     /// Gets the reference to the TestBase that creates the runner.
@@ -279,7 +279,7 @@ internal sealed partial class Runner : IBrowserRunner,
         return this;
     }
 
-    private Action? InvokeAction<TSut>(Action<TSut, RunStore>? action)
+    private Action? InvokeAction<TSut>(Action<TSut, IRunStore>? action)
         where TSut : class
     {
         if (action == null)
@@ -290,7 +290,7 @@ internal sealed partial class Runner : IBrowserRunner,
         return () => action.Invoke(this.DataBag.ReadSut<TSut>(), this.DataBag);
     }
 
-    private IList<Action?>? InvokeAction(Action<RunStore>[] actions)
+    private IList<Action?>? InvokeAction(Action<IRunStore>[] actions)
     {
         if (actions == null)
         {
@@ -312,7 +312,7 @@ internal sealed partial class Runner : IBrowserRunner,
         return pureActions;
     }
 
-    private IList<Action?>? InvokeAction(Action<IBrowser, RunStore>[] actions)
+    private IList<Action?>? InvokeAction(Action<IBrowser, IRunStore>[] actions)
     {
         if (actions == null)
         {
@@ -327,7 +327,7 @@ internal sealed partial class Runner : IBrowserRunner,
         return pureAction;
     }
 
-    private Action? InvokeAction(Action<RunStore>? action)
+    private Action? InvokeAction(Action<IRunStore>? action)
     {
         if (action == null)
         {
@@ -337,7 +337,7 @@ internal sealed partial class Runner : IBrowserRunner,
         return () => action.Invoke(this.DataBag);
     }
 
-    private Action? InvokeAction(Action<HttpClient, RunStore>? action)
+    private Action? InvokeAction(Action<HttpClient, IRunStore>? action)
     {
         if (action == null)
         {
@@ -349,7 +349,7 @@ internal sealed partial class Runner : IBrowserRunner,
             this.DataBag);
     }
 
-    private Action? InvokeAction(Action<IBrowser, RunStore>? action)
+    private Action? InvokeAction(Action<IBrowser, IRunStore>? action)
     {
         if (action == null)
         {
@@ -361,7 +361,7 @@ internal sealed partial class Runner : IBrowserRunner,
                 this.DataBag);
     }
 
-    private Action? InvokeAction<TEventBusEventArgs>(object sender, TEventBusEventArgs? e, Action<object, RunStore, TEventBusEventArgs> handler, Predicate<TEventBusEventArgs>? filter)
+    private Action? InvokeAction<TEventBusEventArgs>(object sender, TEventBusEventArgs? e, Action<object, IRunStore, TEventBusEventArgs> handler, Func<object, IRunStore, TEventBusEventArgs, bool>? filter)
         where TEventBusEventArgs : EventBusEventArgs
     {
         if (handler == null)
@@ -376,7 +376,7 @@ internal sealed partial class Runner : IBrowserRunner,
 
         return () =>
         {
-            if (filter?.Invoke(e) ?? true)
+            if (filter?.Invoke(sender, this.DataBag, e) ?? true)
             {
                 handler.Invoke(sender, this.DataBag, e);
             }

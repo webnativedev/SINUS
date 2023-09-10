@@ -22,7 +22,7 @@ public interface IWhen
     /// An object that will point to the runner.
     /// The interface helps to reduce the set of options to only the appropriate in the sequence.
     /// </returns>
-    IThen Then(string description, params Action<RunStore>[] actions);
+    IThen Then(string description, params Action<IRunStore>[] actions);
 
     /// <summary>
     /// Allows to define the Then-Action in a Given-When-Then sequence.
@@ -32,7 +32,7 @@ public interface IWhen
     /// An object that will point to the runner.
     /// The interface helps to reduce the set of options to only the appropriate in the sequence.
     /// </returns>
-    IThen Then(params Action<RunStore>[] actions);
+    IThen Then(params Action<IRunStore>[] actions);
 
     /// <summary>
     /// Allows to define the Then-Action in a Given-When-Then sequence.

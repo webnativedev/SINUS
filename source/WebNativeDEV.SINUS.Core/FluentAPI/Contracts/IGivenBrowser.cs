@@ -23,7 +23,7 @@ public interface IGivenBrowser
     /// An object that will point to the runner.
     /// The interface helps to reduce the set of options to only the appropriate in the sequence.
     /// </returns>
-    IWhenBrowser When(string description, Action<IBrowser, RunStore>? action = null);
+    IWhenBrowser When(string description, Action<IBrowser, IRunStore>? action = null);
 
     /// <summary>
     /// Allows to define the When-Action in a Given-When-Then sequence.
@@ -33,5 +33,5 @@ public interface IGivenBrowser
     /// An object that will point to the runner.
     /// The interface helps to reduce the set of options to only the appropriate in the sequence.
     /// </returns>
-    IWhenBrowser When(Action<IBrowser, RunStore>? action = null);
+    IWhenBrowser When(Action<IBrowser, IRunStore>? action = null);
 }

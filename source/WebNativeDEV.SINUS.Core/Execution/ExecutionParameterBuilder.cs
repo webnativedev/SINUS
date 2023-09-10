@@ -15,6 +15,9 @@ using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.MsTest;
 
+/// <summary>
+/// Execution Parameter class that implements the builder pattern.
+/// </summary>
 internal sealed class ExecutionParameterBuilder : ExecutionParameter
 {
     /// <summary>
@@ -42,10 +45,15 @@ internal sealed class ExecutionParameterBuilder : ExecutionParameter
     /// <returns>A reference to the builder instance.</returns>
     internal ExecutionParameterBuilder AddActions(Action? action, IList<Action?>? actions)
     {
-        this.Actions = actions ?? (
-                action != null
-                    ? new List<Action?>() { action }
-                    : new List<Action?>());
+        if (actions != null)
+        {
+            this.Actions.AddRange(actions);
+        }
+        else if (action != null)
+        {
+            this.Actions.Add(action);
+        }
+
         return this;
     }
 
@@ -60,47 +68,72 @@ internal sealed class ExecutionParameterBuilder : ExecutionParameter
         return this;
     }
 
+    /// <summary>
+    /// Adds description of the step to execute.
+    /// </summary>
+    /// <param name="description">The description.</param>
+    /// <returns>A reference to the builder instance.</returns>
     internal ExecutionParameterBuilder AddDescription(string? description)
     {
         this.Description = description;
         return this;
     }
 
+    /// <summary>
+    /// Adds the information whether actions should be run.
+    /// </summary>
+    /// <param name="runActions">The information whether actions should be run.</param>
+    /// <returns>A reference to the builder instance.</returns>
     internal ExecutionParameterBuilder AddRunActions(bool runActions)
     {
         this.RunActions = runActions;
         return this;
     }
 
+    /// <summary>
+    /// Adds the setup action.
+    /// </summary>
+    /// <param name="setupAction">The setup action.</param>
+    /// <returns>A reference to the builder instance.</returns>
     internal ExecutionParameterBuilder AddSetupActions(Action<ExecutionSetupParameters>? setupAction)
     {
         if (setupAction != null)
         {
-            this.SetupActions = new List<Action<ExecutionSetupParameters>?>() { setupAction };
-        }
-        else
-        {
-            this.SetupActions = new List<Action<ExecutionSetupParameters>?>();
+            this.SetupActions.Add(setupAction);
         }
 
         return this;
     }
 
+    /// <summary>
+    /// Add the system under test endpoint.
+    /// </summary>
+    /// <param name="sutEndpoint">The system under test endpoint.</param>
+    /// <returns>A reference to the builder instance.</returns>
     internal ExecutionParameterBuilder AddSutEndpoint(string? sutEndpoint)
     {
         this.SutEndpoint = sutEndpoint;
         return this;
     }
 
+    /// <summary>
+    /// Add system under test type.
+    /// </summary>
+    /// <param name="sutType">The system under test type.</param>
+    /// <returns>A reference to the builder instance.</returns>
     internal ExecutionParameterBuilder AddSutType(Type? sutType)
     {
         this.SutType = sutType;
         return this;
     }
 
+    /// <summary>
+    /// Builds the stored information to the final execution parameter object.
+    /// </summary>
+    /// <returns>The resulting execution parameter.</returns>
     internal ExecutionParameter Build()
     {
-        return new ExecutionParameter()
+        var parameters = new ExecutionParameter()
         {
             // Dependencies
             TestBase = this.TestBase,
@@ -115,13 +148,16 @@ internal sealed class ExecutionParameterBuilder : ExecutionParameter
 
             // Actual action
             RunActions = this.RunActions && ((this.Actions?.Any() ?? false) || (this.SetupActions?.Any() ?? false)),
-            SetupActions = this.SetupActions ?? new List<Action<ExecutionSetupParameters>?>(),
-            Actions = this.Actions ?? new List<Action?>(),
 
             // System under Test parameter
             CreateSut = this.CreateSut,
             SutType = this.SutType,
             SutEndpoint = this.SutEndpoint,
         };
+
+        parameters.Actions.AddRange(this.Actions ?? new List<Action?>());
+        parameters.SetupActions.AddRange(this.SetupActions ?? new List<Action<ExecutionSetupParameters>?>());
+
+        return parameters;
     }
 }

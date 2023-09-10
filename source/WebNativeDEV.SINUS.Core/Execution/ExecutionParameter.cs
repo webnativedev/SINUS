@@ -40,14 +40,14 @@ public class ExecutionParameter
     public bool RunActions { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the actions to execute.
+    /// Gets the actions to execute.
     /// </summary>
-    public IList<Action<ExecutionSetupParameters>?>? SetupActions { get; set; }
+    public List<Action<ExecutionSetupParameters>?> SetupActions { get; } = new List<Action<ExecutionSetupParameters>?>();
 
     /// <summary>
-    /// Gets or sets the actions to execute.
+    /// Gets the actions to execute.
     /// </summary>
-    public IList<Action?>? Actions { get; set; }
+    public List<Action?> Actions { get; } = new List<Action?>();
 
     /// <summary>
     /// Gets or sets the reference to the runner.

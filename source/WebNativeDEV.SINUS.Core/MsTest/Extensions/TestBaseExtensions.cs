@@ -63,7 +63,8 @@ public static class TestBaseExtensions
     /// Asserts if a browser or a web application factory was not disposed.
     /// </summary>
     /// <param name="testBase">Reference to the test base object that is extended.</param>
-    public static void AssertOnDataLeak(this TestBase testBase)
+    /// <returns>Successful check or exception on fail.</returns>
+    public static bool AssertOnDataLeak(this TestBase testBase)
     {
 #pragma warning disable CA1031 // don't catch general exceptions
 #pragma warning disable S1215 // "GC.Collect" should not be called
@@ -83,7 +84,7 @@ public static class TestBaseExtensions
 
                 Browser.PrintBrowserUsageStatistic();
                 SinusWafUsageStatisticsManager.PrintWafUsageStatistic();
-                return;
+                return true;
             }
             catch
             {
@@ -98,6 +99,7 @@ public static class TestBaseExtensions
         WebNativeDEV.SINUS.Core.UITesting.Browser.PrintBrowserUsageStatistic();
         SinusWafUsageStatisticsManager.PrintWafUsageStatistic();
         Assert.Fail("Leak found");
+        return false;
 #pragma warning restore S1215 // "GC.Collect" should not be called
 #pragma warning restore CA1031 // don't catch general exceptions
     }

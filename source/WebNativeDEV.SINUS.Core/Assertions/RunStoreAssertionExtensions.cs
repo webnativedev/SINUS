@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WebNativeDEV.SINUS.Core.FluentAPI;
+using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 
 /// <summary>
 /// This class adds extension methods for Fluent Assertions Library.
@@ -21,7 +22,7 @@ public static class RunStoreAssertionExtensions
     /// </summary>
     /// <param name="instance">The instance to operate on.</param>
     /// <returns>An assertion object implementing the checks to given instance.</returns>
-    public static RunStoreAssertions Should(this RunStore instance)
+    public static RunStoreAssertions Should(this IRunStore instance)
     {
         return new RunStoreAssertions(instance);
     }

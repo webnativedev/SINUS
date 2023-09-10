@@ -16,7 +16,7 @@ public interface IThen : IDisposable
     /// </summary>
     /// <param name="action">Pass in your debug code here.</param>
     /// <returns>An instance to the runner, so it can be disposed.</returns>
-    IDisposable Debug(Action<RunStore>? action = null);
+    IDisposable Debug(Action<IRunStore>? action = null);
 
     /// <summary>
     /// Method that is used to write all debug information to the logger.

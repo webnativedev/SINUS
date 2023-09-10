@@ -14,18 +14,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WebNativeDEV.SINUS.Core.FluentAPI;
+using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 
 /// <summary>
 /// Fluent Assertions context for RunStore providing check methods.
 /// </summary>
 public class RunStoreAssertions :
-    ReferenceTypeAssertions<RunStore, RunStoreAssertions>
+    ReferenceTypeAssertions<IRunStore, RunStoreAssertions>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="RunStoreAssertions"/> class.
     /// </summary>
     /// <param name="instance">The instance to operate on.</param>
-    public RunStoreAssertions(RunStore instance)
+    public RunStoreAssertions(IRunStore instance)
         : base(instance)
     {
     }

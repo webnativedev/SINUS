@@ -19,28 +19,25 @@ using WebNativeDEV.SINUS.MsTest;
 /// </summary>
 public class RunStore : IRunStore
 {
-    /// <summary>
-    /// Standard Key name for the actual value.
-    /// </summary>
-    public const string KeyActual = "actual";
-
-    /// <summary>
-    /// Standard Key name for the system-under-test value.
-    /// </summary>
-    public const string KeySut = "SystemUnderTest";
-
     private readonly Dictionary<string, object?> store = new();
     private readonly ILogger logger;
-    private readonly IEventBus eventBus;
+    private readonly IEventBusPublisher? eventBus;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RunStore"/> class.
     /// </summary>
-    public RunStore(IEventBus eventBus)
+    /// <param name="eventBus">The bus used to publish change events.</param>
+    public RunStore(IEventBusPublisher? eventBus)
     {
         this.logger = TestBase.Container.Resolve<ILoggerFactory>().CreateLogger<RunStore>();
         this.eventBus = eventBus;
     }
+
+    /// <inheritdoc/>
+    public string KeyActual => "actual";
+
+    /// <inheritdoc/>
+    public string KeySut => "SystemUnderTest";
 
     /// <summary>
     /// Gets or sets the actual value.
@@ -78,31 +75,20 @@ public class RunStore : IRunStore
         }
     }
 
-    /// <summary>
-    /// Stores data into to the store.
-    /// </summary>
-    /// <param name="key">Unique key that identifies the value.</param>
-    /// <param name="item">An instance to store.</param>
-    /// <returns>An instance of the store to be used as fluent api.</returns>
-    /// <exception cref="ArgumentNullException">Item should not be null.</exception>
-    public RunStore Store(string key, object? item)
+    /// <inheritdoc/>
+    public IRunStore Store(string key, object? item)
     {
         var containsKey = this.store.ContainsKey(key);
         var oldValue = !containsKey ? null : this.store[key];
         this.store[key] = item;
 
-        this.eventBus.Publish(this, new RunStoreDataStoredEventBusEventArgs(key, item, !containsKey, oldValue));
+        this.eventBus?.Publish(this, new RunStoreDataStoredEventBusEventArgs(key, item, !containsKey, oldValue));
 
         return this;
     }
 
-    /// <summary>
-    /// Stores an instance without the need of a key.
-    /// The key will be generated using GUIDs.
-    /// </summary>
-    /// <param name="item">The item to store.</param>
-    /// <returns>An instance of the store to be used as fluent api.</returns>
-    public RunStore Store(object? item)
+    /// <inheritdoc/>
+    public IRunStore Store(object? item)
     {
         return this.Store(Guid.NewGuid().ToString(), item);
     }
@@ -111,48 +97,30 @@ public class RunStore : IRunStore
     /// Stores the value that is actually calculated normally in a When block.
     /// </summary>
     /// <returns>An instance of the store to be used as fluent api.</returns>
-    public RunStore InitActual()
+    public IRunStore InitActual()
     {
-        return this.Store(KeyActual, null);
+        return this.Store(this.KeyActual, null);
     }
 
-    /// <summary>
-    /// Stores the value that is actually calculated normally in a When block.
-    /// </summary>
-    /// <param name="item">The item to store.</param>
-    /// <returns>An instance of the store to be used as fluent api.</returns>
-    public RunStore StoreActual(object? item)
+    /// <inheritdoc/>
+    public IRunStore StoreActual(object? item)
     {
-        return this.Store(KeyActual, item);
+        return this.Store(this.KeyActual, item);
     }
 
-    /// <summary>
-    /// Stores the value that is actually calculated in When.
-    /// </summary>
-    /// <typeparam name="TSut">Type of the system under test.</typeparam>
-    /// <param name="calculationFunction">The block calculating the actual value.</param>
-    /// <returns>An instance of the store to support the fluent api style.</returns>
-    public RunStore StoreActual<TSut>(Func<TSut, object?> calculationFunction)
+    /// <inheritdoc/>
+    public IRunStore StoreActual<TSut>(Func<TSut, object?> calculationFunction)
     {
         return this.StoreActual(calculationFunction?.Invoke(this.ReadSut<TSut>()));
     }
 
-    /// <summary>
-    /// Stores the System under test.
-    /// </summary>
-    /// <param name="systemUnderTest">The system under test.</param>
-    /// <returns>An instance of the store to be used as fluent api.</returns>
-    public RunStore StoreSut(object? systemUnderTest)
+    /// <inheritdoc/>
+    public IRunStore StoreSut(object? systemUnderTest)
     {
-        return this.Store(KeySut, systemUnderTest);
+        return this.Store(this.KeySut, systemUnderTest);
     }
 
-    /// <summary>
-    /// Gets the instance from store based on the key.
-    /// </summary>
-    /// <typeparam name="T">Type the result is checked against and casted into.</typeparam>
-    /// <param name="key">Identifier for the instance to get.</param>
-    /// <returns>An instance from the store.</returns>
+    /// <inheritdoc/>
     public T Read<T>(string key)
     {
         var result = this.ReadObject(key);
@@ -180,59 +148,41 @@ public class RunStore : IRunStore
         return result[0];
     }
 
-    /// <summary>
-    /// Gets the instance from store based on the key as object.
-    /// </summary>
-    /// <param name="key">Identifier for the instance to get.</param>
-    /// <returns>An instance from the store as object.</returns>
+    /// <inheritdoc/>
     public object? ReadObject(string key)
     {
         return this.store[key];
     }
 
-    /// <summary>
-    /// Reads the value that is returned by the system under test as a result.
-    /// </summary>
-    /// <typeparam name="T">Type the result is checked against and casted into.</typeparam>
-    /// <returns>An instance from the store.</returns>
+    /// <inheritdoc/>
     public T ReadActual<T>()
     {
-        return this.Read<T>(KeyActual);
+        return this.Read<T>(this.KeyActual);
     }
 
-    /// <summary>
-    /// Reads the value that is returned by the system under test as a result.
-    /// </summary>
-    /// <returns>An instance from the store.</returns>
+    /// <inheritdoc/>
     public object? ReadActualObject()
     {
-        return this.ReadObject(KeyActual);
+        return this.ReadObject(this.KeyActual);
     }
 
-    /// <summary>
-    /// Reads the value that represents the system under.
-    /// </summary>
-    /// <typeparam name="T">Type the result is checked against and casted into.</typeparam>
-    /// <returns>An instance from the store.</returns>
+    /// <inheritdoc/>
     public T ReadSut<T>()
     {
-        return this.Read<T>(KeySut);
+        return this.Read<T>(this.KeySut);
     }
 
-    /// <summary>
-    /// Reads the value that represents the system under test as object.
-    /// </summary>
-    /// <returns>An instance from the store as object.</returns>
+    /// <inheritdoc/>
     public object? ReadSutObject()
     {
-        return this.ReadObject(KeySut);
+        return this.ReadObject(this.KeySut);
     }
 
     /// <summary>
     /// Prints the content to the logger.
     /// </summary>
     /// <returns>The RunStore for a fluent api.</returns>
-    public RunStore PrintStore()
+    public IRunStore PrintStore()
     {
         return this.Print(this.store);
     }
@@ -243,7 +193,7 @@ public class RunStore : IRunStore
     /// <param name="key">The key to print.</param>
     /// <param name="value">The value to print.</param>
     /// <returns>The RunStore for a fluent api.</returns>
-    public RunStore PrintAdditional(string key, object? value)
+    public IRunStore PrintAdditional(string key, object? value)
     {
         this.logger.LogInformation(
             "| {Key}: {Value} (Type: {Type})",
@@ -272,7 +222,7 @@ public class RunStore : IRunStore
     /// </summary>
     /// <param name="data">The key/value pair to print.</param>
     /// <returns>The RunStore for a fluent api.</returns>
-    private RunStore Print(Dictionary<string, object?> data)
+    private IRunStore Print(Dictionary<string, object?> data)
     {
         this.logger.LogInformation("+----------------------------");
         this.logger.LogInformation("| Count: {Count}", data.Keys.Count);

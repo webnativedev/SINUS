@@ -31,7 +31,7 @@ public class ExecutionEngineTests : TestBase
         {
             new ExecutionParameter()
             {
-                Actions = new List<Action?>() { () => { } },
+                Actions = { () => { } },
                 TestBase = new ExecutionEngineTests(),
                 Namings = new TestNamingConventionManager("Given_X_When_Y_Then_Z"),
             },

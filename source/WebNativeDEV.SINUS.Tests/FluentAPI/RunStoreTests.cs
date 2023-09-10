@@ -53,7 +53,7 @@ public class RunStoreTests : TestBase
             .Then(
                 data => data.Actual.Should().NotBeNull(),
                 data => data.ReadActualObject().Should().NotBeNull(),
-                data => data[RunStore.KeyActual].Should().NotBeNull(),
-                data => data.ReadObject(RunStore.KeyActual).Should().NotBeNull())
+                data => data[data.KeyActual].Should().NotBeNull(),
+                data => data.ReadObject(data.KeyActual).Should().NotBeNull())
             .DebugPrint(nameof(scenario), scenario));
 }

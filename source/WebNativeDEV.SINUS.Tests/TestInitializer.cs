@@ -78,6 +78,7 @@ namespace WebNativeDEV.SINUS.Tests
 
 namespace WebNativeDEV.SINUS.Tests.ZZZ
 {
+    using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using WebNativeDEV.SINUS.Core.MsTest.Extensions;
     using WebNativeDEV.SINUS.Core.Sut;
@@ -91,16 +92,14 @@ namespace WebNativeDEV.SINUS.Tests.ZZZ
     public class ZTest : TestBase
     {
         /// <summary>
-        /// Last test to be executed, so that all statistics.
+        /// Last test to be executed (based on name), so that all statistics.
+        /// Based on https://learn.microsoft.com/en-us/dotnet/core/testing/order-unit-tests?pivots=mstest
+        /// the naming influences the execution order in mstest.
         /// </summary>
         [TestMethod("Final Summary")]
         public void TestSummary()
         {
-            // https://learn.microsoft.com/en-us/dotnet/core/testing/order-unit-tests?pivots=mstest
-            // based on the name, this should be the last test in the test-set.
-            Assert.IsTrue(true);
-
-            this.AssertOnDataLeak();
+            this.AssertOnDataLeak().Should().BeTrue();
         }
     }
 }

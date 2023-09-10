@@ -29,7 +29,7 @@ using WebNativeDEV.SINUS.MsTest;
 internal sealed partial class Runner
 {
     /// <inheritdoc/>
-    public IRunner Listen<TEventBusEventArgs>(string description, Action<object, RunStore, TEventBusEventArgs> handler, Predicate<TEventBusEventArgs>? filter = null)
+    public IRunner Listen<TEventBusEventArgs>(string description, Action<object, IRunStore, TEventBusEventArgs> handler, Func<object, IRunStore, TEventBusEventArgs, bool>? filter = null)
         where TEventBusEventArgs : EventBusEventArgs
     {
         this.eventBus.Subscribe<TEventBusEventArgs>(
@@ -41,7 +41,7 @@ internal sealed partial class Runner
     }
 
     /// <inheritdoc/>
-    public IRunner Listen<TEventBusEventArgs>(Action<object, RunStore, TEventBusEventArgs> handler, Predicate<TEventBusEventArgs>? filter = null)
+    public IRunner Listen<TEventBusEventArgs>(Action<object, IRunStore, TEventBusEventArgs> handler, Func<object, IRunStore, TEventBusEventArgs, bool>? filter = null)
         where TEventBusEventArgs : EventBusEventArgs
     {
         this.eventBus.Subscribe<TEventBusEventArgs>(
@@ -52,14 +52,14 @@ internal sealed partial class Runner
     }
 
     /// <inheritdoc/>
-    public IGiven Given(string description, Action<RunStore>? action = null)
+    public IGiven Given(string description, Action<IRunStore>? action = null)
         => this.RunAction(
                 runCategory: RunCategory.Given,
                 description: description,
                 action: this.InvokeAction(action));
 
     /// <inheritdoc/>
-    public IGiven Given(Action<RunStore>? action = null)
+    public IGiven Given(Action<IRunStore>? action = null)
         => this.RunAction(
                 runCategory: RunCategory.Given,
                 action: this.InvokeAction(action));
@@ -108,40 +108,40 @@ internal sealed partial class Runner
                 sutEndpoint: null);
 
     /// <inheritdoc/>
-    public IWhen When(string? description, Action<RunStore>? action = null)
+    public IWhen When(string? description, Action<IRunStore>? action = null)
         => this.RunAction(
                 runCategory: RunCategory.When,
                 description: description,
                 action: this.InvokeAction(action));
 
     /// <inheritdoc/>
-    public IWhen When(Action<RunStore>? action = null)
+    public IWhen When(Action<IRunStore>? action = null)
         => this.RunAction(
                 runCategory: RunCategory.When,
                 action: this.InvokeAction(action));
 
     /// <inheritdoc/>
-    public IWhen When(string description, Action<HttpClient, RunStore>? action)
+    public IWhen When(string description, Action<HttpClient, IRunStore>? action)
         => this.RunAction(
                 runCategory: RunCategory.When,
                 description: description,
                 action: this.InvokeAction(action));
 
     /// <inheritdoc/>
-    public IWhen When(Action<HttpClient, RunStore>? action)
+    public IWhen When(Action<HttpClient, IRunStore>? action)
         => this.RunAction(
                 runCategory: RunCategory.When,
                 action: this.InvokeAction(action));
 
     /// <inheritdoc/>
-    public IThen Then(string? description, params Action<RunStore>[] actions)
+    public IThen Then(string? description, params Action<IRunStore>[] actions)
         => this.RunAction(
                 runCategory: RunCategory.Then,
                 description: description,
                 actions: this.InvokeAction(actions));
 
     /// <inheritdoc/>
-    public IThen Then(params Action<RunStore>[] actions)
+    public IThen Then(params Action<IRunStore>[] actions)
         => this.RunAction(
                 runCategory: RunCategory.Then,
                 actions: this.InvokeAction(actions));
@@ -212,13 +212,13 @@ internal sealed partial class Runner
                 });
 
     /// <inheritdoc/>
-    public IDisposable Debug(Action<IBrowser, RunStore>? action = null)
+    public IDisposable Debug(Action<IBrowser, IRunStore>? action = null)
         => this.RunAction(
                 runCategory: RunCategory.Debug,
                 action: this.InvokeAction(action));
 
     /// <inheritdoc/>
-    public IDisposable Debug(Action<RunStore>? action = null)
+    public IDisposable Debug(Action<IRunStore>? action = null)
         => this.RunAction(
                 runCategory: RunCategory.Debug,
                 action: this.InvokeAction(action));
@@ -373,27 +373,27 @@ internal sealed partial class Runner
                 sutEndpoint: ExecutionEngine.RandomEndpoint);
 
     /// <inheritdoc/>
-    public IWhenBrowser When(string description, Action<IBrowser, RunStore>? action = null)
+    public IWhenBrowser When(string description, Action<IBrowser, IRunStore>? action = null)
         => this.RunAction(
                 runCategory: RunCategory.When,
                 description: description,
                 action: this.InvokeAction(action));
 
     /// <inheritdoc/>
-    public IWhenBrowser When(Action<IBrowser, RunStore>? action = null)
+    public IWhenBrowser When(Action<IBrowser, IRunStore>? action = null)
         => this.RunAction(
                 runCategory: RunCategory.When,
                 action: this.InvokeAction(action));
 
     /// <inheritdoc/>
-    public IWhen When<TSut>(Action<TSut, RunStore>? action)
+    public IWhen When<TSut>(Action<TSut, IRunStore>? action)
         where TSut : class
         => this.RunAction(
                 runCategory: RunCategory.When,
                 action: this.InvokeAction<TSut>(action));
 
     /// <inheritdoc/>
-    public IWhen When<TSut>(string description, Action<TSut, RunStore>? action)
+    public IWhen When<TSut>(string description, Action<TSut, IRunStore>? action)
         where TSut : class
         => this.RunAction(
                 runCategory: RunCategory.When,
@@ -401,14 +401,14 @@ internal sealed partial class Runner
                 action: this.InvokeAction<TSut>(action));
 
     /// <inheritdoc/>
-    public IThenBrowser Then(string description, params Action<IBrowser, RunStore>[] actions)
+    public IThenBrowser Then(string description, params Action<IBrowser, IRunStore>[] actions)
         => this.RunAction(
                 runCategory: RunCategory.Then,
                 description: description,
                 actions: this.InvokeAction(actions));
 
     /// <inheritdoc/>
-    public IThenBrowser Then(params Action<IBrowser, RunStore>[] actions)
+    public IThenBrowser Then(params Action<IBrowser, IRunStore>[] actions)
         => this.RunAction(
                 runCategory: RunCategory.Then,
                 actions: this.InvokeAction(actions));

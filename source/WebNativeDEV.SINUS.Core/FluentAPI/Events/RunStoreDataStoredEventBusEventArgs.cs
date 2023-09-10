@@ -1,32 +1,54 @@
-﻿using System;
+﻿// <copyright file="RunStoreDataStoredEventBusEventArgs.cs" company="WebNativeDEV">
+// Copyright (c) Daniel Kienböck. All Rights Reserved. Licensed under the MIT License. See LICENSE in the project root for license information.
+// </copyright>
+
+namespace WebNativeDEV.SINUS.Core.FluentAPI.Events;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WebNativeDEV.SINUS.Core.Events;
 
-namespace WebNativeDEV.SINUS.Core.FluentAPI.Events
+/// <summary>
+/// Event args clas for data changes.
+/// </summary>
+public class RunStoreDataStoredEventBusEventArgs : EventBusEventArgs
 {
-    public class RunStoreDataStoredEventBusEventArgs : EventBusEventArgs
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RunStoreDataStoredEventBusEventArgs"/> class.
+    /// </summary>
+    /// <param name="key">Information Key in the data store.</param>
+    /// <param name="value">Information value in the data store.</param>
+    /// <param name="isNew">Indicates whether the information is new in the store.</param>
+    /// <param name="oldValue">Previous value in case the value is not new.</param>
+    public RunStoreDataStoredEventBusEventArgs(string key, object? value, bool isNew, object? oldValue)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RunStoreDataStoredEventBusEventArgs"/> class.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="isNew"></param>
-        /// <param name="oldValue"></param>
-        public RunStoreDataStoredEventBusEventArgs(string key, object? value, bool isNew, object? oldValue)
-        {
-            this.Key = key;
-            this.Value = value;
-            this.IsNew = isNew;
-            this.OldValue = oldValue;
-        }
-
-        public string Key { get; }
-        public object? Value { get; }
-        public bool IsNew { get; }
-        public object? OldValue { get; }
+        this.Key = key;
+        this.Value = value;
+        this.IsNew = isNew;
+        this.OldValue = oldValue;
     }
+
+    /// <summary>
+    /// Gets the key of the information in the data store.
+    /// </summary>
+    public string Key { get; }
+
+    /// <summary>
+    /// Gets the value of the information in the data store.
+    /// </summary>
+    public object? Value { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether this information
+    /// was newly created in the data store or only updated.
+    /// </summary>
+    public bool IsNew { get; }
+
+    /// <summary>
+    /// Gets the old value before an update.
+    /// </summary>
+    public object? OldValue { get; }
 }

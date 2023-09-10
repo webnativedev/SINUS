@@ -22,7 +22,7 @@ public interface IGivenWithSut
     /// An object that will point to the runner.
     /// The interface helps to reduce the set of options to only the appropriate in the sequence.
     /// </returns>
-    IWhen When(string description, Action<HttpClient, RunStore>? action);
+    IWhen When(string description, Action<HttpClient, IRunStore>? action);
 
     /// <summary>
     /// Allows to define the When-Action in a Given-When-Then sequence.
@@ -32,5 +32,5 @@ public interface IGivenWithSut
     /// An object that will point to the runner.
     /// The interface helps to reduce the set of options to only the appropriate in the sequence.
     /// </returns>
-    IWhen When(Action<HttpClient, RunStore>? action);
+    IWhen When(Action<HttpClient, IRunStore>? action);
 }

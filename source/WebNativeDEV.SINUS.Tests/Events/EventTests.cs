@@ -44,7 +44,7 @@ public class EventTests : TestBase
             RunCategory.When,
             RunCategory.Then,
             RunCategory.Dispose);
-        categories.Count.Should().Be(4);
+        categories.Should().HaveCount(4);
     }
 
     [TestMethod]
@@ -65,7 +65,7 @@ public class EventTests : TestBase
             RunCategory.Then,
             RunCategory.Debug,
             RunCategory.Dispose);
-        categories.Count.Should().Be(5);
+        categories.Should().HaveCount(5);
     }
 
     [TestMethod]
