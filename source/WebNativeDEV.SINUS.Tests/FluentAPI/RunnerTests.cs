@@ -158,7 +158,7 @@ public class RunnerTests : TestBase
                 .When(
                     "saving some data with null as calculation function",
                     data => data.StoreActual<string>(null!))
-                .ThenNoError()
+                .ThenNoError("no error")
                 .DebugPrint()
                 .Dispose();
         }
@@ -204,4 +204,44 @@ public class RunnerTests : TestBase
             .DebugPrint()
             .Dispose();
     }
+
+    [TestMethod]
+    [ExpectedException(typeof(AssertFailedException))]
+    public void Given_SimpleFlow_When_ExceptionOccurs_Then_NoErrorFunctionShouldFail()
+        => this.Test(r => r
+            .Given()
+            .When(data => throw new InvalidDataException())
+            .ThenNoError());
+
+    [TestMethod]
+    [ExpectedException(typeof(AssertFailedException))]
+    public void Given_SimpleDocumentedFlow_When_ExceptionOccurs_Then_NoErrorFunctionShouldFail()
+        => this.Test(r => r
+            .Given("a simple flow")
+            .When("exception occured", data => throw new InvalidDataException())
+            .ThenNoError("no error"));
+
+    [TestMethod]
+    [ExpectedException(typeof(AssertFailedException))]
+    public void Given_SimpleFlow_When_Working_Then_ShouldFailFunctionShouldFail()
+        => this.Test(r => r
+            .Given()
+            .When(data => { })
+            .ThenShouldHaveFailed());
+
+    [TestMethod]
+    [ExpectedException(typeof(AssertFailedException))]
+    public void Given_SimpleFlow_When_Working_Then_ShouldFailWithFunctionShouldFail()
+        => this.Test(r => r
+            .Given()
+            .When(data => { })
+            .ThenShouldHaveFailedWith<Exception>());
+
+    [TestMethod]
+    [ExpectedException(typeof(AssertFailedException))]
+    public void Given_SimpleDocumentedFlow_When_Working_Then_ShouldFailFunctionShouldFail()
+        => this.Test(r => r
+            .Given("a simple flow")
+            .When("exception occured", data => { })
+            .ThenShouldHaveFailed("no error"));
 }

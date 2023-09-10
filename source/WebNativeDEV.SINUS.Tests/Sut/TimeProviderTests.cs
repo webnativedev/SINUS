@@ -8,6 +8,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
+using WebNativeDEV.SINUS.Core.Assertions;
 using WebNativeDEV.SINUS.MsTest;
 using WebNativeDEV.SINUS.SystemUnderTest.Controllers;
 using WebNativeDEV.SINUS.SystemUnderTest.Services;
@@ -64,4 +65,28 @@ public class TimeProviderTests : TestBase
             .Then("Check if controller exists", (data) => data.ReadActual<int>().Should().Be(1))
             .DebugPrint()
             .Dispose();
+
+    [TestMethod]
+    public void Given_TimeControllerWithMockedSetupAsSut_When_GetSeconds_Then_MockedResultShouldBeSetRight()
+        => this.Test(r => r
+            .GivenASimpleSystem(() =>
+            {
+                var timeProviderMock = Substitute.For<ITimeProvider>();
+                timeProviderMock.GetCurrentSeconds().Returns(1);
+                return timeProviderMock;
+            })
+            .When<ITimeProvider>((sut, data) => data.Actual = sut.GetCurrentSeconds())
+            .Then(data => data.Should().ActualBe(1)));
+
+    [TestMethod]
+    public void Given_TimeControllerWithMockedSetupAsSutDocumented_When_GetSeconds_Then_MockedResultShouldBeSetRight()
+        => this.Test(r => r
+            .GivenASimpleSystem("a mocked time provider", () =>
+            {
+                var timeProviderMock = Substitute.For<ITimeProvider>();
+                timeProviderMock.GetCurrentSeconds().Returns(1);
+                return timeProviderMock;
+            })
+            .When<ITimeProvider>("called get seconds", (sut, data) => data.Actual = sut.GetCurrentSeconds())
+            .Then("mocked value should be present", data => data.Should().ActualBe(1)));
 }
