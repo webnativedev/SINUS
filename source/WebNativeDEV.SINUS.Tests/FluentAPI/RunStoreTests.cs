@@ -13,6 +13,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using WebNativeDEV.SINUS.Core.Assertions;
 using WebNativeDEV.SINUS.Core.FluentAPI;
 using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.MsTest;
@@ -54,6 +55,7 @@ public class RunStoreTests : TestBase
                 data => data.Actual.Should().NotBeNull(),
                 data => data.ReadActualObject().Should().NotBeNull(),
                 data => data[data.KeyActual].Should().NotBeNull(),
+                data => data.Should().ActualBeNotNull(),
                 data => data.ReadObject(data.KeyActual).Should().NotBeNull())
             .DebugPrint(nameof(scenario), scenario));
 }

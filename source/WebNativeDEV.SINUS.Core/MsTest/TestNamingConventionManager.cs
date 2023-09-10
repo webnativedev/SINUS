@@ -96,10 +96,7 @@ public class TestNamingConventionManager : ITestNamingConventionManager
             RunCategory.Given => this.GivenDescription,
             RunCategory.When => this.WhenDescription,
             RunCategory.Then => this.ThenDescription,
-            RunCategory.Listen => "Listen",
-            RunCategory.Debug => "Debug",
-            RunCategory.Dispose => "Dispose",
-            _ => throw new NotImplementedException(),
+            _ => category.ToString(),
         };
     }
 

@@ -56,16 +56,12 @@ public sealed class ExecutionEngine : IExecutionEngine
 
         ExecutionOutput returnValue = new()
         {
-            IsPreparedOnly = parameter.Actions == null || !parameter.Actions.Any(action => action != null),
+            IsPreparedOnly = !parameter.Actions.Any(),
             ShouldRunIfAlreadyExceptionOccured = parameter.RunCategory switch
             {
                 RunCategory.Given => false,
                 RunCategory.When => false,
-                RunCategory.Then => true,
-                RunCategory.Listen => true,
-                RunCategory.Debug => true,
-                RunCategory.Dispose => true,
-                _ => throw new InvalidDataException("this list should completely be handled"),
+                _ => true,
             },
             RunCategory = parameter.RunCategory,
             TestBase = parameter.TestBase,
@@ -91,19 +87,13 @@ public sealed class ExecutionEngine : IExecutionEngine
 
         List<Action> actions = new();
         actions.AddRange(
-            parameter
-                .SetupActions
-                ?.Select<Action<ExecutionSetupParameters>?, Action>(
-                    action =>
-                        () => action?.Invoke(new ExecutionSetupParameters()
-                        {
-                            Endpoint = returnValue.SutEndpoint,
-                        })) ?? Array.Empty<Action>());
+            parameter.SetupActions.Select<Action<ExecutionSetupParameters>, Action>(
+                action => () => action?.Invoke(new ExecutionSetupParameters()
+                    {
+                        Endpoint = returnValue.SutEndpoint,
+                    })));
 
-        actions.AddRange(
-            parameter
-                .Actions
-                ?.Cast<Action>() ?? Array.Empty<Action>());
+        actions.AddRange(parameter.Actions);
 
         var actionCount = actions.Count;
 

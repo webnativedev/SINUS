@@ -42,12 +42,12 @@ public class ExecutionParameter
     /// <summary>
     /// Gets the actions to execute.
     /// </summary>
-    public List<Action<ExecutionSetupParameters>?> SetupActions { get; } = new List<Action<ExecutionSetupParameters>?>();
+    public IList<Action<ExecutionSetupParameters>> SetupActions { get; } = new List<Action<ExecutionSetupParameters>>();
 
     /// <summary>
     /// Gets the actions to execute.
     /// </summary>
-    public List<Action?> Actions { get; } = new List<Action?>();
+    public IList<Action> Actions { get; } = new List<Action>();
 
     /// <summary>
     /// Gets or sets the reference to the runner.

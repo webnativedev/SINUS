@@ -47,7 +47,13 @@ internal sealed class ExecutionParameterBuilder : ExecutionParameter
     {
         if (actions != null)
         {
-            this.Actions.AddRange(actions);
+            foreach (var a in actions)
+            {
+                if (a != null)
+                {
+                    this.Actions.Add(a);
+                }
+            }
         }
         else if (action != null)
         {
@@ -146,17 +152,24 @@ internal sealed class ExecutionParameterBuilder : ExecutionParameter
 
             Description = this.Description,
 
-            // Actual action
-            RunActions = this.RunActions && ((this.Actions?.Any() ?? false) || (this.SetupActions?.Any() ?? false)),
-
             // System under Test parameter
             CreateSut = this.CreateSut,
             SutType = this.SutType,
             SutEndpoint = this.SutEndpoint,
         };
 
-        parameters.Actions.AddRange(this.Actions ?? new List<Action?>());
-        parameters.SetupActions.AddRange(this.SetupActions ?? new List<Action<ExecutionSetupParameters>?>());
+        // Actual action
+        foreach (var a in this.Actions ?? new List<Action>())
+        {
+            parameters.Actions.Add(a);
+        }
+
+        foreach (var sa in this.SetupActions ?? new List<Action<ExecutionSetupParameters>>())
+        {
+            parameters.SetupActions.Add(sa);
+        }
+
+        parameters.RunActions = this.RunActions && (parameters.Actions.Any() || parameters.SetupActions.Any());
 
         return parameters;
     }

@@ -69,12 +69,12 @@ public sealed class Browser : IBrowser
     /// <summary>
     /// Gets a list of test-identifiers that includes a browser.
     /// </summary>
-    public static List<string> TestsIncludingBrowsers { get; } = new List<string>();
+    public static IList<string> TestsIncludingBrowsers { get; } = new List<string>();
 
     /// <summary>
     /// Gets a list of test-identifiers that released the browser after using it.
     /// </summary>
-    public static List<string> TestsDisposingBrowsers { get; } = new List<string>();
+    public static IList<string> TestsDisposingBrowsers { get; } = new List<string>();
 
     /// <inheritdoc/>
     public string? Title
