@@ -5,7 +5,7 @@
 namespace WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 
 using System;
-using WebNativeDEV.SINUS.Core.Events;
+using WebNativeDEV.SINUS.Core.Events.EventArguments;
 
 /// <summary>
 /// Represents an interface that manages the execution of a test based on a given-when-then sequence.

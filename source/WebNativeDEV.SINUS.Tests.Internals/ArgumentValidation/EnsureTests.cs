@@ -2,7 +2,7 @@
 // Copyright (c) Daniel Kienböck. All Rights Reserved. Licensed under the MIT License. See LICENSE in the project root for license information.
 // </copyright>
 
-namespace WebNativeDEV.SINUS.Tests.ArgumentValidation;
+namespace WebNativeDEV.SINUS.Tests.Internals.ArgumentValidation;
 
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

@@ -10,11 +10,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WebNativeDEV.SINUS.Core.Events.Contracts;
+using WebNativeDEV.SINUS.Core.Events.EventArguments;
 
 /// <summary>
 /// Implementation of a simple event bus.
 /// </summary>
-public class EventBus : IEventBus
+internal class EventBus : IEventBus
 {
     private readonly Dictionary<Type, List<Action<object, EventBusEventArgs>>> handlers = new();
 

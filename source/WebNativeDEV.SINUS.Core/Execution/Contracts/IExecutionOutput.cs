@@ -6,9 +6,23 @@ namespace WebNativeDEV.SINUS.Core.Execution.Contracts;
 
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 
+/// <summary>
+/// The execution output of the execution engine.
+/// </summary>
 public interface IExecutionOutput
 {
+    /// <summary>
+    /// Gets a list of exceptions.
+    /// </summary>
     IList<Exception> Exceptions { get; }
-    bool IsPreparedOnly { get; set; }
-    RunCategory RunCategory { get; set; }
+
+    /// <summary>
+    /// Gets a value indicating whether the test is classified as prepared only.
+    /// </summary>
+    bool IsPreparedOnly { get; }
+
+    /// <summary>
+    /// Gets the section in which the exceptions occured.
+    /// </summary>
+    RunCategory RunCategory { get; }
 }

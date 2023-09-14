@@ -27,12 +27,7 @@ using WebNativeDEV.SINUS.SystemUnderTest.Services.Abstractions;
 [TestClass]
 public class MsTestTests : TestBase
 {
-    [TestMethod]
-    public void Given_AssemblyTestContext_When_Creating_Then_DataShouldBeStored()
-        => this.Test(r => r
-            .GivenASimpleSystem(new AssemblyTestContext(Substitute.For<TestContext>()))
-            .When<IAssemblyTestContext>((sut, data) => data.Actual = sut.TestContext)
-            .Then(data => data.Should().ActualBeNotNull()));
+    
 
     [TestMethod]
     public void Given_MinimalTest_When_CheckResult_Then_DataSuccessShouldBePresent()

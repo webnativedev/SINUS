@@ -2,6 +2,8 @@
 // Copyright (c) Daniel Kienböck. All Rights Reserved. Licensed under the MIT License. See LICENSE in the project root for license information.
 // </copyright>
 
+using WebNativeDEV.SINUS.Core.Events.EventArguments;
+
 namespace WebNativeDEV.SINUS.Core.Events.Contracts;
 
 #pragma warning disable CA2109 // Check visible event handler

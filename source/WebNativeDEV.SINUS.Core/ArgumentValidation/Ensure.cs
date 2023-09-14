@@ -14,7 +14,7 @@ using WebNativeDEV.SINUS.Core.ArgumentValidation.Exceptions;
 /// <summary>
 /// Class that is used to ensure rules similar to data contracts.
 /// </summary>
-public static class Ensure
+internal static class Ensure
 {
     /// <summary>
     /// Ensures that the item is not null by throwing exception if so.

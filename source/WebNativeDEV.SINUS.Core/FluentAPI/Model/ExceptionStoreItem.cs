@@ -14,7 +14,7 @@ using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 /// <summary>
 /// Stores the captured exceptions and rates them.
 /// </summary>
-public class ExceptionStoreItem
+internal class ExceptionStoreItem
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="ExceptionStoreItem"/> class.

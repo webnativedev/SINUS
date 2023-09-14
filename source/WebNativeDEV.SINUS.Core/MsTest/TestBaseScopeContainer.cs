@@ -39,7 +39,7 @@ public class TestBaseScopeContainer
         this.DataBag = new RunStore(this);
         this.NamingConventionManager = new TestNamingConventionManager(this);
         this.IsPreparedOnly = false;
-        this.Exceptions = new List<ExceptionStoreItem>();
+        this.Exceptions = new ExceptionStore();
     }
 
     /// <summary>
@@ -50,7 +50,7 @@ public class TestBaseScopeContainer
     /// <summary>
     /// Gets the exceptions that occured during the execution.
     /// </summary>
-    public IList<ExceptionStoreItem> Exceptions { get; }
+    public IExceptionStore Exceptions { get; }
 
     /// <summary>
     /// Gets the assembly context.

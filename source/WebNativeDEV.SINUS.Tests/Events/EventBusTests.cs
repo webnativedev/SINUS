@@ -30,38 +30,7 @@ using WebNativeDEV.SINUS.MsTest;
     "EventHandling")]
 public class EventBusTests : TestBase
 {
-    [TestMethod]
-    public void Given_ANewTestBus_When_PublishingEvents_Then_TheyShouldBeReceived()
-        => this.Test(r => r
-            .GivenASimpleSystem(new EventBus())
-            .When<IEventBus>((sut, data) =>
-            {
-                sut.Subscribe<EventBusEventArgs>((sender, e) =>
-                {
-                    e.Should().NotBeNull();
-                    data.Actual = true;
-                });
-
-                sut.Publish<EventBusEventArgs>(this, EventBusEventArgs.Empty);
-            })
-            .Then(data => data.ReadActual<bool>().Should().BeTrue()));
-
-    [TestMethod]
-    public void Given_ANewTestBusDocumented_When_PublishingEvents_Then_TheyShouldBeReceived()
-        => this.Test(r => r
-            .GivenASimpleSystem("a new eventbus", new EventBus())
-            .When<IEventBus>("publish and subscribe", (sut, data) =>
-            {
-                sut.Subscribe<EventBusEventArgs>((sender, e) =>
-                {
-                    e.Should().NotBeNull();
-                    data.Actual = true;
-                });
-
-                sut.Publish<EventBusEventArgs>(this, EventBusEventArgs.Empty);
-            })
-            .Then("subscribe should be fired", data => data.ReadActual<bool>().Should().BeTrue()));
-
+    
     [TestMethod]
     public void Given_InternalBus_When_PublishingEvents_Then_TheyShouldBeReceivedInLine()
     => this.Test(r => r

@@ -12,8 +12,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata;
-using WebNativeDEV.SINUS.Core.Events;
 using WebNativeDEV.SINUS.Core.Events.Contracts;
+using WebNativeDEV.SINUS.Core.Events.EventArguments;
 using WebNativeDEV.SINUS.Core.Execution;
 using WebNativeDEV.SINUS.Core.Execution.Contracts;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
@@ -192,7 +192,7 @@ internal sealed partial class Runner : IBrowserRunner
 
         foreach (var e in output.Exceptions)
         {
-            this.scope.Exceptions.Add(new ExceptionStoreItem(parameter.RunCategory, e));
+            this.scope.Exceptions.Add(parameter.RunCategory, e);
         }
 
         this.scope.IsPreparedOnly = this.scope.IsPreparedOnly ||
@@ -371,16 +371,16 @@ internal sealed partial class Runner : IBrowserRunner
                 Assert.Inconclusive("The test result is evaluated as inconclusive, because it was rated 'only-prepared' when seeing no 'When'-part.");
             }
 
-            if (this.scope.Exceptions.Any(e => !e.IsCheckedInThenClause))
+            if (this.scope.Exceptions.HasUncheckedElements)
             {
                 this.logger.LogError(
                     "The test result is evaluated as failed, because exceptions occured. Count: {Count}; Types: {Types}",
                     this.scope.Exceptions.Count,
-                    string.Join(',', this.scope.Exceptions.Select(x => x.GetTupleString())));
-                Assert.Fail($"The test result is evaluated as failed, because exceptions occured. Count: {this.scope.Exceptions.Count}; Types: {string.Join(',', this.scope.Exceptions.Select(x => x.GetTupleString()))}");
+                    this.scope.Exceptions.GetContentAsString());
+                Assert.Fail($"The test result is evaluated as failed, because exceptions occured. Count: {this.scope.Exceptions.Count}; Types: {this.scope.Exceptions.GetContentAsString()}");
             }
 
-            this.logger.LogInformation("The test result is evaluated as successful. (Checked Exceptions: {CheckedExceptionCount})", this.scope.Exceptions.Count(e => e.IsCheckedInThenClause));
+            this.logger.LogInformation("The test result is evaluated as successful. (Checked Exceptions: {CheckedExceptionCount})", this.scope.Exceptions.Count);
         }
     }
 }

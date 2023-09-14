@@ -6,12 +6,13 @@ namespace WebNativeDEV.SINUS.Core.FluentAPI;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NSubstitute;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata;
-using WebNativeDEV.SINUS.Core.Events;
 using WebNativeDEV.SINUS.Core.Events.Contracts;
+using WebNativeDEV.SINUS.Core.Events.EventArguments;
 using WebNativeDEV.SINUS.Core.Execution;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 using WebNativeDEV.SINUS.Core.Logging;
@@ -197,14 +198,11 @@ internal sealed partial class Runner
                 runCategory: RunCategory.Then,
                 action: () =>
                 {
-                    var checkExceptions = this.scope.Exceptions;
-                    var count = checkExceptions.Count;
-
-                    if (count == 1)
+                    if (this.scope.Exceptions.Count == 1)
                     {
-                        checkExceptions[0].IsCheckedInThenClause = true;
+                        this.scope.Exceptions.SetAllChecked();
                     }
-                    else if (count == 0)
+                    else if (this.scope.Exceptions.Count == 0)
                     {
                         Assert.Fail("Expected exception was not thrown.");
                     }
@@ -221,14 +219,11 @@ internal sealed partial class Runner
                 description: description,
                 action: () =>
                 {
-                    var checkExceptions = this.scope.Exceptions;
-                    var count = checkExceptions.Count;
-
-                    if (count == 1)
+                    if (this.scope.Exceptions.Count == 1)
                     {
-                        checkExceptions[0].IsCheckedInThenClause = true;
+                        this.scope.Exceptions.SetAllChecked();
                     }
-                    else if (count == 0)
+                    else if (this.scope.Exceptions.Count == 0)
                     {
                         Assert.Fail("Expected exception was not thrown.");
                     }
@@ -245,12 +240,11 @@ internal sealed partial class Runner
                 runCategory: RunCategory.Then,
                 action: () =>
                 {
-                    var checkExceptions = this.scope.Exceptions.Where(x => x.Exception is T).ToList();
-                    var count = checkExceptions.Count;
+                    var count = this.scope.Exceptions.CountOfType<T>();
 
                     if (count == 1)
                     {
-                        checkExceptions[0].IsCheckedInThenClause = true;
+                        this.scope.Exceptions.SetAllCheckedOfType<T>();
                     }
                     else if (count == 0)
                     {

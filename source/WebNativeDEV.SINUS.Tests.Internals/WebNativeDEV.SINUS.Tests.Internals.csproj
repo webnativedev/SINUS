@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -8,7 +8,14 @@
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-	<SonarQubeTestProject>true</SonarQubeTestProject>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <WarningLevel>7</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <WarningLevel>7</WarningLevel>
   </PropertyGroup>
 
   <ItemGroup>
@@ -49,14 +56,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\WebNativeDEV.SINUS.Core\WebNativeDEV.SINUS.Core.csproj" />
-    <ProjectReference Include="..\WebNativeDEV.SINUS.SystemUnderTest\WebNativeDEV.SINUS.SystemUnderTest.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="IoC\" />
-    <Folder Include="UITesting\" />
-    <Folder Include="Requirements\" />
-    <Folder Include="ZTests\" />
   </ItemGroup>
 
 </Project>
