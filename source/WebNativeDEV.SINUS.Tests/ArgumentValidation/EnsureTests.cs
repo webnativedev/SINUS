@@ -13,6 +13,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
+using WebNativeDEV.SINUS.Core.ArgumentValidation.Exceptions;
 using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.Core.Requirements;
 using WebNativeDEV.SINUS.MsTest;
@@ -50,7 +51,6 @@ public class EnsureTests : TestBase
         => TestNamingConventionManager.DynamicDataDisplayNameAddValueFromLastArgument(methodInfo, data);
 
     [TestMethod]
-    [ExpectedException(typeof(AssertFailedException), "ArgumentValidationException")]
     public void Given_AValue_When_CallingArgumentValidationNotNullWithNull_Then_AnExceptionShouldHaveBeenThrown()
         => this.Test(r => r
             .Given(data => data["value"] = null)
@@ -66,7 +66,6 @@ public class EnsureTests : TestBase
              .ThenShouldHaveFailedWith<IOException>());
 
     [TestMethod]
-    [ExpectedException(typeof(AssertFailedException))]
     public void Given_AValue_When_CallingArgumentValidationNotNullWithNull_Then_AGeneralExceptionShouldHaveBeenThrown()
         => this.Test(r => r
             .Given(data => data["value"] = null)
@@ -74,7 +73,6 @@ public class EnsureTests : TestBase
              .ThenShouldHaveFailed());
 
     [TestMethod]
-    [ExpectedException(typeof(AssertFailedException))]
     public void Given_AValue_When_CallingArgumentValidationNotNullWithNull_Then_AnExceptionWithDescriptionShouldHaveBeenThrown()
         => this.Test(r => r
             .Given(data => data["value"] = null)

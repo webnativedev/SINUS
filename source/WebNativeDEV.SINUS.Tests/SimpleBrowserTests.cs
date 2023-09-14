@@ -23,11 +23,10 @@ public class SimpleBrowserTests : TestBase
 
     [TestMethod]
     public void Given_AWebsite_When_CreatingScreenshot_Then_NoExceptionShouldOccur()
-        => this.Test()
+        => this.Test(r => r
             .GivenASystemAndABrowserAtDefaultEndpoint<Program>(this.simpleView)
             .When("making a screenshot", (browser, data) => browser.TakeScreenshot())
-            .Then("no exception should occur")
-            .Dispose();
+            .ThenNoError()).Should().BeSuccessful();
 
     [TestMethod]
     public void Given_AWebsiteOnRandomEndpoint_When_CreatingScreenshot_Then_NoExceptionShouldOccur()
@@ -38,23 +37,21 @@ public class SimpleBrowserTests : TestBase
 
     [TestMethod]
     public void Given_AWebsite_When_StoringTheTitle_Then_ItShouldBeCorrect()
-        => this.Test()
+        => this.Test(r => r
             .GivenASystemAndABrowserAtDefaultEndpoint<Program>(this.simpleView)
             .When("storing the title", (browser, data) => data.StoreActual(browser?.Title))
-            .Then("it should equal to the real title", (browser, data) => data.Should().ActualBe(SimpleViewTitle))
-            .Dispose();
+            .Then("it should equal to the real title", (browser, data) => data.Should().ActualBe(SimpleViewTitle)));
 
     [TestMethod]
     public void Given_AWebsiteOnRandomEndpoint_When_StoringTheTitle_Then_ItShouldBeCorrect()
-        => this.Test()
+        => this.Test(r => r
             .GivenASystemAndABrowserAtRandomEndpoint<Program>(this.simpleView)
             .When("storing the title", (browser, data) => data.StoreActual(browser?.Title))
-            .Then("it should equal to the real title", (browser, data) => data.Should().ActualBe(SimpleViewTitle))
-            .Dispose();
+            .Then("it should equal to the real title", (browser, data) => data.Should().ActualBe(SimpleViewTitle)));
 
     [TestMethod]
     public void Given_ABlankWebsiteNotHeadless_When_StoringTheTitle_Then_ItShouldNotBeNull()
-        => this.Test()
+        => this.Test(r => r
             .GivenABrowserAt(
                 ("empty page", "about:blank"),
                 new BrowserFactoryOptions()
@@ -63,47 +60,42 @@ public class SimpleBrowserTests : TestBase
                     IgnoreSslErrors = false,
                 })
             .When("storing the title", (browser, data) => data.StoreActual(browser?.Title))
-            .Then("it should equal to the real title", (browser, data) => Assert.IsNotNull(data.ReadActual<string>()))
-            .Dispose();
+            .Then("it should equal to the real title", (browser, data) => Assert.IsNotNull(data.ReadActual<string>())));
 
     [TestMethod]
     public void Given_ABlankWebsite_When_StoringTheTitle_Then_ItShouldNotBeNull()
-        => this.Test()
+        => this.Test(r => r
             .GivenABrowserAt(("empty page", "about:blank"))
             .When("storing the title", (browser, data) => data.StoreActual(browser?.Title))
-            .Then("it should equal to the real title", (browser, data) => Assert.IsNotNull(data.ReadActual<string>()))
-            .Dispose();
+            .Then("it should equal to the real title", (browser, data) => Assert.IsNotNull(data.ReadActual<string>())));
 
     [TestMethod]
     public void Given_ABlankWebsiteAsUri_When_StoringTheTitle_Then_ItShouldBeCorrect()
-        => this.Test()
+        => this.Test(r => r
             .GivenABrowserAt("empty page", new Uri("about:blank"))
             .When("storing the title", (browser, data) => data.StoreActual(browser?.Title))
-            .Then("it should equal to the real title", (browser, data) => Assert.IsNotNull(data.ReadActual<string>()))
-            .Dispose();
+            .Then("it should equal to the real title", (browser, data) => Assert.IsNotNull(data.ReadActual<string>())));
 
     [TestMethod]
     public void Given_AWebsite_When_CallingPrintUsageStatistic_Then_ItShouldReturnOneLeakingBecauseDisposeCalledAfterwards()
-        => this.Test()
+        => this.Test(r => r
             .GivenASystemAndABrowserAtDefaultEndpoint<Program>(this.simpleView)
             .When("storing the title", (browser, data) => data.StoreActual(browser?.Title))
             .Then("it should print usage statistics", (browser, data) => { })
-            .Debug((browser, data) => this.PrintUsageStatistic(this.TestName))
-            .Dispose();
+            .Debug((browser, data) => this.PrintUsageStatistic(this.TestName)));
 
     [TestMethod]
     public void Given_AWebsiteOnRandomEndpoint_When_CallingPrintUsageStatistic_Then_ItShouldReturnOneLeakingBecauseDisposeCalledAfterwards()
-        => this.Test()
+        => this.Test(r => r
             .GivenASystemAndABrowserAtRandomEndpoint<Program>(this.simpleView)
             .When("storing the title", (browser, data) => data.StoreActual(browser?.Title))
             .Then("it should print usage statistics", (browser, data) => { })
-            .Debug((browser, data) => this.PrintUsageStatistic(this.TestName))
-            .Dispose();
+            .Debug((browser, data) => this.PrintUsageStatistic(this.TestName)));
 
     [TestMethod]
     public void Given_ABrowser_When_StoreData_Then_NoThrow()
     {
-        this.Test()
+        this.Test(r => r
             .GivenASystemAndABrowserAtDefaultEndpoint<Program>(this.simpleView)
             .When("Calling Browser", (browser, data) =>
             {
@@ -113,14 +105,13 @@ public class SimpleBrowserTests : TestBase
                 data.Store("element active: " + (browser.FindActiveElement()?.Text ?? "<none>"));
             })
             .Then("no exception should be thrown")
-            .DebugPrint()
-            .Dispose();
+            .DebugPrint());
     }
 
     [TestMethod]
     public void Given_ABrowserOnRandomEndpoint_When_StoreData_Then_NoThrow()
     {
-        this.Test()
+        this.Test(r => r
             .GivenASystemAndABrowserAtRandomEndpoint<Program>(this.simpleView)
             .When("Calling Browser", (browser, data) =>
             {
@@ -130,7 +121,6 @@ public class SimpleBrowserTests : TestBase
                 data.Store("element active: " + (browser.FindActiveElement()?.Text ?? "<none>"));
             })
             .Then("no exception should be thrown")
-            .DebugPrint()
-            .Dispose();
+            .DebugPrint());
     }
 }

@@ -18,15 +18,17 @@ using System.Text;
 using System.Threading.Tasks;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
 using WebNativeDEV.SINUS.Core.Execution.Contracts;
+using WebNativeDEV.SINUS.Core.Execution.Exceptions;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 using WebNativeDEV.SINUS.Core.Logging;
+using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.Core.Sut;
 using WebNativeDEV.SINUS.MsTest;
 
 /// <summary>
 /// The execution engine.
 /// </summary>
-public sealed class ExecutionEngine : IExecutionEngine
+internal sealed class ExecutionEngine : IExecutionEngine
 {
     /// <summary>
     /// Random Endpoint placeholder/template that will be used later for string replacement.
@@ -34,18 +36,26 @@ public sealed class ExecutionEngine : IExecutionEngine
     public const string RandomEndpoint = "https://localhost:" + RandomEndpointPlaceholder;
 
     private const string RandomEndpointPlaceholder = "{RANDOMENDPOINT}";
-    private const int RetryCountCreatingSut = 10;
+    private const int RetryCountCreatingSut = 5;
     private const int RetryDelay = 60;
     private static readonly object LockerSutStatic = new();
-    private readonly ILogger<ExecutionEngine> logger;
+    private readonly ILogger logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ExecutionEngine"/> class.
     /// </summary>
-    /// <param name="loggerFactory">A factory to create a logger.</param>
-    public ExecutionEngine(ILoggerFactory loggerFactory)
+    public ExecutionEngine()
+        : this(TestBaseSingletonContainer.LoggerFactory)
     {
-        this.logger = loggerFactory.CreateLogger<ExecutionEngine>();
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ExecutionEngine"/> class.
+    /// </summary>
+    /// <param name="factory">Logger factory dependency.</param>
+    public ExecutionEngine(ILoggerFactory factory)
+    {
+        this.logger = factory.CreateLogger<ExecutionEngine>();
         this.logger.LogDebug("Created a log for execution engine");
     }
 
@@ -89,9 +99,9 @@ public sealed class ExecutionEngine : IExecutionEngine
         actions.AddRange(
             parameter.SetupActions.Select<Action<ExecutionSetupParameters>, Action>(
                 action => () => action?.Invoke(new ExecutionSetupParameters()
-                    {
-                        Endpoint = returnValue.SutEndpoint,
-                    })));
+                {
+                    Endpoint = returnValue.SutEndpoint,
+                })));
 
         actions.AddRange(parameter.Actions);
 
@@ -158,8 +168,10 @@ public sealed class ExecutionEngine : IExecutionEngine
             return;
         }
 
+#pragma warning disable CA1031 // don't catch general exceptions
+
         bool successful = false;
-        for (int retryIndex = 0; retryIndex < RetryCountCreatingSut; retryIndex++)
+        for (int retryIndex = 0; retryIndex < RetryCountCreatingSut && !successful; retryIndex++)
         {
             try
             {
@@ -179,7 +191,8 @@ public sealed class ExecutionEngine : IExecutionEngine
                 ISinusWebApplicationFactory? waf = Activator.CreateInstance(
                     wafType,
                     returnValue.SutEndpoint,
-                    parameter?.TestBase?.TestName)
+                    parameter?.TestBase?.TestName,
+                    parameter?.SutArgs.ToArray())
                     as ISinusWebApplicationFactory;
 
                 returnValue.WebApplicationFactory = waf;
@@ -187,13 +200,7 @@ public sealed class ExecutionEngine : IExecutionEngine
 
                 if (returnValue.HttpClient == null || returnValue.WebApplicationFactory == null)
                 {
-                    returnValue.HttpClient?.CancelPendingRequests();
-                    returnValue.HttpClient?.Dispose();
-                    returnValue.HttpClient = null;
-
-                    returnValue.WebApplicationFactory?.CloseCreatedHost();
-                    returnValue.WebApplicationFactory?.Dispose();
-                    returnValue.WebApplicationFactory = null;
+                    throw new ExecutionEngineRunException("Web Application Factory was not created properly.");
                 }
                 else
                 {
@@ -214,13 +221,34 @@ public sealed class ExecutionEngine : IExecutionEngine
                 GC.WaitForPendingFinalizers();
                 GC.WaitForFullGCComplete();
 #pragma warning restore S1215 // "GC.Collect" should not be called
-                Thread.Sleep(TimeSpan.FromSeconds(RetryDelay));
+
+                if (retryIndex + 1 == RetryCountCreatingSut)
+                {
+                    returnValue.Exceptions.Add(new ExecutionEngineRunException("creation of web application failed because of IO", exception));
+                    successful = false;
+                    break;
+                }
+                else
+                {
+                    Thread.Sleep(TimeSpan.FromSeconds(RetryDelay));
+                }
+            }
+            catch (Exception exception)
+            {
+                this.logger.LogError(
+                    exception,
+                    "Creating WebApplication failed\n{Exception}",
+                    exception.Message);
+
+                returnValue.Exceptions.Add(new ExecutionEngineRunException("creation of web application failed", exception));
+                returnValue.ResetHttpClient();
+                returnValue.ResetWebApplicationFactory();
+                successful = false;
+                break;
             }
         }
+#pragma warning restore CA1031 // don't catch general exceptions
 
-        if (!successful)
-        {
-            throw new InvalidOperationException("System under test could not be created.");
-        }
+        this.logger.LogInformation("Execution was {Successful}", successful ? "successful" : "not successful");
     }
 }

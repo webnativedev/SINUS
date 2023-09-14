@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using OpenQA.Selenium;
 using System.Diagnostics.CodeAnalysis;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
-using WebNativeDEV.SINUS.Core.Ioc;
+using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 using WebNativeDEV.SINUS.MsTest;
 
@@ -25,7 +25,7 @@ public sealed class BrowserFactory : IBrowserFactory, IDisposable
     /// </summary>
     public BrowserFactory()
     {
-        this.logger = TestBase.Container.Resolve<ILoggerFactory>().CreateLogger<BrowserFactory>();
+        this.logger = TestBaseSingletonContainer.CreateLogger<BrowserFactory>();
     }
 
     /// <summary>
@@ -43,7 +43,7 @@ public sealed class BrowserFactory : IBrowserFactory, IDisposable
         testBase = Ensure.NotNull(testBase);
 
         this.logger.LogInformation("Create Browser requested for {Url}", url);
-        var driver = TestBase.Container.Resolve<IWebDriverFactory>().CreateWebDriver(
+        var driver = TestBaseSingletonContainer.WebDriverFactory.CreateWebDriver(
             options ?? new BrowserFactoryOptions()
             {
                 Headless = true,
@@ -55,8 +55,7 @@ public sealed class BrowserFactory : IBrowserFactory, IDisposable
 
         return new Browser(
             driver,
-            TestBase.Container.Resolve<ILoggerFactory>(),
-            testBase.LogsDir ?? throw new InvalidDataException("LogDir not set"),
+            testBase.TestContext.TestRunResultsDirectory ?? throw new InvalidDataException("LogDir not set"),
             humanReadablePageName,
             testBase.TestName);
     }

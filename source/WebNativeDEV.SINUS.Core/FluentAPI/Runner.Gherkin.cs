@@ -14,7 +14,6 @@ using WebNativeDEV.SINUS.Core.Events;
 using WebNativeDEV.SINUS.Core.Events.Contracts;
 using WebNativeDEV.SINUS.Core.Execution;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
-using WebNativeDEV.SINUS.Core.Ioc;
 using WebNativeDEV.SINUS.Core.Logging;
 using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.Core.MsTest.Extensions;
@@ -32,7 +31,7 @@ internal sealed partial class Runner
     public IRunner Listen<TEventBusEventArgs>(string description, Action<object, IRunStore, TEventBusEventArgs> handler, Func<object, IRunStore, TEventBusEventArgs, bool>? filter = null)
         where TEventBusEventArgs : EventBusEventArgs
     {
-        this.eventBus.Subscribe<TEventBusEventArgs>(
+        this.scope.EventBus.Subscribe<TEventBusEventArgs>(
             (sender, e) => this.RunAction(
                     runCategory: RunCategory.Listen,
                     description: description,
@@ -44,7 +43,7 @@ internal sealed partial class Runner
     public IRunner Listen<TEventBusEventArgs>(Action<object, IRunStore, TEventBusEventArgs> handler, Func<object, IRunStore, TEventBusEventArgs, bool>? filter = null)
         where TEventBusEventArgs : EventBusEventArgs
     {
-        this.eventBus.Subscribe<TEventBusEventArgs>(
+        this.scope.EventBus.Subscribe<TEventBusEventArgs>(
             (sender, e) => this.RunAction(
                     runCategory: RunCategory.Listen,
                     action: this.InvokeAction<TEventBusEventArgs>(sender, e as TEventBusEventArgs, handler, filter)));
@@ -97,6 +96,7 @@ internal sealed partial class Runner
                 runCategory: RunCategory.Given,
                 description: description,
                 sutType: typeof(TProgram),
+                sutArgs: null,
                 sutEndpoint: null);
 
     /// <inheritdoc/>
@@ -105,6 +105,26 @@ internal sealed partial class Runner
         => this.RunCreateSut(
                 runCategory: RunCategory.Given,
                 sutType: typeof(TProgram),
+                sutArgs: null,
+                sutEndpoint: null);
+
+    /// <inheritdoc/>
+    public IGivenWithSut GivenASystem<TProgram>(string description, params string[] args)
+        where TProgram : class
+        => this.RunCreateSut(
+                runCategory: RunCategory.Given,
+                description: description,
+                sutType: typeof(TProgram),
+                sutArgs: args,
+                sutEndpoint: null);
+
+    /// <inheritdoc/>
+    public IGivenWithSut GivenASystem<TProgram>(params string[] args)
+        where TProgram : class
+        => this.RunCreateSut(
+                runCategory: RunCategory.Given,
+                sutType: typeof(TProgram),
+                sutArgs: args,
                 sutEndpoint: null);
 
     /// <inheritdoc/>
@@ -153,7 +173,7 @@ internal sealed partial class Runner
                 description: description,
                 action: () =>
                 {
-                    if (this.Exceptions.Any())
+                    if (this.scope.Exceptions.Any())
                     {
                         Assert.Fail("Exception was not thrown.");
                     }
@@ -165,7 +185,7 @@ internal sealed partial class Runner
                 runCategory: RunCategory.Then,
                 action: () =>
                 {
-                    if (this.Exceptions.Any())
+                    if (this.scope.Exceptions.Any())
                     {
                         Assert.Fail("Exception was not thrown.");
                     }
@@ -177,9 +197,20 @@ internal sealed partial class Runner
                 runCategory: RunCategory.Then,
                 action: () =>
                 {
-                    if (!this.Exceptions.Any())
+                    var checkExceptions = this.scope.Exceptions;
+                    var count = checkExceptions.Count;
+
+                    if (count == 1)
+                    {
+                        checkExceptions[0].IsCheckedInThenClause = true;
+                    }
+                    else if (count == 0)
                     {
                         Assert.Fail("Expected exception was not thrown.");
+                    }
+                    else
+                    {
+                        Assert.Fail("Expected exception was not thrown, but multiple times.");
                     }
                 });
 
@@ -190,9 +221,20 @@ internal sealed partial class Runner
                 description: description,
                 action: () =>
                 {
-                    if (!this.Exceptions.Any())
+                    var checkExceptions = this.scope.Exceptions;
+                    var count = checkExceptions.Count;
+
+                    if (count == 1)
+                    {
+                        checkExceptions[0].IsCheckedInThenClause = true;
+                    }
+                    else if (count == 0)
                     {
                         Assert.Fail("Expected exception was not thrown.");
+                    }
+                    else
+                    {
+                        Assert.Fail("Expected exception was not thrown, but multiple times.");
                     }
                 });
 
@@ -203,53 +245,62 @@ internal sealed partial class Runner
                 runCategory: RunCategory.Then,
                 action: () =>
                 {
-                    if (!this.Exceptions
-                            .Select(x => x.Item2)
-                            .Any(e => e is T))
+                    var checkExceptions = this.scope.Exceptions.Where(x => x.Exception is T).ToList();
+                    var count = checkExceptions.Count;
+
+                    if (count == 1)
+                    {
+                        checkExceptions[0].IsCheckedInThenClause = true;
+                    }
+                    else if (count == 0)
                     {
                         Assert.Fail("Expected exception was not thrown.");
                     }
-                });
-
-    /// <inheritdoc/>
-    public IDisposable Debug(Action<IBrowser, IRunStore>? action = null)
-        => this.RunAction(
-                runCategory: RunCategory.Debug,
-                action: this.InvokeAction(action));
-
-    /// <inheritdoc/>
-    public IDisposable Debug(Action<IRunStore>? action = null)
-        => this.RunAction(
-                runCategory: RunCategory.Debug,
-                action: this.InvokeAction(action));
-
-    /// <inheritdoc/>
-    public IDisposable DebugPrint()
-        => this.RunAction(
-                runCategory: RunCategory.Debug,
-                action: () => this.DataBag.PrintStore());
-
-    /// <inheritdoc/>
-    public IDisposable DebugPrint((string, object?)[] additionalData)
-        => this.RunAction(
-                runCategory: RunCategory.Debug,
-                action: () =>
-                {
-                    this.DataBag.PrintStore();
-                    foreach (var data in additionalData)
+                    else
                     {
-                        this.DataBag.PrintAdditional(data.Item1, data.Item2);
+                        Assert.Fail("Expected exception was not thrown, but multiple times.");
                     }
                 });
 
     /// <inheritdoc/>
-    public IDisposable DebugPrint(string key, object? value)
+    public IThen Debug(Action<IBrowser, IRunStore>? action = null)
+        => this.RunAction(
+                runCategory: RunCategory.Debug,
+                action: this.InvokeAction(action));
+
+    /// <inheritdoc/>
+    public IThen Debug(Action<IRunStore>? action = null)
+        => this.RunAction(
+                runCategory: RunCategory.Debug,
+                action: this.InvokeAction(action));
+
+    /// <inheritdoc/>
+    public IThen DebugPrint()
+        => this.RunAction(
+                runCategory: RunCategory.Debug,
+                action: () => this.scope.DataBag.PrintStore());
+
+    /// <inheritdoc/>
+    public IThen DebugPrint((string, object?)[] additionalData)
         => this.RunAction(
                 runCategory: RunCategory.Debug,
                 action: () =>
                 {
-                    this.DataBag.PrintStore();
-                    this.DataBag.PrintAdditional(key, value);
+                    this.scope.DataBag.PrintStore();
+                    foreach (var data in additionalData)
+                    {
+                        this.scope.DataBag.PrintAdditional(data.Item1, data.Item2);
+                    }
+                });
+
+    /// <inheritdoc/>
+    public IThen DebugPrint(string key, object? value)
+        => this.RunAction(
+                runCategory: RunCategory.Debug,
+                action: () =>
+                {
+                    this.scope.DataBag.PrintStore();
+                    this.scope.DataBag.PrintAdditional(key, value);
                 });
 
     /// <inheritdoc/>

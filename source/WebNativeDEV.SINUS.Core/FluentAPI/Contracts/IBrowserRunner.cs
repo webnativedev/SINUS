@@ -11,7 +11,7 @@ using WebNativeDEV.SINUS.Core.UITesting;
 /// Represents an interface that manages the execution of a test based on a given-when-then sequence.
 /// This interface allows to create a proper Fluent API including the browser.
 /// </summary>
-public interface IBrowserRunner : IRunner
+public interface IBrowserRunner : IRunner, IGivenBrowser, IWhenBrowser, IThenBrowser
 {
     /// <summary>
     /// Allows to define the Browser-based Given-Action in a Given-When-Then sequence.

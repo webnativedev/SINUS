@@ -22,7 +22,16 @@ public class TestNamingConventionManager : ITestNamingConventionManager
     /// <summary>
     /// Initializes a new instance of the <see cref="TestNamingConventionManager"/> class.
     /// </summary>
-    /// <param name="testName">The testname.</param>
+    /// <param name="scope">The dependency store.</param>
+    public TestNamingConventionManager(TestBaseScopeContainer scope)
+        : this(scope.TestBase.TestName)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TestNamingConventionManager"/> class.
+    /// </summary>
+    /// <param name="testName">The name of the test.</param>
     public TestNamingConventionManager(string testName)
     {
         this.TestName = testName;

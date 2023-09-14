@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 /// <summary>
 /// Parameter container for the setup phase used in execution engine.
 /// </summary>
-public sealed class ExecutionSetupParameters
+internal sealed class ExecutionSetupParameters
 {
     /// <summary>
     /// Gets the endpoint.

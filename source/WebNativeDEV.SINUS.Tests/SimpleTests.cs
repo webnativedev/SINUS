@@ -35,17 +35,16 @@ public class SimpleTests : TestBase
     [ExpectedException(typeof(AssertInconclusiveException))]
     public void Given_TheMockTimeProvider_When_GettingTheCurrentSeconds_Then_ValueEquals59AsGherkinPreparation()
     {
-        this.Test()
+        this.Test(r => r
             .Given("The Mock Time Provider")
             .When("Ask for the current seconds")
-            .Then("Check for the mocked value 59")
-            .Dispose();
+            .Then("Check for the mocked value 59"));
     }
 
     [TestMethod]
     public void Given_TheMockTimeProvider_When_GettingTheCurrentSeconds_Then_ValueEquals59AsGherkin()
     {
-        this.Test()
+        this.Test(r => r
             .Given(
                 "The Mock Time Provider",
                 (data) => data.StoreSut(new MockTimeProvider()))
@@ -53,14 +52,13 @@ public class SimpleTests : TestBase
                 "Ask for the current seconds",
                 (data) => data.StoreActual(data.ReadSut<MockTimeProvider>().GetCurrentSeconds()))
             .Then("Check for the mocked value 59", data => data.Should().ActualBe(59))
-            .Debug(data => data.PrintStore())
-            .Dispose();
+            .Debug(data => data.PrintStore()));
     }
 
     [TestMethod]
     public void Given_TheMockTimeProviderViaHttp_When_GettingTheCurrentSeconds_Then_ValueEquals59AsGherkin()
     {
-        this.Test()
+        this.Test(r => r
             .GivenASystem<Program>("The Mock Time Provider via http")
             .When(
                 "Ask for the current seconds",
@@ -68,7 +66,6 @@ public class SimpleTests : TestBase
             .Then(
                 "Check for the mocked value 59",
                 data => data.Should().ActualBe("59"))
-            .DebugPrint()
-            .Dispose();
+            .DebugPrint());
     }
 }

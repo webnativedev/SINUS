@@ -9,7 +9,7 @@ namespace WebNativeDEV.SINUS.Tests
 {
     using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using WebNativeDEV.SINUS.Core.Ioc;
+    using WebNativeDEV.SINUS.Core.MsTest;
     using WebNativeDEV.SINUS.Core.MsTest.Extensions;
     using WebNativeDEV.SINUS.MsTest;
 
@@ -27,14 +27,14 @@ namespace WebNativeDEV.SINUS.Tests
         /// <param name="testContext">The current context of the test execution (assembly level).</param>
         [AssemblyInitialize]
         public static void AssemblyInitialize(TestContext testContext)
-            => Setup(container => { }, testContext);
+            => TestBaseSingletonContainer.AssemblyTestContext = testContext;
 
         /// <summary>
         /// Method that is called by the MS-Test Framework on assmebly cleanup.
         /// </summary>
         [AssemblyCleanup]
         public static void AssemblyCleanup()
-            => TearDown(MaxAgeOfProessInMinutes);
+            => TestBaseExtensions.KillChromeZombieProcesses(null!, MaxAgeOfProessInMinutes);
 
         /// <summary>
         /// Maintenance Test related to the number of output folders.
@@ -51,28 +51,6 @@ namespace WebNativeDEV.SINUS.Tests
         [TestMethod]
         public void Maintenance_ProcessesKilled()
             => new Action(() => this.CountChromeZombieProcesses(MaxAgeOfProessInMinutes)).Should().NotThrow();
-
-        /// <summary>
-        /// Maintenance Print Meta-Data.
-        /// </summary>
-        [TestMethod]
-        public void Given_ASolidTestBase_When_CheckingVariables_Then_NonShouldBeNull()
-        {
-            this.Test()
-                .Given("solid testbase")
-                .When("storing data", data =>
-                {
-                    data["logsDir"] = this.LogsDir;
-                    data["runDir"] = this.RunDir;
-                    data["testName"] = this.TestName;
-                })
-                .Then(
-                    "all data should be not null",
-                    data => Assert.IsNotNull(data["logsDir"]),
-                    data => Assert.IsNotNull(data["runDir"]),
-                    data => Assert.IsNotNull(data["testName"]))
-                .DebugPrint();
-        }
     }
 }
 

@@ -15,7 +15,7 @@ using WebNativeDEV.SINUS.Core.MsTest.Contracts;
 /// <summary>
 /// Store that holds the assembly context in an immutable way.
 /// </summary>
-public class AssemblyTestContext : IAssemblyTestContext
+internal class AssemblyTestContext : IAssemblyTestContext
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="AssemblyTestContext"/> class.

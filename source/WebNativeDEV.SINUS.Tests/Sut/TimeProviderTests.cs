@@ -22,34 +22,31 @@ public class TimeProviderTests : TestBase
 {
     [TestMethod]
     public void Given_TimeProvider_When_CheckingSeconds_Then_TheyShouldBeLessThan60()
-        => this.Test()
+        => this.Test(r => r
             .Given("a time provider", data => data.StoreSut(new TimeProvider()))
             .When("Reading the seconds", data => data.StoreActual<TimeProvider>(sut => sut.GetCurrentSeconds()))
-            .Then("Check if less than 60", (data) => Assert.IsTrue(data.ReadActual<int>() is >= 0 and <= 60))
-            .Dispose();
+            .Then("Check if less than 60", (data) => Assert.IsTrue(data.ReadActual<int>() is >= 0 and <= 60)));
 
     [TestMethod]
     public void Given_TimeProvider_When_CheckingToString_Then_TheyShouldReturnSomethingValid()
-        => this.Test()
+        => this.Test(r => r
             .Given("a time provider", data => data.StoreSut(new TimeProvider()))
             .When("Reading the seconds", data => data.StoreActual<TimeProvider>(sut => sut.ToString()))
             .Then("Check if string is long", (data) => Assert.IsTrue(data.ReadActual<string>().Length > 16))
-            .DebugPrint()
-            .Dispose();
+            .DebugPrint());
 
     [TestMethod]
     [ExpectedException(typeof(AssertFailedException))]
     public void Given_TimeController_When_DependencyTimeProviderIsNull_Then_Throw()
-        => this.Test()
+        => this.Test(r => r
             .Given("a time controller", data => data.StoreSut(new TimeController(null!, null!)))
             .When("sut can not be created", data => data["not-available"] = 1)
             .Then("Check if controller exists", (data) => Assert.IsNotNull(data.ReadSut<TimeController>()))
-            .DebugPrint()
-            .Dispose();
+            .DebugPrint());
 
     [TestMethod]
     public void Given_TimeControllerWithMockedSetup_When_GetSeconds_Then_MockedResultShouldBePresent()
-        => this.Test()
+        => this.Test(r => r
             .Given("a time controller", data =>
             {
                 var timeProviderMock = Substitute.For<ITimeProvider>();
@@ -63,8 +60,7 @@ public class TimeProviderTests : TestBase
             })
             .When("sut can be created", data => data.Actual = data.ReadSut<TimeController>().GetSeconds())
             .Then("Check if controller exists", (data) => data.ReadActual<int>().Should().Be(1))
-            .DebugPrint()
-            .Dispose();
+            .DebugPrint());
 
     [TestMethod]
     public void Given_TimeControllerWithMockedSetupAsSut_When_GetSeconds_Then_MockedResultShouldBeSetRight()

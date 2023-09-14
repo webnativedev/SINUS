@@ -28,6 +28,7 @@ internal sealed class SinusWebApplicationFactory<TEntryPoint> : WebApplicationFa
     where TEntryPoint : class
 {
     private readonly string id;
+    private readonly string[] args;
     private IHost? customHost;
 
     /// <summary>
@@ -35,12 +36,13 @@ internal sealed class SinusWebApplicationFactory<TEntryPoint> : WebApplicationFa
     /// </summary>
     /// <param name="hostUrl">The endpoint of the system under test.</param>
     /// <param name="id">Id of the test (test name).</param>
-    public SinusWebApplicationFactory(string? hostUrl, string? id)
+    /// <param name="args">Arguments handed over to the application.</param>
+    public SinusWebApplicationFactory(string? hostUrl, string? id, string[] args)
     {
         this.HostUrl = hostUrl;
         this.InMemory = string.IsNullOrWhiteSpace(this.HostUrl);
         this.id = id ?? "<no id>";
-
+        this.args = args;
         if (id != null)
         {
             SinusWafUsageStatisticsManager.TestsIncludingWaf.Add(id);
@@ -80,6 +82,10 @@ internal sealed class SinusWebApplicationFactory<TEntryPoint> : WebApplicationFa
         }
 
         builder.UseSetting("ExecutionMode", "Mock");
+        for (int i = 0; i < this.args.Length; i++)
+        {
+            builder.UseSetting($"arg{i}", this.args[i]);
+        }
     }
 
     /// <summary>

@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WebNativeDEV.SINUS.Core.FluentAPI;
 using WebNativeDEV.SINUS.Core.MsTest;
+using WebNativeDEV.SINUS.Core.MsTest.Contracts;
 
 /// <summary>
 /// This class adds extension methods for Fluent Assertions Library.
@@ -22,7 +23,7 @@ public static class TestBaseResultAssertionExtensions
     /// </summary>
     /// <param name="instance">The instance to operate on.</param>
     /// <returns>An assertion object implementing the checks to given instance.</returns>
-    public static TestBaseResultAssertions Should(this TestBaseResult instance)
+    public static TestBaseResultAssertions Should(this ITestBaseResult instance)
     {
         return new TestBaseResultAssertions(instance);
     }

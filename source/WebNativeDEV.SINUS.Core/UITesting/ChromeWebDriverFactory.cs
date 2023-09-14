@@ -13,7 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
-using WebNativeDEV.SINUS.Core.Ioc;
+using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 using WebNativeDEV.SINUS.MsTest;
 
@@ -29,7 +29,7 @@ internal sealed class ChromeWebDriverFactory : IWebDriverFactory
     /// </summary>
     public ChromeWebDriverFactory()
     {
-        this.logger = TestBase.Container.Resolve<ILoggerFactory>().CreateLogger<ChromeWebDriverFactory>();
+        this.logger = TestBaseSingletonContainer.CreateLogger<ChromeWebDriverFactory>();
     }
 
     /// <inheritdoc/>
@@ -45,7 +45,7 @@ internal sealed class ChromeWebDriverFactory : IWebDriverFactory
         service.EnableVerboseLogging = true;
         service.EnableAppendLog = true;
         service.LogPath = Path.Combine(
-            testBase.LogsDir,
+            testBase.TestContext.TestRunResultsDirectory ?? ".",
             $"chromedriverservices_{DateTime.Now:yyyy-MM-dd__HH-mm-ss-fffffff}.log");
 #pragma warning restore CA2000
 

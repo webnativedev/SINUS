@@ -87,5 +87,10 @@
     <Folder Include="Assertions\Contracts\" />
     <Folder Include="MsTest\Context\" />
   </ItemGroup>
-
+	
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>WebNativeDEV.SINUS.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
 </Project>

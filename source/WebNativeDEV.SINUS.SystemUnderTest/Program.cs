@@ -23,11 +23,6 @@ public partial class Program
     }
 
     /// <summary>
-    /// Gets a value indicating whether the service runs as test-double.
-    /// </summary>
-    public static bool ShouldMock { get; private set; }
-
-    /// <summary>
     /// Entry point into the application.
     /// </summary>
     /// <param name="args">OS arguments.</param>
@@ -36,24 +31,46 @@ public partial class Program
     {
         args ??= Array.Empty<string>();
 
+        var shouldMock = args.Contains("--ExecutionMode=Mock");
+
+        var externalArgs =
+            args
+                .Where(x => x.StartsWith("--arg") && x.Contains('='))
+                .Select(x => x[5..])
+                .Where(x =>
+                {
+                    return int.TryParse(x.Split("=")[0], out int result);
+                })
+                .Select(x => x.Split("=", 2)[1])
+                .ToList();
+        var shouldStartWithError = externalArgs.Contains("start-with-exception");
+
         Console.WriteLine("    +-----------------------------");
         Console.WriteLine("    | Start: ");
         Console.WriteLine("    |      Args: ");
         args.ToList().ForEach(x => Console.WriteLine($"    |          * {x}"));
-        ShouldMock = args.Contains("--ExecutionMode=Mock");
-        Console.WriteLine("    |      Mocking: " + (ShouldMock ? "activated" : "deactivated"));
+        Console.WriteLine("    |      Mocking: " + (shouldMock ? "activated" : "deactivated"));
+        Console.WriteLine("    |      Start Failing: " + (shouldStartWithError ? "activated" : "deactivated"));
+        Console.WriteLine("    |      ExternalArgs: ");
+        externalArgs.ToList().ForEach(x => Console.WriteLine($"    |          * {x}"));
         Console.WriteLine("    +-----------------------------");
 
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
-        if (ShouldMock)
+        if (shouldMock)
         {
             builder.Services.AddSingleton<ITimeProvider, MockTimeProvider>();
         }
         else
         {
             builder.Services.AddSingleton<ITimeProvider, TimeProvider>();
+        }
+
+        // throw exception if requested
+        if (shouldStartWithError)
+        {
+            throw new InvalidOperationException("start-with-exception request received, so throw");
         }
 
         builder.Services.AddControllers();
@@ -84,8 +101,8 @@ public partial class Program
         Console.WriteLine("    | Shutdown: ");
         Console.WriteLine("    |      Args: ");
         args.ToList().ForEach(x => Console.WriteLine($"    |          * {x}"));
-        ShouldMock = args.Contains("--ExecutionMode=Mock");
-        Console.WriteLine("    |      Mocking: " + (ShouldMock ? "activated" : "deactivated"));
+        shouldMock = args.Contains("--ExecutionMode=Mock");
+        Console.WriteLine("    |      Mocking: " + (shouldMock ? "activated" : "deactivated"));
         Console.WriteLine("    +-----------------------------");
     }
 }

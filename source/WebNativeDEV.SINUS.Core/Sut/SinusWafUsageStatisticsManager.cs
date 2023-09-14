@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.Core.UITesting;
 using WebNativeDEV.SINUS.MsTest;
 
@@ -40,14 +41,13 @@ public static class SinusWafUsageStatisticsManager
             return;
         }
 
-        var loggerFactory = TestBase.Container.Resolve<ILoggerFactory>();
-        var usageLogger = loggerFactory.CreateLogger<TestBase>();
+        var usageLogger = TestBaseSingletonContainer.CreateLogger<TestBase>();
         usageLogger.LogInformation("+--------------------------------");
         usageLogger.LogInformation("| Tests Including Waf: {Count}", including.Count);
 
         foreach (var testIdsIncludingWaf in including)
         {
-            var disposedInfo = Browser.TestsDisposingBrowsers.Contains(testIdsIncludingWaf)
+            var disposedInfo = SinusWafUsageStatisticsManager.TestsDisposingWaf.Contains(testIdsIncludingWaf)
                                     ? "disposed"
                                     : "leak    ";
             usageLogger.LogInformation("| ({DisposedInfo}) {Id}", disposedInfo, testIdsIncludingWaf);

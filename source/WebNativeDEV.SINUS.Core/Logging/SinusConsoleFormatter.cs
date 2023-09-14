@@ -17,7 +17,7 @@ using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 /// Formatter class that is very much custom for the use case and defines "blocks" for
 /// given, when, then, debug, dispose.
 /// </summary>
-public class SinusConsoleFormatter : ConsoleFormatter, IDisposable
+internal class SinusConsoleFormatter : ConsoleFormatter, IDisposable
 {
     private readonly IDisposable? optionsReloadToken;
     private ConsoleFormatterOptions formatterOptions;

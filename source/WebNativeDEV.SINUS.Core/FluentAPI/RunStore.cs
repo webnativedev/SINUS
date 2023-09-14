@@ -11,26 +11,26 @@ using System.Linq;
 using WebNativeDEV.SINUS.Core.Events.Contracts;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 using WebNativeDEV.SINUS.Core.FluentAPI.Events;
-using WebNativeDEV.SINUS.Core.Ioc;
+using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.MsTest;
 
 /// <summary>
 /// Represents the store that is used in test runners.
 /// </summary>
-public class RunStore : IRunStore
+internal sealed class RunStore : IRunStore
 {
     private readonly Dictionary<string, object?> store = new();
     private readonly ILogger logger;
-    private readonly IEventBusPublisher? eventBus;
+    private readonly TestBaseScopeContainer scope;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RunStore"/> class.
     /// </summary>
-    /// <param name="eventBus">The bus used to publish change events.</param>
-    public RunStore(IEventBusPublisher? eventBus)
+    /// <param name="scope">The scoped dependencies.</param>
+    public RunStore(TestBaseScopeContainer scope)
     {
-        this.logger = TestBase.Container.Resolve<ILoggerFactory>().CreateLogger<RunStore>();
-        this.eventBus = eventBus;
+        this.logger = TestBaseSingletonContainer.CreateLogger<RunStore>();
+        this.scope = scope;
     }
 
     /// <inheritdoc/>
@@ -82,7 +82,7 @@ public class RunStore : IRunStore
         var oldValue = !containsKey ? null : this.store[key];
         this.store[key] = item;
 
-        this.eventBus?.Publish(this, new RunStoreDataStoredEventBusEventArgs(key, item, !containsKey, oldValue));
+        this.scope.EventBus?.Publish(this, new RunStoreDataStoredEventBusEventArgs(key, item, !containsKey, oldValue));
 
         return this;
     }
@@ -151,6 +151,11 @@ public class RunStore : IRunStore
     /// <inheritdoc/>
     public object? ReadObject(string key)
     {
+        if (!this.store.ContainsKey(key))
+        {
+            return null;
+        }
+
         return this.store[key];
     }
 

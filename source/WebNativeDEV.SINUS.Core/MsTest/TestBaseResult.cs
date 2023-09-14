@@ -9,22 +9,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebNativeDEV.SINUS.Core.MsTest.Contracts;
 using WebNativeDEV.SINUS.MsTest;
 
 /// <summary>
 /// Result of a test run.
 /// </summary>
-public class TestBaseResult
+internal class TestBaseResult : ITestBaseResult
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="TestBaseResult"/> class.
     /// </summary>
     /// <param name="success">Execution result state.</param>
-    /// <param name="testBase">The instance of the test execution.</param>
-    public TestBaseResult(bool success, TestBase testBase)
+    /// <param name="scope">The instance to the dependency store.</param>
+    public TestBaseResult(bool success, TestBaseScopeContainer scope)
     {
         this.Success = success;
-        this.TestBase = testBase;
+        this.Scope = scope;
     }
 
     /// <summary>
@@ -35,5 +36,5 @@ public class TestBaseResult
     /// <summary>
     /// Gets the test base instance.
     /// </summary>
-    public TestBase TestBase { get; }
+    internal TestBaseScopeContainer Scope { get; }
 }

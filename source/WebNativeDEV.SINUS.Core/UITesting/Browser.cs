@@ -10,7 +10,7 @@ using OpenQA.Selenium.Support.UI;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
-using WebNativeDEV.SINUS.Core.Ioc;
+using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 using WebNativeDEV.SINUS.MsTest;
 
@@ -27,19 +27,17 @@ public sealed class Browser : IBrowser
     private readonly string id;
     private IWebDriver? driver;
     private bool disposedValue;
-    private ILogger? logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Browser"/> class.
     /// </summary>
     /// <param name="driver">Underlying Selenium WebDrivers.</param>
-    /// <param name="loggerFactory">The factory to create logger-objects.</param>
     /// <param name="contentFolder">Folder to store data.</param>
     /// <param name="humanReadablePageName">Logical page name.</param>
     /// <param name="id">Single identifier that identifies the browser uniquely inside the test session.</param>
-    public Browser(IWebDriver driver, ILoggerFactory loggerFactory, string contentFolder = "./", string? humanReadablePageName = null, string? id = null)
+    public Browser(IWebDriver driver, string contentFolder = "./", string? humanReadablePageName = null, string? id = null)
     {
-        this.LoggerFactory = loggerFactory;
+        this.Logger = TestBaseSingletonContainer.CreateLogger<Browser>();
         this.Logger.LogInformation(
             "Broswer object created {DriverName} - logger: {LoggerName} - content: {ContentFolder}",
             driver?.GetType()?.ToString() ?? "null",
@@ -110,20 +108,9 @@ public sealed class Browser : IBrowser
     public string? HumanReadablePageName { get; }
 
     /// <summary>
-    /// Gets the factory to create logger instances.
-    /// </summary>
-    private ILoggerFactory LoggerFactory { get; }
-
-    /// <summary>
     /// Gets the logger instance.
     /// </summary>
-    private ILogger Logger
-    {
-        get
-        {
-            return this.logger ??= this.LoggerFactory.CreateLogger<Browser>();
-        }
-    }
+    private ILogger Logger { get; }
 
     /// <summary>
     /// Prints the usage statistics of the browser objects.
@@ -137,8 +124,7 @@ public sealed class Browser : IBrowser
             return;
         }
 
-        var loggerFactory = TestBase.Container.Resolve<ILoggerFactory>();
-        var usageLogger = loggerFactory.CreateLogger<TestBase>();
+        var usageLogger = TestBaseSingletonContainer.CreateLogger<TestBase>();
         usageLogger.LogInformation("+--------------------------------");
         usageLogger.LogInformation("| Tests Including Browsers: {Count}", including.Count);
 

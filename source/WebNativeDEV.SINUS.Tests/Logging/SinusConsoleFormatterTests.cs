@@ -101,7 +101,7 @@ public class SinusConsoleFormatterTests : TestBase
             new[] { tokenSource },
             optionsCache);
 
-        this.Test()
+        this.Test(r => r
             .Given(
                 "Creating a formatter",
                 data => data.StoreSut(new SinusConsoleFormatter(optionsMonitor)))
@@ -109,7 +109,7 @@ public class SinusConsoleFormatterTests : TestBase
                 "writing a message to TextWriter",
                 data =>
                 {
-                    data.ReadSut<SinusConsoleFormatter>().Write(logEntry, null, writer!);
+                    data.ReadSut<ConsoleFormatter>().Write(logEntry, null, writer!);
                     if (changeOption)
                     {
                         configuration.Reload();
@@ -123,7 +123,6 @@ public class SinusConsoleFormatterTests : TestBase
                     var content = Encoding.ASCII.GetString(stream.ToArray()).ReplaceLineEndings(string.Empty).Trim();
                     content.Should().Be(expectedResult);
                 })
-            .DebugPrint()
-            .Dispose();
+            .DebugPrint());
     }
 }

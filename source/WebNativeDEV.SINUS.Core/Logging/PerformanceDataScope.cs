@@ -14,7 +14,7 @@ using WebNativeDEV.SINUS.Core.Execution;
 /// Represents a manager class responsible for starting and ending a defined scope of execution
 /// and log corresponding meta-data.
 /// </summary>
-public sealed class PerformanceDataScope : IDisposable
+internal sealed class PerformanceDataScope : IDisposable
 {
     private const string MainMessageBody = "execution performance for block is";
     private readonly ILogger logger;
@@ -79,7 +79,7 @@ public sealed class PerformanceDataScope : IDisposable
     /// <param name="prefix">The prefix.</param>
     /// <param name="description">The description.</param>
     /// <param name="actionsCount">Count of actions that are skipped.</param>
-    public static void WriteSkip(ILogger<ExecutionEngine> logger, string prefix, object description, int actionsCount)
+    public static void WriteSkip(ILogger logger, string prefix, object description, int actionsCount)
     {
         var prefixCalculated = prefix == null ? string.Empty : prefix + ": ";
 

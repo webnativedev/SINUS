@@ -4,11 +4,13 @@
 
 namespace WebNativeDEV.SINUS.Core.Execution;
 
+using NSubstitute.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebNativeDEV.SINUS.Core.Execution.Contracts;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 using WebNativeDEV.SINUS.Core.Sut;
 using WebNativeDEV.SINUS.MsTest;
@@ -16,7 +18,7 @@ using WebNativeDEV.SINUS.MsTest;
 /// <summary>
 /// Represents a class used as output for the execution engine implementation.
 /// </summary>
-public sealed class ExecutionOutput
+internal sealed class ExecutionOutput : IExecutionOutput
 {
     /// <summary>
     /// Gets the exceptions that were raised during execution.
@@ -24,37 +26,57 @@ public sealed class ExecutionOutput
     public IList<Exception> Exceptions { get; } = new List<Exception>();
 
     /// <summary>
-    /// Gets the HttpClient created for the execution.
+    /// Gets or sets the HttpClient created for the execution.
     /// </summary>
-    public HttpClient? HttpClient { get; internal set; }
+    public HttpClient? HttpClient { get; set; }
 
     /// <summary>
-    /// Gets the Web Application Factory as IDisposable.
+    /// Gets or sets the Web Application Factory as IDisposable.
     /// </summary>
-    public ISinusWebApplicationFactory? WebApplicationFactory { get; internal set; }
+    public ISinusWebApplicationFactory? WebApplicationFactory { get; set; }
 
     /// <summary>
-    /// Gets a value indicating whether the execution is only prepared.
+    /// Gets or sets a value indicating whether the execution is only prepared.
     /// </summary>
-    public bool IsPreparedOnly { get; internal set; }
+    public bool IsPreparedOnly { get; set; }
 
     /// <summary>
-    /// Gets a value indicating whether the execution should run if exceptions were already raised.
+    /// Gets or sets a value indicating whether the execution should run if exceptions were already raised.
     /// </summary>
-    public bool ShouldRunIfAlreadyExceptionOccured { get; internal set; }
+    public bool ShouldRunIfAlreadyExceptionOccured { get; set; }
 
     /// <summary>
-    /// Gets a system under test endpoint.
+    /// Gets or sets a system under test endpoint.
     /// </summary>
-    public string? SutEndpoint { get; internal set; }
+    public string? SutEndpoint { get; set; }
 
     /// <summary>
-    /// Gets the run category.
+    /// Gets or sets the run category.
     /// </summary>
-    public RunCategory RunCategory { get; internal set; }
+    public RunCategory RunCategory { get; set; }
 
     /// <summary>
-    /// Gets the reference to the test.
+    /// Gets or sets the reference to the test.
     /// </summary>
-    public TestBase? TestBase { get; internal set; }
+    public TestBase? TestBase { get; set; }
+
+    /// <summary>
+    /// Resets the http client.
+    /// </summary>
+    public void ResetHttpClient()
+    {
+        this.HttpClient?.CancelPendingRequests();
+        this.HttpClient?.Dispose();
+        this.HttpClient = null;
+    }
+
+    /// <summary>
+    /// Resets the WAF.
+    /// </summary>
+    public void ResetWebApplicationFactory()
+    {
+        this.WebApplicationFactory?.CloseCreatedHost();
+        this.WebApplicationFactory?.Dispose();
+        this.WebApplicationFactory = null;
+    }
 }

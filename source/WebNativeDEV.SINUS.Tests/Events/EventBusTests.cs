@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebNativeDEV.SINUS.Core.Assertions;
 using WebNativeDEV.SINUS.Core.Events;
 using WebNativeDEV.SINUS.Core.Events.Contracts;
 using WebNativeDEV.SINUS.Core.FluentAPI;
@@ -81,4 +82,25 @@ public class EventBusTests : TestBase
         .Given()
         .When(data => data.Sut = 1)
         .Then(data => data.Actual.Should().NotBeNull()));
+
+    [TestMethod]
+    public void Given_InternalBus_When_PublishingEvents_Then_AllDataShouldBePresent()
+    => this.Test(r => r
+        .Listen<RunStoreDataStoredEventBusEventArgs>(
+            "stored data",
+            (sender, data, e) => data["actual-event"] = e,
+            (sender, data, e) => e.Key == data.KeyActual)
+        .Given()
+        .When(data => data.Actual = 1)
+        .Then(data =>
+        {
+            data.Actual.Should().Be(1);
+            data.Should().ActualBe(1);
+
+            var arg = data.Read<RunStoreDataStoredEventBusEventArgs>("actual-event");
+            arg.Key.Should().Be(data.KeyActual);
+            arg.Value.Should().Be(1);
+            arg.IsNew.Should().BeTrue();
+            arg.OldValue.Should().BeNull();
+        }));
 }

@@ -11,7 +11,7 @@ using WebNativeDEV.SINUS.Core.Events;
 /// Represents an interface that manages the execution of a test based on a given-when-then sequence.
 /// This interface allows to create a proper Fluent API.
 /// </summary>
-public interface IRunner : IDisposable
+public interface IRunner : IDisposable, IGiven, IGivenWithSut, IGivenWithSimpleSut, IWhen, IThen
 {
     /// <summary>
     /// Registers an event handler.
@@ -118,5 +118,30 @@ public interface IRunner : IDisposable
     /// The interface helps to reduce the set of options to only the appropriate in the sequence.
     /// </returns>
     IGivenWithSut GivenASystem<TProgram>()
+        where TProgram : class;
+
+    /// <summary>
+    /// Allows to define the Then-Action in a Given-When-Then sequence.
+    /// </summary>
+    /// <typeparam name="TProgram">The type to bootstrap the Sut.</typeparam>
+    /// <param name="description">Plain text description.</param>
+    /// <param name="args">The arguments to hand-over into the sut.</param>
+    /// <returns>
+    /// An object that will point to the runner.
+    /// The interface helps to reduce the set of options to only the appropriate in the sequence.
+    /// </returns>
+    IGivenWithSut GivenASystem<TProgram>(string description, params string[] args)
+        where TProgram : class;
+
+    /// <summary>
+    /// Allows to define the Then-Action in a Given-When-Then sequence.
+    /// </summary>
+    /// <typeparam name="TProgram">The type to bootstrap the Sut.</typeparam>
+    /// <param name="args">The arguments to hand-over into the sut.</param>
+    /// <returns>
+    /// An object that will point to the runner.
+    /// The interface helps to reduce the set of options to only the appropriate in the sequence.
+    /// </returns>
+    IGivenWithSut GivenASystem<TProgram>(params string[] args)
         where TProgram : class;
 }

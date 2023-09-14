@@ -16,117 +16,116 @@ using WebNativeDEV.SINUS.MsTest;
 public class RunnerTests : TestBase
 {
     [TestMethod]
-    [ExpectedException(typeof(AssertFailedException))]
     public void Given_ARunnerWithAnErrorInGiven_When_ExceptionIsThrown_Then_ThisErrorShouldBeVisible()
     {
-        this.Test()
+        this.Test(r => r
             .Given("An setup step with an error", data => throw new Exception("Setup failed"))
             .When("An excecution occurs", data => data.PrintStore())
-            .ThenShouldHaveFailedWith<Exception>()
-            .Dispose();
+            .ThenShouldHaveFailedWith<Exception>());
+    }
+
+    [TestMethod]
+    public void Given_ARunnerWithAnErrorInWhen_When_ExceptionIsThrown_Then_ThisErrorShouldBeVisible()
+    {
+        this.Test(r => r
+            .Given("An setup step with an error")
+            .When("An excecution occurs", data => throw new Exception("Execution failed"))
+            .ThenShouldHaveFailedWith<Exception>());
     }
 
     [TestMethod]
     [ExpectedException(typeof(AssertFailedException))]
-    public void Given_ARunnerWithAnErrorInWhen_When_ExceptionIsThrown_Then_ThisErrorShouldBeVisible()
+    public void Given_ARunnerWithAnErrorInWhen_When_ExceptionIsThrown_Then_ThisErrorShouldBeVisibleIfNotCaught()
     {
-        this.Test()
+        this.Test(r => r
             .Given("An setup step with an error")
             .When("An excecution occurs", data => throw new Exception("Execution failed"))
-            .ThenShouldHaveFailedWith<Exception>()
-            .Dispose();
+            .ThenNoError());
     }
 
     [TestMethod]
     [ExpectedException(typeof(AssertFailedException))]
     public void Given_ARunnerWithAnErrorInThen_When_ExceptionIsThrown_Then_ThisErrorShouldBeVisible()
     {
-        this.Test()
+        this.Test(r => r
             .Given("An setup step with an error")
             .When("An excecution occurs", data => data.PrintStore())
-            .Then("The error should be visible", data => throw new Exception("Verification failed"))
-            .Dispose();
+            .Then("The error should be visible", data => throw new Exception("Verification failed")));
     }
 
     [TestMethod]
     [ExpectedException(typeof(AssertFailedException))]
     public void Given_ARunnerWithAnErrorInThen2x_When_ExceptionIsThrown_Then_ThisErrorShouldBeVisible()
     {
-        this.Test()
+        this.Test(r => r
             .Given("An setup step with an error")
             .When("An excecution occurs", data => data.PrintStore())
             .Then(
                 "The error should be visible",
                 data => throw new Exception("Verification failed"),
-                data => throw new Exception("Verification failed"))
-            .Dispose();
+                data => throw new Exception("Verification failed")));
     }
 
     [TestMethod]
     [ExpectedException(typeof(AssertFailedException))]
     public void Given_ARunnerWithAnErrorInThen2x_When_ExceptionIsThrownAndAssertion_Then_ThisErrorShouldBeVisible()
     {
-        this.Test()
+        this.Test(r => r
             .Given("An setup step with an error")
             .When("An excecution occurs", data => data.PrintStore())
             .Then(
                 "The error should be visible",
                 data => throw new Exception("Verification failed"),
-                data => Assert.Fail("Error happens here"))
-            .Dispose();
+                data => Assert.Fail("Error happens here")));
     }
 
     [TestMethod]
     [ExpectedException(typeof(AssertInconclusiveException))]
     public void Given_ARunner_When_NotExecutingAnyCode_Then_TheTestShouldBeInconclusive()
     {
-        this.Test()
+        this.Test(r => r
             .Given("A setup without code")
             .When("An excecution without code")
-            .Then("A validation without code")
-            .Dispose();
+            .Then("A validation without code"));
     }
 
     [TestMethod]
     [ExpectedException(typeof(AssertInconclusiveException))]
     public void Given_ARunnerWithGiven_When_NotExecutingAnyCodeInWhen_Then_TheTestShouldBeInconclusive()
     {
-        this.Test()
+        this.Test(r => r
             .Given("A setup without code", data => data["test"] = 11)
             .When("An excecution without code")
             .Then("A validation without code")
-            .DebugPrint()
-            .Dispose();
+            .DebugPrint());
     }
 
     [TestMethod]
     [ExpectedException(typeof(AssertInconclusiveException))]
     public void Given_ARunnerWithGivenAndThen_When_NotExecutingAnyCodeInWhen_Then_TheTestShouldBeInconclusive()
     {
-        this.Test()
+        this.Test(r => r
             .Given("A setup without code", data => data["test"] = 11)
             .When("An excecution without code")
             .Then("A validation without code", data => data["test2"] = data["test"])
-            .DebugPrint()
-            .Dispose();
+            .DebugPrint());
     }
 
     [TestMethod]
     [ExpectedException(typeof(AssertInconclusiveException))]
     public void Given_ARunnerWithThen_When_NotExecutingAnyCodeInWhen_Then_TheTestShouldBeInconclusive()
     {
-        this.Test()
+        this.Test(r => r
             .Given("A setup without code")
             .When("An excecution without code")
             .Then("A validation without code", data => data["test2"] = 22)
-            .DebugPrint()
-            .Dispose();
+            .DebugPrint());
     }
 
     [TestMethod]
     public void Given_ARunnerWithRunStore_When_StoringDataInDifferentWays_Then_AllShouldBeAvailable()
     {
-        this.Test()
+        this.Test(r => r
             .Given("A RunStore")
             .When("saving some data", data =>
             {
@@ -144,8 +143,7 @@ public class RunnerTests : TestBase
                 data => Assert.AreEqual("sut", data.ReadSut<string>()),
                 data => Assert.AreEqual("sut3", data.ReadActual<string>()),
                 data => Assert.AreEqual(5, data["key5"]))
-            .DebugPrint()
-            .Dispose();
+            .DebugPrint());
     }
 
     [TestMethod]
@@ -153,14 +151,13 @@ public class RunnerTests : TestBase
     {
         try
         {
-            this.Test()
+            this.Test(r => r
                 .Given("A RunStore")
                 .When(
                     "saving some data with null as calculation function",
                     data => data.StoreActual<string>(null!))
                 .ThenNoError("no error")
-                .DebugPrint()
-                .Dispose();
+                .DebugPrint());
         }
         catch
         {
@@ -172,7 +169,7 @@ public class RunnerTests : TestBase
     [ExpectedException(typeof(AssertFailedException))]
     public void Given_ARunnerWithRunStore_When_StoringActualAsStringAndReadAsInt_Then_Throw()
     {
-        this.Test()
+        this.Test(r => r
             .Given("A RunStore")
             .When("saving some data and read with another type", data =>
             {
@@ -181,15 +178,14 @@ public class RunnerTests : TestBase
                 check.Should().NotBe(3);
             })
             .Then("exception occurs")
-            .DebugPrint()
-            .Dispose();
+            .DebugPrint());
     }
 
     [TestMethod]
     [ExpectedException(typeof(AssertFailedException))]
     public void Given_ARunnerWithRunStore_When_StoringMultipleStrings_Then_CannotReadByType()
     {
-        this.Test()
+        this.Test(r => r
             .Given("A RunStore")
             .When("saving some strings", data =>
             {
@@ -201,8 +197,7 @@ public class RunnerTests : TestBase
                 check.Should().NotBe("2");
             })
             .Then("exception occurs")
-            .DebugPrint()
-            .Dispose();
+            .DebugPrint());
     }
 
     [TestMethod]

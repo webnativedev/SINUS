@@ -15,18 +15,19 @@ using System.Text;
 using System.Threading.Tasks;
 using WebNativeDEV.SINUS.Core.FluentAPI;
 using WebNativeDEV.SINUS.Core.MsTest;
+using WebNativeDEV.SINUS.Core.MsTest.Contracts;
 
 /// <summary>
 /// Fluent Assertions context for TestBaseResult providing check methods.
 /// </summary>
 public class TestBaseResultAssertions :
-    ReferenceTypeAssertions<TestBaseResult, TestBaseResultAssertions>
+    ReferenceTypeAssertions<ITestBaseResult, TestBaseResultAssertions>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="TestBaseResultAssertions"/> class.
     /// </summary>
     /// <param name="instance">The instance to operate on.</param>
-    public TestBaseResultAssertions(TestBaseResult instance)
+    public TestBaseResultAssertions(ITestBaseResult instance)
         : base(instance)
     {
     }

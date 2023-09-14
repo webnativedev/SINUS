@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WebNativeDEV.SINUS.Core.Events;
 using WebNativeDEV.SINUS.Core.Execution;
+using WebNativeDEV.SINUS.Core.Execution.Contracts;
 
 /// <summary>
 /// Event Arg for execution event.
@@ -21,7 +22,7 @@ public class ExecutedEventBusEventArgs : EventBusEventArgs
     /// Initializes a new instance of the <see cref="ExecutedEventBusEventArgs"/> class.
     /// </summary>
     /// <param name="output">The output of the execution.</param>
-    public ExecutedEventBusEventArgs(ExecutionOutput output)
+    public ExecutedEventBusEventArgs(IExecutionOutput output)
         : base()
     {
         this.Output = output;
@@ -30,5 +31,5 @@ public class ExecutedEventBusEventArgs : EventBusEventArgs
     /// <summary>
     /// Gets the Execution output.
     /// </summary>
-    public ExecutionOutput Output { get; }
+    public IExecutionOutput Output { get; }
 }

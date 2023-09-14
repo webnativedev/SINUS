@@ -41,42 +41,37 @@ public class AssertionTests : TestBase
     [TestMethod]
     [ExpectedException(typeof(AssertFailedException))]
     public void Given_FluentAssertions_When_CheckActual_Then_CheckForNullThrowsAnError()
-        => this.Test()
+        => this.Test(r => r
             .Given("Assertions extended and actual value available")
             .When("Running assert with null", data => data.Actual = "test")
-            .Then("exception should be thrown", data => data.Should().ActualBeNull())
-            .Dispose();
+            .Then("exception should be thrown", data => data.Should().ActualBeNull()));
 
     [TestMethod]
     public void Given_FluentAssertions_When_CheckActualAfterMethodStore_Then_CheckForNullThrowsNoError()
-        => this.Test()
+        => this.Test(r => r
             .Given("Assertions extended and actual value available", data => data.StoreActual("test"))
             .When("Running assert with null", data => data.Should().ActualBeNotNull().And.ActualBe("test"))
-            .ThenNoError()
-            .Dispose();
+            .ThenNoError());
 
     [TestMethod]
     [ExpectedException(typeof(AssertFailedException))]
     public void Given_FluentAssertions_When_CheckActual_Then_CheckForNotNullThrowsAnError()
-        => this.Test()
+        => this.Test(r => r
             .Given("Assertions extended and actual value not available")
             .When("Running assert with not null", data => data.InitActual())
-            .Then("exception should be thrown", data => data.Should().ActualBeNotNull())
-            .Dispose();
+            .Then("exception should be thrown", data => data.Should().ActualBeNotNull()));
 
     [TestMethod]
     public void Given_FluentAssertions_When_CheckActualAfterMethodStore_Then_CheckForNotNullThrowsNoError()
-        => this.Test()
+        => this.Test(r => r
             .Given("Assertions extended and actual value available", data => data.StoreActual(null))
             .When("Running assert with not null", data => data.Should().ActualBeNull())
-            .ThenNoError("no error expected")
-            .Dispose();
+            .ThenNoError("no error expected"));
 
     [TestMethod]
     public void Given_FluentAssertions_When_CheckActualAfterMethodStore_Then_CheckForNotNullWithActualBe()
-        => this.Test()
+        => this.Test(r => r
             .Given(data => data.StoreActual(null))
             .When(data => data.Should().ActualBe<string>(null!))
-            .ThenNoError()
-            .Dispose();
+            .ThenNoError());
 }

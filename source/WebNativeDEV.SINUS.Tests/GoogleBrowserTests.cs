@@ -28,21 +28,20 @@ public sealed class GoogleBrowserTests : TestBase
     [TestCategory("external")]
     [BusinessRequirement("001:Read Title")]
     public void Given_ABrowserLoadingGoogle_When_CheckTitle_Then_TitleIsNotNull()
-        => this.Test()
+        => this.Test(r => r
             .GivenABrowserAt(this.Google)
             .When(
                 "Navigation to page finished",
                 (browser, data) => data.Actual = browser.Title)
             .Then(
                 "Title should not be null",
-                (browser, data) => data.Actual.Should().NotBeNull())
-            .Dispose();
+                (browser, data) => data.Actual.Should().NotBeNull()));
 
     [TestMethod]
     [TestCategory("external")]
     [BusinessRequirement("001:Read Title")]
     public void Given_ABrowserLoadingGoogle_When_CheckTitle_Then_TitleIsNotNullWithDebug()
-     => this.Test()
+     => this.Test(r => r
             .GivenABrowserAt(this.Google)
             .When(
                 "Navigation to page finished",
@@ -50,54 +49,7 @@ public sealed class GoogleBrowserTests : TestBase
             .Then(
                 "no exception should occur",
                 (browser, data) => data.ReadActual<string>().Should().NotBeNullOrWhiteSpace())
-            .Debug((browser, data) => data.PrintStore())
-            .Dispose();
-
-    [TestMethod]
-    [TestCategory("external")]
-    [BusinessRequirement("001:Read Title")]
-    public void Given_ABrowserLoadingGoogleWithUsing_When_CheckTitle_Then_TitleIsNotNull()
-    {
-        using var runner = this.Test()
-            .GivenABrowserAt(this.Google)
-            .When(
-                "Navigation to page finished",
-                (browser, data) => data.StoreActual(browser.Title!))
-            .Then(
-                "Title should not be null",
-                (browser, data) => Assert.IsNotNull(data.ReadActual<string>()));
-    }
-
-    [TestMethod]
-    [TestCategory("external")]
-    [BusinessRequirement("001:Read Title")]
-    public void Given_ABrowserLoadingGoogleWithUsing_When_CheckTitle_Then_TitleIsNotNullWithDebug()
-    {
-        using var runner = this.Test()
-                .GivenABrowserAt(this.Google)
-                .When("Navigation to page finished", (browser, data) => data.StoreActual(browser.Title!))
-                .Then("no exception should occur", (browser, data) => Assert.IsNotNull(data.ReadActual<string>()))
-                .Debug((browser, data) => data.PrintStore());
-    }
-
-    [TestMethod]
-    [TestCategory("external")]
-    [BusinessRequirement("001:Read Title")]
-    public void Given_ABrowserLoadingGoogleWithUsingBlock_When_CheckTitle_Then_TitleIsNotNull()
-    {
-        #pragma warning disable IDE0063 // Use simple using-Statement.
-
-        using (var runner = this.Test()
-                .GivenABrowserAt(this.Google)
-                .When("Navigation to page finished", (browser, data) => data.StoreActual(browser.Title!))
-                .Then("no exception should occur", (browser, data) => Assert.IsNotNull(data.ReadActual<string>()))
-                .Debug((browser, data) => data.PrintStore()))
-        {
-            runner.Should().NotBeNull();
-        }
-
-        #pragma warning restore IDE0063 // Use simple using-Statement.
-    }
+            .Debug((browser, data) => data.PrintStore()));
 
     [TestMethod]
     [TestCategory("external")]
@@ -105,19 +57,17 @@ public sealed class GoogleBrowserTests : TestBase
     [TechnicalApproval("Empty When-Block leads to inconclusive result.")]
     [TechnicalApproval("Browser injected correctly in Then block.")]
     public void Given_ABrowserLoadingGoogle_When_Nothing_Then_ResultInconclusive()
-    => this.Test()
+    => this.Test(r => r
         .GivenABrowserAt(this.Google)
         .When("Navigation to page finished")
-        .Then("Title should not be null", (browser, data) => browser.Should().NotBeNull())
-        .Dispose();
+        .Then("Title should not be null", (browser, data) => browser.Should().NotBeNull()));
 
     [TestMethod]
     [TestCategory("external")]
     [BusinessRequirement("002:Take Screenshot")]
     public void Given_ABrowserLoadingGoogle_When_TakeASnapshot_Then_NoExceptionShouldOccur()
-        => this.Test()
+        => this.Test(r => r
             .GivenABrowserAt(this.Google)
             .When("Taking a snapshot", (browser, data) => browser.TakeScreenshot())
-            .Then("no exception should occur")
-            .Dispose();
+            .Then("no exception should occur"));
 }

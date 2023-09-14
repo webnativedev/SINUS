@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebNativeDEV.SINUS.Core.ArgumentValidation.Exceptions;
 
 /// <summary>
 /// Class that is used to ensure rules similar to data contracts.

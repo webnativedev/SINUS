@@ -17,7 +17,7 @@ using WebNativeDEV.SINUS.MsTest;
 /// <summary>
 /// Represents a class used as input for the execution engine implementation.
 /// </summary>
-public class ExecutionParameter
+internal class ExecutionParameter
 {
     /// <summary>
     /// Gets or sets the reference to the test executed.
@@ -68,6 +68,11 @@ public class ExecutionParameter
     /// Gets or sets a type that represents the class which needs to be instantiated to create a system under test.
     /// </summary>
     public Type? SutType { get; set; }
+
+    /// <summary>
+    /// Gets the arguments to hand-over in the creation of a system under test.
+    /// </summary>
+    public IList<string> SutArgs { get; } = new List<string>();
 
     /// <summary>
     /// Gets or sets an endpoint address for the system under test.

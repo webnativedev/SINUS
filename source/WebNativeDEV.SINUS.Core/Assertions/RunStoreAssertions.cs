@@ -45,7 +45,7 @@ public class RunStoreAssertions :
     /// <returns>Fluent API driven AndConstraint object.</returns>
     public AndConstraint<RunStoreAssertions> ActualBe<T>(T expected, string because = "", params object[] becauseArgs)
     {
-        var actual = this.Subject?.ReadActualObject();
+        var actual = this.Subject.ReadActualObject();
         if (actual is not T)
         {
             actual = null;

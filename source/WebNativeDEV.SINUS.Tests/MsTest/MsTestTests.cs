@@ -1,4 +1,4 @@
-﻿// <copyright file="RunStoreTests.cs" company="WebNativeDEV">
+﻿// <copyright file="MsTestTests.cs" company="WebNativeDEV">
 // Copyright (c) Daniel Kienböck. All Rights Reserved. Licensed under the MIT License. See LICENSE in the project root for license information.
 // </copyright>
 
@@ -19,7 +19,6 @@ using WebNativeDEV.SINUS.Core.Assertions;
 using WebNativeDEV.SINUS.Core.FluentAPI;
 using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.Core.MsTest.Contracts;
-using WebNativeDEV.SINUS.MsTest;
 using WebNativeDEV.SINUS.SystemUnderTest.Services.Abstractions;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'Type_or_Member'.
@@ -42,9 +41,21 @@ public class MsTestTests : TestBase
     }
 
     [TestMethod]
-    public void Given_MinimalTest_When_CheckResult_Then_DataTestBaseShouldBePresent()
+    public void Given_ASolidTestBase_When_CheckingVariables_Then_NonShouldBeNull()
     {
-        this.Test(r => { }).TestBase.TestName.Should().Be(this.TestName);
+        this.Test(r => r
+            .Given("solid testbase")
+            .When("storing data", data =>
+            {
+                data["logsDir"] = this.TestContext.TestRunResultsDirectory;
+                data["runDir"] = this.TestContext.TestRunDirectory;
+                data["testName"] = this.TestName;
+            })
+            .Then(
+                "all data should be not null",
+                data => Assert.IsNotNull(data["logsDir"]),
+                data => Assert.IsNotNull(data["runDir"]),
+                data => Assert.IsNotNull(data["testName"]))
+            .DebugPrint());
     }
-
 }

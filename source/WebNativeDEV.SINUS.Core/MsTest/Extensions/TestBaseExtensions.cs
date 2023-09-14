@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Diagnostics;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
-using WebNativeDEV.SINUS.Core.Ioc;
 using WebNativeDEV.SINUS.Core.Sut;
 using WebNativeDEV.SINUS.Core.UITesting;
 using WebNativeDEV.SINUS.MsTest;
@@ -44,12 +43,11 @@ public static class TestBaseExtensions
     {
         Ensure.NotNull(testBase);
 
-        ILogger<TestBase> logger = TestBase.Container?.Resolve<ILoggerFactory>()?.CreateLogger<TestBase>()
-            ?? throw new ArgumentNullException(nameof(testBase), "extended object is null");
+        var logger = TestBaseSingletonContainer.CreateLogger<TestBase>();
 
         // assumption that each Run has a run-directory below
         // the main TestResults folder (as standard)
-        int count = Directory.GetDirectories(Path.Combine(testBase.RunDir, "..")).Length;
+        int count = Directory.GetDirectories(Path.Combine(testBase.TestContext.TestRunDirectory ?? ".", "..")).Length;
 
         if (count >= max)
         {
@@ -68,38 +66,26 @@ public static class TestBaseExtensions
     {
 #pragma warning disable CA1031 // don't catch general exceptions
 #pragma warning disable S1215 // "GC.Collect" should not be called
+
         Ensure.NotNull(testBase);
 
-        for (int i = 0; i < ReevaluationCount; i++)
-        {
-            try
-            {
-                Browser.TestsIncludingBrowsers.Should().AllSatisfy(element => Browser.TestsDisposingBrowsers.Contains(element));
-                Browser.TestsDisposingBrowsers.Should().AllSatisfy(element => Browser.TestsIncludingBrowsers.Contains(element));
-                Browser.TestsIncludingBrowsers.Should().HaveSameCount(Browser.TestsDisposingBrowsers);
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.WaitForFullGCComplete();
+        Thread.Sleep(TimeSpan.FromSeconds(SecondsDelay));
 
-                SinusWafUsageStatisticsManager.TestsIncludingWaf.Should().AllSatisfy(element => SinusWafUsageStatisticsManager.TestsDisposingWaf.Contains(element));
-                SinusWafUsageStatisticsManager.TestsDisposingWaf.Should().AllSatisfy(element => SinusWafUsageStatisticsManager.TestsIncludingWaf.Contains(element));
-                SinusWafUsageStatisticsManager.TestsIncludingWaf.Should().HaveSameCount(SinusWafUsageStatisticsManager.TestsDisposingWaf);
+        Browser.TestsIncludingBrowsers.Should().AllSatisfy(element => Browser.TestsDisposingBrowsers.Contains(element));
+        Browser.TestsDisposingBrowsers.Should().AllSatisfy(element => Browser.TestsIncludingBrowsers.Contains(element));
+        Browser.TestsIncludingBrowsers.Should().HaveSameCount(Browser.TestsDisposingBrowsers);
 
-                Browser.PrintBrowserUsageStatistic();
-                SinusWafUsageStatisticsManager.PrintWafUsageStatistic();
-                return true;
-            }
-            catch
-            {
-                i++;
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-                GC.WaitForFullGCComplete();
-                Thread.Sleep(TimeSpan.FromSeconds(SecondsDelay));
-            }
-        }
+        SinusWafUsageStatisticsManager.TestsIncludingWaf.Should().AllSatisfy(element => SinusWafUsageStatisticsManager.TestsDisposingWaf.Contains(element));
+        SinusWafUsageStatisticsManager.TestsDisposingWaf.Should().AllSatisfy(element => SinusWafUsageStatisticsManager.TestsIncludingWaf.Contains(element));
+        SinusWafUsageStatisticsManager.TestsIncludingWaf.Should().HaveSameCount(SinusWafUsageStatisticsManager.TestsDisposingWaf);
 
-        WebNativeDEV.SINUS.Core.UITesting.Browser.PrintBrowserUsageStatistic();
+        Browser.PrintBrowserUsageStatistic();
         SinusWafUsageStatisticsManager.PrintWafUsageStatistic();
-        Assert.Fail("Leak found");
-        return false;
+        return true;
+
 #pragma warning restore S1215 // "GC.Collect" should not be called
 #pragma warning restore CA1031 // don't catch general exceptions
     }
@@ -113,7 +99,7 @@ public static class TestBaseExtensions
     {
         Ensure.NotNull(testBase);
 
-        ILogger<TestBase> logger = TestBase.Container.Resolve<ILoggerFactory>().CreateLogger<TestBase>();
+        var logger = TestBaseSingletonContainer.CreateLogger<TestBase>();
 
         var processes = GetChromeDriverProcesses(maxAgeOfProessInMinutes);
 
@@ -133,7 +119,7 @@ public static class TestBaseExtensions
     /// <param name="maxAgeOfProessInMinutes">Max age for old a process should be to identify it as zombie.</param>
     public static void KillChromeZombieProcesses(this TestBase testBase, int maxAgeOfProessInMinutes)
     {
-        ILogger<TestBase> logger = TestBase.Container.Resolve<ILoggerFactory>().CreateLogger<TestBase>();
+        var logger = TestBaseSingletonContainer.CreateLogger<TestBase>();
 
         var processes = GetChromeDriverProcesses(maxAgeOfProessInMinutes);
         foreach (var process in processes)

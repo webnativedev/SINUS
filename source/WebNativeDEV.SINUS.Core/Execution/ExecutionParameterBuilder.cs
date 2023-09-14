@@ -28,13 +28,23 @@ internal sealed class ExecutionParameterBuilder : ExecutionParameter
     /// <param name="namings">The naming convention checker.</param>
     /// <param name="runCategory">The run category.</param>
     /// <param name="exceptionsCount">The count of exceptions.</param>
-    internal ExecutionParameterBuilder(TestBase testBase, Runner runner, TestNamingConventionManager namings, RunCategory runCategory, int exceptionsCount)
+    internal ExecutionParameterBuilder(TestBase testBase, IBrowserRunner? runner, TestNamingConventionManager namings, RunCategory runCategory, int exceptionsCount)
     {
         this.TestBase = testBase;
         this.Runner = runner;
         this.Namings = namings;
         this.RunCategory = runCategory;
         this.ExceptionsCount = exceptionsCount;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ExecutionParameterBuilder"/> class.
+    /// </summary>
+    /// <param name="scope">Reference to all dependencies.</param>
+    /// <param name="runCategory">The run category.</param>
+    internal ExecutionParameterBuilder(TestBaseScopeContainer scope, RunCategory runCategory)
+        : this(scope.TestBase, scope.Runner, scope.NamingConventionManager, runCategory, scope.Exceptions.Count)
+    {
     }
 
     /// <summary>
@@ -134,6 +144,24 @@ internal sealed class ExecutionParameterBuilder : ExecutionParameter
     }
 
     /// <summary>
+    /// Add system under test arguments.
+    /// </summary>
+    /// <param name="sutArgs">The system under test args.</param>
+    /// <returns>A reference to the builder instance.</returns>
+    internal ExecutionParameterBuilder AddSutArgs(IEnumerable<string>? sutArgs)
+    {
+        if (sutArgs != null)
+        {
+            foreach (var arg in sutArgs)
+            {
+                this.SutArgs.Add(arg);
+            }
+        }
+
+        return this;
+    }
+
+    /// <summary>
     /// Builds the stored information to the final execution parameter object.
     /// </summary>
     /// <returns>The resulting execution parameter.</returns>
@@ -170,6 +198,11 @@ internal sealed class ExecutionParameterBuilder : ExecutionParameter
         }
 
         parameters.RunActions = this.RunActions && (parameters.Actions.Any() || parameters.SetupActions.Any());
+
+        foreach (var arg in this.SutArgs ?? new List<string>())
+        {
+            parameters.SutArgs.Add(arg);
+        }
 
         return parameters;
     }
