@@ -4,6 +4,7 @@
 
 namespace WebNativeDEV.SINUS.Core.UITesting.Contracts;
 
+using WebNativeDEV.SINUS.Core.UITesting.Model;
 using WebNativeDEV.SINUS.MsTest;
 
 /// <summary>

@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebNativeDEV.SINUS.Core.UITesting.Model;
 using WebNativeDEV.SINUS.MsTest;
 
 /// <summary>

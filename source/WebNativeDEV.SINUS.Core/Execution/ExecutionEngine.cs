@@ -23,6 +23,7 @@ using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 using WebNativeDEV.SINUS.Core.Logging;
 using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.Core.Sut;
+using WebNativeDEV.SINUS.Core.Sut.Contracts;
 using WebNativeDEV.SINUS.MsTest;
 
 /// <summary>

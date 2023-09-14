@@ -17,7 +17,7 @@ using WebNativeDEV.SINUS.Core.Execution.Contracts;
 using WebNativeDEV.SINUS.Core.FluentAPI;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 using WebNativeDEV.SINUS.Core.FluentAPI.Model;
-using WebNativeDEV.SINUS.Core.Sut;
+using WebNativeDEV.SINUS.Core.Sut.Contracts;
 using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 using WebNativeDEV.SINUS.MsTest;
 

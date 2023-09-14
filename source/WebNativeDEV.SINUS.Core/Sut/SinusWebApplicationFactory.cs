@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using WebNativeDEV.SINUS.Core.Sut.Contracts;
 using WebNativeDEV.SINUS.Core.UITesting;
 using WebNativeDEV.SINUS.MsTest;
 

@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WebNativeDEV.SINUS.Core.Execution.Contracts;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
-using WebNativeDEV.SINUS.Core.Sut;
+using WebNativeDEV.SINUS.Core.Sut.Contracts;
 using WebNativeDEV.SINUS.MsTest;
 
 /// <summary>

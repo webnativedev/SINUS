@@ -10,6 +10,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using WebNativeDEV.SINUS.Core.ArgumentValidation;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 using WebNativeDEV.SINUS.Core.MsTest.Contracts;
 
@@ -24,7 +25,7 @@ public class TestNamingConventionManager : ITestNamingConventionManager
     /// </summary>
     /// <param name="scope">The dependency store.</param>
     public TestNamingConventionManager(TestBaseScopeContainer scope)
-        : this(scope.TestBase.TestName)
+        : this(Ensure.NotNull(scope).TestBase.TestName)
     {
     }
 

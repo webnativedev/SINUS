@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebNativeDEV.SINUS.Core.Assertions;
 using WebNativeDEV.SINUS.Core.MsTest.Extensions;
 using WebNativeDEV.SINUS.Core.UITesting;
+using WebNativeDEV.SINUS.Core.UITesting.Model;
 using WebNativeDEV.SINUS.MsTest;
 using WebNativeDEV.SINUS.SystemUnderTest;
 

@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 internal sealed class ExecutionSetupParameters
 {
     /// <summary>
-    /// Gets the endpoint.
+    /// Gets or sets the endpoint.
     /// </summary>
-    public string? Endpoint { get; internal set; }
+    public string? Endpoint { get; set; }
 }

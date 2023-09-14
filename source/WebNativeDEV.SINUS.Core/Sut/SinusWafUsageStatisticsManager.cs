@@ -17,7 +17,7 @@ using WebNativeDEV.SINUS.MsTest;
 /// <summary>
 /// Static class that collects statistical data.
 /// </summary>
-public static class SinusWafUsageStatisticsManager
+internal static class SinusWafUsageStatisticsManager
 {
     /// <summary>
     /// Gets a list of test-identifiers that includes a browser.

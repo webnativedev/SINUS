@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
 using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.Core.UITesting.Contracts;
+using WebNativeDEV.SINUS.Core.UITesting.Model;
 using WebNativeDEV.SINUS.MsTest;
 
 /// <summary>

@@ -19,8 +19,8 @@ using WebNativeDEV.SINUS.Core.Logging;
 using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.Core.MsTest.Extensions;
 using WebNativeDEV.SINUS.Core.Sut;
-using WebNativeDEV.SINUS.Core.UITesting;
 using WebNativeDEV.SINUS.Core.UITesting.Contracts;
+using WebNativeDEV.SINUS.Core.UITesting.Model;
 using WebNativeDEV.SINUS.MsTest;
 
 /// <summary>

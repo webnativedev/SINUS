@@ -10,12 +10,13 @@ using System.Diagnostics.CodeAnalysis;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
 using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.Core.UITesting.Contracts;
+using WebNativeDEV.SINUS.Core.UITesting.Model;
 using WebNativeDEV.SINUS.MsTest;
 
 /// <summary>
 /// This class represents a factory for creating Browsers of a given type (e.g.: Chrome).
 /// </summary>
-public sealed class BrowserFactory : IBrowserFactory, IDisposable
+internal sealed class BrowserFactory : IBrowserFactory, IDisposable
 {
     private readonly ILogger logger;
     private bool disposedValue;
