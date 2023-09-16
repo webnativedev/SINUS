@@ -112,133 +112,19 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
 
     /// <inheritdoc/>
     public void PrintBusinessRequirements(string? filter = null)
-    {
-        var methodData = this.usages
-            .Where(x => filter == null || x.Key == filter)
-            .Where(x => x.Value != null && x.Value.ContainsKey(this.AttributeBusinessRequirement))
-            .Select(x => (TestName: x.Key,
-                          Data: x.Value[this.AttributeBusinessRequirement] as List<object>))
-            .Where(x => x.Data != null)
-            .SelectMany(
-                x => x.Data ?? throw new InvalidDataException(),
-                (x, item) => (x.TestName, Descriptions: (((string[] Descriptions, string Level))item).Descriptions))
-            .SelectMany(
-                x => x.Descriptions ?? throw new InvalidDataException(),
-                (x, item) => (x.TestName, Description: item))
-            .Where(x => x.Description != null)
-            .ToList();
-
-        var classData = this.usages
-            .Where(x => filter == null || x.Key == filter)
-            .Where(x => x.Value != null && x.Value.ContainsKey(this.AttributeBusinessRequirements))
-            .Select(x => (TestName: x.Key,
-                          Data: x.Value[this.AttributeBusinessRequirements] as List<object>))
-            .Where(x => x.Data != null)
-            .SelectMany(
-                x => x.Data ?? throw new InvalidDataException(),
-                (x, item) => (x.TestName, Descriptions: (((string capability, string[] requirements, string level))item).requirements))
-            .SelectMany(
-                x => x.Descriptions ?? throw new InvalidDataException(),
-                (x, item) => (x.TestName, Description: item))
-            .Where(x => x.Description != null)
-            .ToList();
-
-        var data = methodData
-            .Union(classData)
-            .GroupBy(x => x.Description)
-            .Select(group => new
-            {
-                BusinessRequirement = group.Key,
-                Tests = group.Select(x => x.TestName).ToList(),
-                Count = group.Count(),
-            })
-            .ToList();
-        if (!data.Any())
-        {
-            return;
-        }
-
-        var usageLogger = TestBaseSingletonContainer.CreateLogger<TestBase>();
-        usageLogger.LogInformation("+--------------------------------");
-        usageLogger.LogInformation("| Business Requirements: {Count}", data.Count);
-
-        foreach (var item in data)
-        {
-            usageLogger.LogInformation("| {Count} {Capability}", item.Count, item.BusinessRequirement);
-            foreach (var test in item.Tests)
-            {
-                usageLogger.LogInformation("|     {Test}", test);
-            }
-        }
-
-        usageLogger.LogInformation("+--------------------------------");
-        usageLogger.LogInformation(" ");
-    }
+        => this.PrintRequirements(
+            filter,
+            this.AttributeBusinessRequirement,
+            this.AttributeBusinessRequirements,
+            "Business");
 
     /// <inheritdoc/>
     public void PrintTechnicalRequirements(string? filter = null)
-    {
-        var methodData = this.usages
-            .Where(x => filter == null || x.Key == filter)
-            .Where(x => x.Value != null && x.Value.ContainsKey(this.AttributeTechnicalRequirement))
-            .Select(x => (TestName: x.Key,
-                          Data: x.Value[this.AttributeTechnicalRequirement] as List<object>))
-            .Where(x => x.Data != null)
-            .SelectMany(
-                x => x.Data ?? throw new InvalidDataException(),
-                (x, item) => (x.TestName, Descriptions: (((string[] Descriptions, string Level))item).Descriptions))
-            .SelectMany(
-                x => x.Descriptions ?? throw new InvalidDataException(),
-                (x, item) => (x.TestName, Description: item))
-            .Where(x => x.Description != null)
-            .ToList();
-
-        var classData = this.usages
-            .Where(x => filter == null || x.Key == filter)
-            .Where(x => x.Value != null && x.Value.ContainsKey(this.AttributeTechnicalRequirements))
-            .Select(x => (TestName: x.Key,
-                          Data: x.Value[this.AttributeTechnicalRequirements] as List<object>))
-            .Where(x => x.Data != null)
-            .SelectMany(
-                x => x.Data ?? throw new InvalidDataException(),
-                (x, item) => (x.TestName, Descriptions: (((string capability, string[] requirements, string level))item).requirements))
-            .SelectMany(
-                x => x.Descriptions ?? throw new InvalidDataException(),
-                (x, item) => (x.TestName, Description: item))
-            .Where(x => x.Description != null)
-            .ToList();
-
-        var data = methodData
-            .Union(classData)
-            .GroupBy(x => x.Description)
-            .Select(group => new
-            {
-                BusinessRequirement = group.Key,
-                Tests = group.Select(x => x.TestName).ToList(),
-                Count = group.Count(),
-            })
-            .ToList();
-        if (!data.Any())
-        {
-            return;
-        }
-
-        var usageLogger = TestBaseSingletonContainer.CreateLogger<TestBase>();
-        usageLogger.LogInformation("+--------------------------------");
-        usageLogger.LogInformation("| Technical Requirements: {Count}", data.Count);
-
-        foreach (var item in data)
-        {
-            usageLogger.LogInformation("| {Count} {Capability}", item.Count, item.BusinessRequirement);
-            foreach (var test in item.Tests)
-            {
-                usageLogger.LogInformation("|     {Test}", test);
-            }
-        }
-
-        usageLogger.LogInformation("+--------------------------------");
-        usageLogger.LogInformation(" ");
-    }
+        => this.PrintRequirements(
+            filter,
+            this.AttributeTechnicalRequirement,
+            this.AttributeTechnicalRequirements,
+            "Technical");
 
     /// <inheritdoc/>
     public void PrintUsageStatistic(string? filter = null)
@@ -382,6 +268,70 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
                         ? "disposed"
                         : "leak    ";
             usageLogger.LogInformation("| ({DisposedInfo}) {Id}", disposedInfo, title);
+        }
+
+        usageLogger.LogInformation("+--------------------------------");
+        usageLogger.LogInformation(" ");
+    }
+
+    private void PrintRequirements(string? filter, string methodKey, string classKey, string title)
+    {
+        var methodData = this.usages
+            .Where(x => filter == null || x.Key == filter)
+            .Where(x => x.Value != null && x.Value.ContainsKey(methodKey))
+            .Select(x => (TestName: x.Key,
+                          Data: x.Value[methodKey] as List<object>))
+            .Where(x => x.Data != null)
+            .SelectMany(
+                x => x.Data ?? throw new InvalidDataException(),
+                (x, item) => (x.TestName, (((string[] Descriptions, string Level))item).Descriptions))
+            .SelectMany(
+                x => x.Descriptions ?? throw new InvalidDataException(),
+                (x, item) => (x.TestName, Description: item))
+            .Where(x => x.Description != null)
+            .ToList();
+
+        var classData = this.usages
+            .Where(x => filter == null || x.Key == filter)
+            .Where(x => x.Value != null && x.Value.ContainsKey(classKey))
+            .Select(x => (TestName: x.Key,
+                          Data: x.Value[classKey] as List<object>))
+            .Where(x => x.Data != null)
+            .SelectMany(
+                x => x.Data ?? throw new InvalidDataException(),
+                (x, item) => (x.TestName, Descriptions: (((string capability, string[] requirements, string level))item).requirements))
+            .SelectMany(
+                x => x.Descriptions ?? throw new InvalidDataException(),
+                (x, item) => (x.TestName, Description: item))
+            .Where(x => x.Description != null)
+            .ToList();
+
+        var data = methodData
+            .Union(classData)
+            .GroupBy(x => x.Description)
+            .Select(group => new
+            {
+                Requirement = group.Key,
+                Tests = group.Select(x => x.TestName).ToList(),
+                Count = group.Count(),
+            })
+            .ToList();
+        if (!data.Any())
+        {
+            return;
+        }
+
+        var usageLogger = TestBaseSingletonContainer.CreateLogger<TestBase>();
+        usageLogger.LogInformation("+--------------------------------");
+        usageLogger.LogInformation("| {Title} Requirements: {Count}", title, data.Count);
+
+        foreach (var item in data)
+        {
+            usageLogger.LogInformation("| {Count} {Capability}", item.Count, item.Requirement);
+            foreach (var test in item.Tests)
+            {
+                usageLogger.LogInformation("|     {Test}", test);
+            }
         }
 
         usageLogger.LogInformation("+--------------------------------");

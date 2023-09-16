@@ -5,6 +5,8 @@
 #pragma warning disable SA1403 // File may only contain a single namespace
 #pragma warning disable SA1402 // File may only contain a single type
 
+[assembly: Microsoft.VisualStudio.TestTools.UnitTesting.TestDataSourceDiscovery(Microsoft.VisualStudio.TestTools.UnitTesting.TestDataSourceDiscoveryOption.DuringExecution)]
+
 namespace WebNativeDEV.SINUS.Tests
 {
     using FluentAssertions;

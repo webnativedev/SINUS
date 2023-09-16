@@ -37,7 +37,7 @@ public class EnsureTests : TestBase
             new object?[] { new int?(5), "NullableTestInt5" },
             new object?[] { 1, "IntOne" },
             new object?[] { 2.3, "DoubleTwoPointThree" },
-            new object?[] { DateTime.Now, "DateTimeNow" },
+            new object?[] { new DateTime(2023, 1, 1, 1, 1, 1, 1, 1, DateTimeKind.Utc), "DateTimeTest" },
         };
 
     /// <summary>

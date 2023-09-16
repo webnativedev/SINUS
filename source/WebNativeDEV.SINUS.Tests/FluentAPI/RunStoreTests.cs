@@ -30,7 +30,7 @@ public class RunStoreTests : TestBase
         new object?[] { 1, "IntTest" },
         new object?[] { "str", "StringTest" },
         new object?[] { new object(), "ObjectTest" },
-        new object?[] { DateTime.Now, "DateTimeTest" },
+        new object?[] { new DateTime(2023, 1, 1, 1, 1, 1, 1, 1, DateTimeKind.Utc), "DateTimeTest" },
     };
 
     /// <summary>

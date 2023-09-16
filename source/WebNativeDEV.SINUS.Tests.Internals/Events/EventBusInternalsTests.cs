@@ -19,6 +19,7 @@ using WebNativeDEV.SINUS.MsTest;
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'Type_or_Member'.
 #pragma warning disable SA1600 // Elements should be documented
 
+[TestClass]
 public class EventBusInternalsTests : TestBase
 {
     [TestMethod]
