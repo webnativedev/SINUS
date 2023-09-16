@@ -2,9 +2,9 @@
 // Copyright (c) Daniel Kienböck. All Rights Reserved. Licensed under the MIT License. See LICENSE in the project root for license information.
 // </copyright>
 
-using WebNativeDEV.SINUS.Core.Execution.Model;
-
 namespace WebNativeDEV.SINUS.Core.Execution.Contracts;
+
+using WebNativeDEV.SINUS.Core.Execution.Model;
 
 /// <summary>
 /// Represents an interface to the execution engine.

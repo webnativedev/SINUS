@@ -27,8 +27,6 @@ using WebNativeDEV.SINUS.SystemUnderTest.Services.Abstractions;
 [TestClass]
 public class MsTestTests : TestBase
 {
-    
-
     [TestMethod]
     public void Given_MinimalTest_When_CheckResult_Then_DataSuccessShouldBePresent()
     {

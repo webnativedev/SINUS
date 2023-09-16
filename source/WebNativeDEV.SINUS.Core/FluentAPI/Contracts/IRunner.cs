@@ -11,7 +11,7 @@ using WebNativeDEV.SINUS.Core.Events.EventArguments;
 /// Represents an interface that manages the execution of a test based on a given-when-then sequence.
 /// This interface allows to create a proper Fluent API.
 /// </summary>
-public interface IRunner : IDisposable, IGiven, IGivenWithSut, IGivenWithSimpleSut, IWhen, IThen
+public interface IRunner : IGiven, IGivenWithSut, IGivenWithSimpleSut, IWhen, IThen
 {
     /// <summary>
     /// Registers an event handler.

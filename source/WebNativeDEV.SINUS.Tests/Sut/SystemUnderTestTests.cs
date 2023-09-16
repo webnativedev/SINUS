@@ -29,7 +29,7 @@ public sealed partial class SystemUnderTestTests : TestBase
         => this.Test(r => r
             .GivenASystemAndABrowserAtDefaultEndpoint<Program>(this.simpleView)
             .When("making a screenshot", (browser, data) => browser.TakeScreenshot())
-            .Then("no exception should occur"));
+            .Then("no exception should occur")).Should().BeSuccessful();
 
     [TestMethod]
     public void Given_SutOnRandomEndpoint_When_CallingView_Then_SeleniumBrowsableWithRunner()

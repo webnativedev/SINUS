@@ -6,6 +6,7 @@ namespace WebNativeDEV.SINUS.Core.Execution;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
+using NSubstitute.Core;
 using OpenQA.Selenium.Interactions;
 using System;
 using System.Collections.Generic;
@@ -92,6 +93,46 @@ internal sealed class ExecutionEngine : IExecutionEngine
         return returnValue;
     }
 
+    private static string? CalculateSutEndpoint(ExecutionParameter? parameter)
+    {
+        var endpoint = parameter?.SutEndpoint;
+        if (endpoint == RandomEndpoint)
+        {
+            int port = 10001 + RandomNumberGenerator.GetInt32(100);
+            endpoint = endpoint.Replace(
+                RandomEndpointPlaceholder,
+                port.ToString(CultureInfo.InvariantCulture),
+                StringComparison.InvariantCulture);
+        }
+
+        return endpoint;
+    }
+
+    private static bool CreateWaf(ExecutionParameter parameter, ExecutionOutput returnValue)
+    {
+        var sutType = Ensure.NotNull(parameter?.SutType, nameof(parameter.SutType));
+        returnValue.SutEndpoint = CalculateSutEndpoint(parameter);
+
+        // if endpoint is null then in-memory, else public
+        var wafType = typeof(SinusWebApplicationFactory<>).MakeGenericType(sutType);
+        ISinusWebApplicationFactory? waf = Activator.CreateInstance(
+            wafType,
+            returnValue.SutEndpoint,
+            parameter?.TestBase?.TestName,
+            parameter?.SutArgs.ToArray())
+            as ISinusWebApplicationFactory;
+
+        returnValue.WebApplicationFactory = waf;
+        returnValue.HttpClient = waf?.CreateClient();
+
+        if (returnValue.HttpClient == null || returnValue.WebApplicationFactory == null)
+        {
+            throw new ExecutionEngineRunException("Web Application Factory was not created properly.");
+        }
+
+        return true;
+    }
+
     private void RunActions(ExecutionParameter parameter, ExecutionOutput returnValue)
     {
         parameter = Ensure.NotNull(parameter);
@@ -173,42 +214,13 @@ internal sealed class ExecutionEngine : IExecutionEngine
 #pragma warning disable CA1031 // don't catch general exceptions
 
         bool successful = false;
+        Exception? lastException = null;
         for (int retryIndex = 0; retryIndex < RetryCountCreatingSut && !successful; retryIndex++)
         {
             try
             {
-                var sutType = Ensure.NotNull(parameter?.SutType, nameof(parameter.SutType));
-                returnValue.SutEndpoint = parameter?.SutEndpoint;
-                if (returnValue.SutEndpoint == RandomEndpoint)
-                {
-                    int port = 10001 + RandomNumberGenerator.GetInt32(100);
-                    returnValue.SutEndpoint = returnValue.SutEndpoint.Replace(
-                        RandomEndpointPlaceholder,
-                        port.ToString(CultureInfo.InvariantCulture),
-                        StringComparison.InvariantCulture);
-                }
-
-                // if endpoint is null then in-memory, else public
-                var wafType = typeof(SinusWebApplicationFactory<>).MakeGenericType(sutType);
-                ISinusWebApplicationFactory? waf = Activator.CreateInstance(
-                    wafType,
-                    returnValue.SutEndpoint,
-                    parameter?.TestBase?.TestName,
-                    parameter?.SutArgs.ToArray())
-                    as ISinusWebApplicationFactory;
-
-                returnValue.WebApplicationFactory = waf;
-                returnValue.HttpClient = waf?.CreateClient();
-
-                if (returnValue.HttpClient == null || returnValue.WebApplicationFactory == null)
-                {
-                    throw new ExecutionEngineRunException("Web Application Factory was not created properly.");
-                }
-                else
-                {
-                    successful = true;
-                    break;
-                }
+                successful = this.CreateWaf(parameter, returnValue);
+                lastException = null;
             }
             catch (IOException exception)
             {
@@ -218,22 +230,15 @@ internal sealed class ExecutionEngine : IExecutionEngine
                     retryIndex + 1,
                     exception.Message);
 
+                Thread.Sleep(TimeSpan.FromSeconds(RetryDelay));
+
 #pragma warning disable S1215 // "GC.Collect" should not be called
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
                 GC.WaitForFullGCComplete();
 #pragma warning restore S1215 // "GC.Collect" should not be called
 
-                if (retryIndex + 1 == RetryCountCreatingSut)
-                {
-                    returnValue.Exceptions.Add(new ExecutionEngineRunException("creation of web application failed because of IO", exception));
-                    successful = false;
-                    break;
-                }
-                else
-                {
-                    Thread.Sleep(TimeSpan.FromSeconds(RetryDelay));
-                }
+                lastException = new ExecutionEngineRunException("creation of web application failed because of IO", exception);
             }
             catch (Exception exception)
             {
@@ -255,6 +260,12 @@ internal sealed class ExecutionEngine : IExecutionEngine
                 break;
             }
         }
+
+        if (lastException != null)
+        {
+            returnValue.Exceptions.Add(lastException);
+        }
+
 #pragma warning restore CA1031 // don't catch general exceptions
 
         this.logger.LogInformation("Execution was {Successful}", successful ? "successful" : "not successful");
