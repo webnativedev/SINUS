@@ -7,6 +7,7 @@ namespace WebNativeDEV.SINUS.Tests;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebNativeDEV.SINUS.Core.Requirements;
+using WebNativeDEV.SINUS.Core.Assertions;
 using WebNativeDEV.SINUS.MsTest;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'Type_or_Member'.
@@ -36,6 +37,13 @@ public sealed class GoogleBrowserTests : TestBase
             .Then(
                 "Title should not be null",
                 (browser, data) => data.Actual.Should().NotBeNull()));
+
+    [TestMethod]
+    public void Given_ABrowserOpensGoogle_When_ReadingTheTitle_Then_TitleShouldBeSetToGoogle()
+        => this.Test(r => r
+            .GivenABrowserAt("http://www.google.at")
+            .When((browser, data) => data.Actual = browser.Title)
+            .Then((browser, data) => data.Should().ActualBe("Google")));
 
     [TestMethod]
     [TestCategory("external")]
@@ -69,5 +77,5 @@ public sealed class GoogleBrowserTests : TestBase
         => this.Test(r => r
             .GivenABrowserAt(this.Google)
             .When("Taking a snapshot", (browser, data) => browser.TakeScreenshot())
-            .Then("no exception should occur"));
+            .Then("no exception should occur")).Should().BeSuccessful();
 }

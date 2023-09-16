@@ -74,4 +74,18 @@ public class AssertionTests : TestBase
             .Given(data => data.StoreActual(null))
             .When(data => data.Should().ActualBe<string>(null!))
             .ThenNoError());
+
+    [TestMethod]
+    public void Given_FluentAssertions_When_CheckActualAfterMethodStoreWithNonNull_Then_CheckForNullWithActualBe()
+        => this.Test(r => r
+            .Given(data => data.StoreActual("test"))
+            .When(data => data.Should().ActualBe<string>(null!))
+            .ThenShouldHaveFailed());
+
+    [TestMethod]
+    public void Given_FluentAssertions_When_CheckActualAfterMethodStoreWithNull_Then_CheckForNotNullWithActualBe()
+        => this.Test(r => r
+            .Given(data => data.StoreActual(null))
+            .When(data => data.Should().ActualBe<string>("test"))
+            .ThenShouldHaveFailed());
 }

@@ -16,6 +16,7 @@ using WebNativeDEV.SINUS.Core.Events.Contracts;
 using WebNativeDEV.SINUS.Core.Events.EventArguments;
 using WebNativeDEV.SINUS.Core.Execution;
 using WebNativeDEV.SINUS.Core.Execution.Contracts;
+using WebNativeDEV.SINUS.Core.Execution.Model;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 using WebNativeDEV.SINUS.Core.FluentAPI.Events;
 using WebNativeDEV.SINUS.Core.FluentAPI.Model;
@@ -45,7 +46,6 @@ internal sealed partial class Runner : IBrowserRunner
     public Runner(TestBaseScopeContainer scope)
     {
         this.scope = scope;
-        this.scope.Runner = this;
 
         this.logger = scope.CreateLogger<Runner>();
         this.logger.LogDebug("Created a log for base-runner");
@@ -359,7 +359,6 @@ internal sealed partial class Runner : IBrowserRunner
                     action: () =>
                     {
                         this.scope.Shutdown();
-                        this.scope.Runner = null;
                     });
             }
 

@@ -7,6 +7,7 @@ namespace WebNativeDEV.SINUS.Tests;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebNativeDEV.SINUS.Core.Assertions;
+using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.MsTest;
 using WebNativeDEV.SINUS.SystemUnderTest;
 using WebNativeDEV.SINUS.SystemUnderTest.Services.Abstractions;
@@ -19,8 +20,11 @@ using WebNativeDEV.SINUS.SystemUnderTest.Services.Mock;
 public class SimpleTests : TestBase
 {
     [TestMethod]
-    public void Given_TheMockTimeProvider_When_GettingTheCurrentSeconds_Then_ValueEquals59_AsTripleAPattern()
+    public void Given_TheMockTimeProvider_When_GettingTheCurrentSeconds_Then_ValueEquals59AsTripleAPattern()
     {
+        // Init
+        TestBaseSingletonContainer.TestBaseUsageStatisticsManager.Register(this);
+
         // Arrange
         ITimeProvider provider = new MockTimeProvider();
 

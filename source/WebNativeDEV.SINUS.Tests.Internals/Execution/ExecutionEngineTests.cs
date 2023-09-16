@@ -15,6 +15,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using WebNativeDEV.SINUS.Core.Execution;
+using WebNativeDEV.SINUS.Core.Execution.Model;
 using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.MsTest;
 
@@ -54,7 +55,7 @@ public class ExecutionEngineTests : TestBase
         nameof(ValidValues),
         DynamicDataDisplayName = nameof(DefaultDataDisplayName))]
     public void Given_AValue_When_CallingArgumentValidationNotNullWithValues_Then_NoExceptionShouldBeThrown(object? value, string scenario)
-    => this.Test(r => r
+    => this.Test(scenario, r => r
         .Given(data => data.StoreSut(new ExecutionEngine(Substitute.For<ILoggerFactory>())))
         .When(data => data.StoreActual<ExecutionEngine>(ex => ex.Run(value as ExecutionParameter)))
         .Then(data => data.ReadActual<ExecutionOutput>().Exceptions.Should().BeNullOrEmpty())

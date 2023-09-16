@@ -84,7 +84,7 @@ public class EnsureTests : TestBase
         nameof(ValidValues),
         DynamicDataDisplayName = nameof(DefaultDataDisplayName))]
     public void Given_AValue_When_CallingArgumentValidationNotNullWithValues_Then_NoExceptionShouldBeThrown(object? value, string scenario)
-        => this.Test(r => r
+        => this.Test(scenario, r => r
             .Given(data => data["value"] = value)
              .When(data => data["checkedValue"] = Ensure.NotNull(data["value"]))
              .Then(

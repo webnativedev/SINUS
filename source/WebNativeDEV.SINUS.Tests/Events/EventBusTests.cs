@@ -30,7 +30,6 @@ using WebNativeDEV.SINUS.MsTest;
     "EventHandling")]
 public class EventBusTests : TestBase
 {
-    
     [TestMethod]
     public void Given_InternalBus_When_PublishingEvents_Then_TheyShouldBeReceivedInLine()
     => this.Test(r => r
@@ -50,7 +49,9 @@ public class EventBusTests : TestBase
             (sender, data, e) => e.Key == data.KeySut)
         .Given()
         .When(data => data.Sut = 1)
-        .Then(data => data.Actual.Should().NotBeNull()));
+        .Then(
+            data => data.Actual.Should().NotBeNull(),
+            data => data.Actual.Should().NotBe(RunStoreDataStoredEventBusEventArgs.Empty)));
 
     [TestMethod]
     public void Given_InternalBus_When_PublishingEvents_Then_AllDataShouldBePresent()
@@ -61,15 +62,18 @@ public class EventBusTests : TestBase
             (sender, data, e) => e.Key == data.KeyActual)
         .Given()
         .When(data => data.Actual = 1)
-        .Then(data =>
-        {
-            data.Actual.Should().Be(1);
-            data.Should().ActualBe(1);
-
-            var arg = data.Read<RunStoreDataStoredEventBusEventArgs>("actual-event");
-            arg.Key.Should().Be(data.KeyActual);
-            arg.Value.Should().Be(1);
-            arg.IsNew.Should().BeTrue();
-            arg.OldValue.Should().BeNull();
-        }));
+        .Then(
+            data =>
+            {
+                data.Actual.Should().Be(1);
+                data.Should().ActualBe(1);
+            },
+            data =>
+            {
+                var arg = data.Read<RunStoreDataStoredEventBusEventArgs>("actual-event");
+                arg.Key.Should().Be(data.KeyActual);
+                arg.Value.Should().Be(1);
+                arg.IsNew.Should().BeTrue();
+                arg.OldValue.Should().BeNull();
+            }));
 }

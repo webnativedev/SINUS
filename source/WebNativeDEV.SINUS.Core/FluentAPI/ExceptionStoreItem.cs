@@ -2,14 +2,14 @@
 // Copyright (c) Daniel Kienböck. All Rights Reserved. Licensed under the MIT License. See LICENSE in the project root for license information.
 // </copyright>
 
-namespace WebNativeDEV.SINUS.Core.FluentAPI.Model;
+namespace WebNativeDEV.SINUS.Core.FluentAPI;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
+using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 
 /// <summary>
 /// Stores the captured exceptions and rates them.
@@ -23,9 +23,9 @@ internal class ExceptionStoreItem
     /// <param name="exception">Exception thrown.</param>
     public ExceptionStoreItem(RunCategory runCategory, Exception exception)
     {
-        RunCategory = runCategory;
-        Exception = exception;
-        IsCheckedInThenClause = false;
+        this.RunCategory = runCategory;
+        this.Exception = exception;
+        this.IsCheckedInThenClause = false;
     }
 
     /// <summary>
@@ -46,7 +46,7 @@ internal class ExceptionStoreItem
     /// <summary>
     /// Gets the readable state whether it was an expected/checked exception or not.
     /// </summary>
-    public string IsCheckedInThenClauseName => IsCheckedInThenClause ? "checked" : "error";
+    public string IsCheckedInThenClauseName => this.IsCheckedInThenClause ? "checked" : "error";
 
     /// <summary>
     /// Readable representation of the item.
@@ -54,6 +54,6 @@ internal class ExceptionStoreItem
     /// <returns>The plain text readable string.</returns>
     public string GetTupleString()
     {
-        return $"({RunCategory}, {Exception.GetType().Name}, {IsCheckedInThenClauseName})";
+        return $"({this.RunCategory}, {this.Exception.GetType().Name}, {this.IsCheckedInThenClauseName})";
     }
 }

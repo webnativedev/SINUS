@@ -18,7 +18,6 @@ using WebNativeDEV.SINUS.MsTest;
 /// </summary>
 public static class TestBaseExtensions
 {
-    private const int ReevaluationCount = 3;
     private const int SecondsDelay = 3;
 
     /// <summary>
@@ -29,8 +28,8 @@ public static class TestBaseExtensions
     public static void PrintUsageStatistic(this TestBase testBase, string? filter = null)
     {
         Ensure.NotNull(testBase);
-        Browser.PrintBrowserUsageStatistic(filter);
-        SinusWafUsageStatisticsManager.PrintWafUsageStatistic(filter);
+        TestBaseSingletonContainer.TestBaseUsageStatisticsManager.PrintBrowserUsageStatistic(filter);
+        TestBaseSingletonContainer.TestBaseUsageStatisticsManager.PrintWafUsageStatistic(filter);
     }
 
     /// <summary>
@@ -64,7 +63,6 @@ public static class TestBaseExtensions
     /// <returns>Successful check or exception on fail.</returns>
     public static bool AssertOnDataLeak(this TestBase testBase)
     {
-#pragma warning disable CA1031 // don't catch general exceptions
 #pragma warning disable S1215 // "GC.Collect" should not be called
 
         Ensure.NotNull(testBase);
@@ -74,20 +72,18 @@ public static class TestBaseExtensions
         GC.WaitForFullGCComplete();
         Thread.Sleep(TimeSpan.FromSeconds(SecondsDelay));
 
-        Browser.TestsIncludingBrowsers.Should().AllSatisfy(element => Browser.TestsDisposingBrowsers.Contains(element));
-        Browser.TestsDisposingBrowsers.Should().AllSatisfy(element => Browser.TestsIncludingBrowsers.Contains(element));
-        Browser.TestsIncludingBrowsers.Should().HaveSameCount(Browser.TestsDisposingBrowsers);
+        TestBaseSingletonContainer.TestBaseUsageStatisticsManager.CheckAttribute(
+            data => data.ContainsKey(TestBaseSingletonContainer.TestBaseUsageStatisticsManager.AttributeBrowserCreated) &&
+                    data.ContainsKey(TestBaseSingletonContainer.TestBaseUsageStatisticsManager.AttributeBrowserDisposed));
 
-        SinusWafUsageStatisticsManager.TestsIncludingWaf.Should().AllSatisfy(element => SinusWafUsageStatisticsManager.TestsDisposingWaf.Contains(element));
-        SinusWafUsageStatisticsManager.TestsDisposingWaf.Should().AllSatisfy(element => SinusWafUsageStatisticsManager.TestsIncludingWaf.Contains(element));
-        SinusWafUsageStatisticsManager.TestsIncludingWaf.Should().HaveSameCount(SinusWafUsageStatisticsManager.TestsDisposingWaf);
+        TestBaseSingletonContainer.TestBaseUsageStatisticsManager.CheckAttribute(
+            data => data.ContainsKey(TestBaseSingletonContainer.TestBaseUsageStatisticsManager.AttributeWafCreated) &&
+                    data.ContainsKey(TestBaseSingletonContainer.TestBaseUsageStatisticsManager.AttributeWafDisposed));
 
-        Browser.PrintBrowserUsageStatistic();
-        SinusWafUsageStatisticsManager.PrintWafUsageStatistic();
+        TestBaseSingletonContainer.TestBaseUsageStatisticsManager.PrintUsageStatistic();
         return true;
 
 #pragma warning restore S1215 // "GC.Collect" should not be called
-#pragma warning restore CA1031 // don't catch general exceptions
     }
 
     /// <summary>

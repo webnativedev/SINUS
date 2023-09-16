@@ -11,7 +11,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
+using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 
 /// <summary>
 /// Formatter class that is very much custom for the use case and defines "blocks" for

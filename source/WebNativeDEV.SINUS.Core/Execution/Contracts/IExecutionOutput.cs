@@ -4,7 +4,7 @@
 
 namespace WebNativeDEV.SINUS.Core.Execution.Contracts;
 
-using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
+using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 
 /// <summary>
 /// The execution output of the execution engine.

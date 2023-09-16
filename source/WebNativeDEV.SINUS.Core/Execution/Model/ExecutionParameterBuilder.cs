@@ -2,7 +2,7 @@
 // Copyright (c) Daniel Kienböck. All Rights Reserved. Licensed under the MIT License. See LICENSE in the project root for license information.
 // </copyright>
 
-namespace WebNativeDEV.SINUS.Core.Execution;
+namespace WebNativeDEV.SINUS.Core.Execution.Model;
 
 using OpenQA.Selenium.Interactions;
 using System;
@@ -12,7 +12,9 @@ using System.Text;
 using System.Threading.Tasks;
 using WebNativeDEV.SINUS.Core.FluentAPI;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
+using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 using WebNativeDEV.SINUS.Core.MsTest;
+using WebNativeDEV.SINUS.Core.MsTest.Contracts;
 using WebNativeDEV.SINUS.MsTest;
 
 /// <summary>
@@ -28,7 +30,7 @@ internal sealed class ExecutionParameterBuilder : ExecutionParameter
     /// <param name="namings">The naming convention checker.</param>
     /// <param name="runCategory">The run category.</param>
     /// <param name="exceptionsCount">The count of exceptions.</param>
-    internal ExecutionParameterBuilder(TestBase testBase, IBrowserRunner? runner, TestNamingConventionManager namings, RunCategory runCategory, int exceptionsCount)
+    internal ExecutionParameterBuilder(TestBase testBase, IBrowserRunner? runner, ITestNamingConventionManager namings, RunCategory runCategory, int exceptionsCount)
     {
         this.TestBase = testBase;
         this.Runner = runner;

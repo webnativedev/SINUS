@@ -2,7 +2,7 @@
 // Copyright (c) Daniel Kienböck. All Rights Reserved. Licensed under the MIT License. See LICENSE in the project root for license information.
 // </copyright>
 
-namespace WebNativeDEV.SINUS.Core.Execution;
+namespace WebNativeDEV.SINUS.Core.Execution.Model;
 
 using NSubstitute.Core;
 using System;
@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WebNativeDEV.SINUS.Core.Execution.Contracts;
-using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
+using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 using WebNativeDEV.SINUS.Core.Sut.Contracts;
 using WebNativeDEV.SINUS.MsTest;
 
@@ -59,24 +59,4 @@ internal sealed class ExecutionOutput : IExecutionOutput
     /// Gets or sets the reference to the test.
     /// </summary>
     public TestBase? TestBase { get; set; }
-
-    /// <summary>
-    /// Resets the http client.
-    /// </summary>
-    public void ResetHttpClient()
-    {
-        this.HttpClient?.CancelPendingRequests();
-        this.HttpClient?.Dispose();
-        this.HttpClient = null;
-    }
-
-    /// <summary>
-    /// Resets the WAF.
-    /// </summary>
-    public void ResetWebApplicationFactory()
-    {
-        this.WebApplicationFactory?.CloseCreatedHost();
-        this.WebApplicationFactory?.Dispose();
-        this.WebApplicationFactory = null;
-    }
 }

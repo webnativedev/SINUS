@@ -46,6 +46,7 @@ public static class TestBaseSingletonContainer
         WebDriverFactory = new ChromeWebDriverFactory();
         BrowserFactory = new BrowserFactory();
         ExecutionEngine = new ExecutionEngine();
+        TestBaseUsageStatisticsManager = new TestBaseUsageStatisticsManager();
     }
 
     /// <summary>
@@ -67,6 +68,11 @@ public static class TestBaseSingletonContainer
     /// Gets or sets the assembly context.
     /// </summary>
     public static TestContext? AssemblyTestContext { get; set; }
+
+    /// <summary>
+    /// Gets or sets the usage statistics manager for tests.
+    /// </summary>
+    public static ITestBaseUsageStatisticsManager TestBaseUsageStatisticsManager { get; set; }
 
     /// <summary>
     /// Gets or sets the execution engine.

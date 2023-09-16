@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.Core.Sut.Contracts;
 using WebNativeDEV.SINUS.Core.UITesting;
 using WebNativeDEV.SINUS.MsTest;
@@ -31,6 +32,7 @@ internal sealed class SinusWebApplicationFactory<TEntryPoint> : WebApplicationFa
     private readonly string id;
     private readonly string[] args;
     private IHost? customHost;
+    private bool disposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SinusWebApplicationFactory{TEntryPoint}"/> class.
@@ -46,7 +48,10 @@ internal sealed class SinusWebApplicationFactory<TEntryPoint> : WebApplicationFa
         this.args = args;
         if (id != null)
         {
-            SinusWafUsageStatisticsManager.TestsIncludingWaf.Add(id);
+            TestBaseSingletonContainer.TestBaseUsageStatisticsManager.SetAttribute(
+                this.id,
+                TestBaseSingletonContainer.TestBaseUsageStatisticsManager.AttributeWafCreated,
+                true);
         }
     }
 
@@ -121,10 +126,17 @@ internal sealed class SinusWebApplicationFactory<TEntryPoint> : WebApplicationFa
     protected override void Dispose(bool disposing)
     {
         base.Dispose(disposing);
-        this.CloseCreatedHost();
-        if (!SinusWafUsageStatisticsManager.TestsDisposingWaf.Contains(this.id))
+        if (this.disposed)
         {
-            SinusWafUsageStatisticsManager.TestsDisposingWaf.Add(this.id);
+            return;
         }
+
+        this.CloseCreatedHost();
+        TestBaseSingletonContainer.TestBaseUsageStatisticsManager.SetAttribute(
+            this.id,
+            TestBaseSingletonContainer.TestBaseUsageStatisticsManager.AttributeWafDisposed,
+            true);
+
+        this.disposed = true;
     }
 }

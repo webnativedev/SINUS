@@ -4,7 +4,7 @@
 
 namespace WebNativeDEV.SINUS.Core.MsTest.Contracts;
 
-using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
+using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 
 /// <summary>
 /// Defines an interface for an implementation that is responsible
@@ -16,6 +16,12 @@ public interface ITestNamingConventionManager
     /// Gets the name of the test.
     /// </summary>
     string TestName { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether this name is only a maintenance action,
+    /// so it does not need to be checked any further.
+    /// </summary>
+    bool IsMaintenance { get; }
 
     /// <summary>
     /// Gets the description of the Given part.

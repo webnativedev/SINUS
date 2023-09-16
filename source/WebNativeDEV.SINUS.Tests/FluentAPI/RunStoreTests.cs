@@ -48,7 +48,7 @@ public class RunStoreTests : TestBase
         nameof(ValidValues),
         DynamicDataDisplayName = nameof(DefaultDataDisplayName))]
     public void Given_ARunStore_When_AddingValues_Then_TheyShouldBeStored(object? value, string scenario)
-        => this.Test(r => r
+        => this.Test(scenario, r => r
             .Given()
             .When(data => data.Actual = value)
             .Then(

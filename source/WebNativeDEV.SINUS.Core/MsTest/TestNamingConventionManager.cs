@@ -11,7 +11,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
-using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
+using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 using WebNativeDEV.SINUS.Core.MsTest.Contracts;
 
 /// <summary>
@@ -36,6 +36,15 @@ public class TestNamingConventionManager : ITestNamingConventionManager
     public TestNamingConventionManager(string testName)
     {
         this.TestName = testName;
+
+        if(this.TestName.StartsWith("Maintenance_", StringComparison.InvariantCulture))
+        {
+            this.GivenDescription = string.Empty;
+            this.WhenDescription = string.Empty;
+            this.ThenDescription = string.Empty;
+            this.IsMaintenance = true;
+            return;
+        }
 
         var nameparts = this.TestName.Split('_', StringSplitOptions.RemoveEmptyEntries);
 
@@ -70,6 +79,9 @@ public class TestNamingConventionManager : ITestNamingConventionManager
     }
 
     /// <inheritdoc />
+    public bool IsMaintenance { get; }
+
+    /// <inheritdoc />
     public string TestName { get; }
 
     /// <inheritdoc />
@@ -84,6 +96,24 @@ public class TestNamingConventionManager : ITestNamingConventionManager
     /// <summary>
     /// Calculates a display name for different scenarios.
     /// </summary>
+    /// <param name="testName">The method name to work on.</param>
+    /// <param name="scenario">The scenario name.</param>
+    /// <returns>The calculated test scenario name.</returns>
+    public static string DynamicDataDisplayNameAddScenario(string? testName, string? scenario)
+    {
+        testName = Ensure.NotNull(testName);
+        Ensure.NotNull(scenario);
+
+        var newName = testName.Replace(
+                "_Then",
+                "WithValue" + scenario + "_Then",
+                StringComparison.InvariantCulture);
+        return newName;
+    }
+
+    /// <summary>
+    /// Calculates a display name for different scenarios.
+    /// </summary>
     /// <param name="methodInfo">The method to work on.</param>
     /// <param name="data">The arguments of the function. Last argument is the scenario name.</param>
     /// <returns>The calculated test scenario name.</returns>
@@ -91,11 +121,7 @@ public class TestNamingConventionManager : ITestNamingConventionManager
     {
         var originalName = methodInfo?.Name
             ?? throw new ArgumentException("methodName is null", nameof(methodInfo));
-        var newName = originalName.Replace(
-                "_Then",
-                "WithValue" + data.LastOrDefault(string.Empty) + "_Then",
-                StringComparison.InvariantCulture);
-        return newName;
+        return DynamicDataDisplayNameAddScenario(originalName, data.LastOrDefault(string.Empty) as string);
     }
 
     /// <inheritdoc />

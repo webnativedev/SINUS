@@ -51,7 +51,10 @@ internal sealed class Browser : IBrowser
 
         if (id != null)
         {
-            TestsIncludingBrowsers.Add(id);
+            TestBaseSingletonContainer.TestBaseUsageStatisticsManager.SetAttribute(
+                this.id,
+                TestBaseSingletonContainer.TestBaseUsageStatisticsManager.AttributeBrowserCreated,
+                true);
         }
     }
 
@@ -63,16 +66,6 @@ internal sealed class Browser : IBrowser
     {
         this.Dispose(disposing: false);
     }
-
-    /// <summary>
-    /// Gets a list of test-identifiers that includes a browser.
-    /// </summary>
-    public static IList<string> TestsIncludingBrowsers { get; } = new List<string>();
-
-    /// <summary>
-    /// Gets a list of test-identifiers that released the browser after using it.
-    /// </summary>
-    public static IList<string> TestsDisposingBrowsers { get; } = new List<string>();
 
     /// <inheritdoc/>
     public string? Title
@@ -111,34 +104,6 @@ internal sealed class Browser : IBrowser
     /// Gets the logger instance.
     /// </summary>
     private ILogger Logger { get; }
-
-    /// <summary>
-    /// Prints the usage statistics of the browser objects.
-    /// </summary>
-    /// <param name="filter">a Filter to search for.</param>
-    public static void PrintBrowserUsageStatistic(string? filter = null)
-    {
-        var including = Browser.TestsIncludingBrowsers.Where(x => filter == null || x == filter).ToList();
-        if (!including.Any())
-        {
-            return;
-        }
-
-        var usageLogger = TestBaseSingletonContainer.CreateLogger<TestBase>();
-        usageLogger.LogInformation("+--------------------------------");
-        usageLogger.LogInformation("| Tests Including Browsers: {Count}", including.Count);
-
-        foreach (var testIdsIncludingBrowsers in including)
-        {
-            var disposedInfo = Browser.TestsDisposingBrowsers.Contains(testIdsIncludingBrowsers)
-                                    ? "disposed"
-                                    : "leak    ";
-            usageLogger.LogInformation("| ({DisposedInfo}) {Id}", disposedInfo, testIdsIncludingBrowsers);
-        }
-
-        usageLogger.LogInformation("+--------------------------------");
-        usageLogger.LogInformation(" ");
-    }
 
     /// <inheritdoc/>
     public object? GetBaseObject()
@@ -256,7 +221,10 @@ internal sealed class Browser : IBrowser
                 this.driver?.Dispose();
                 this.driver = null;
 
-                TestsDisposingBrowsers.Add(this.id);
+                TestBaseSingletonContainer.TestBaseUsageStatisticsManager.SetAttribute(
+                    this.id,
+                    TestBaseSingletonContainer.TestBaseUsageStatisticsManager.AttributeBrowserDisposed,
+                    true);
             }
 
             this.disposedValue = true;

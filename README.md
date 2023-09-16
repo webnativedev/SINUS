@@ -5,30 +5,29 @@
 
 ![Example Video](/docs/demo-medium.gif "Example Video")
 
-Main idea of this package is to provide a readable and easy way to perform UI tests.
+Main idea of this package is to provide a readable and easy way to perform web UI tests.
 Hereby the package is opinionated and makes some decisions that need to be accepted for the usage of this package.
 It defines a way (one of hundreds) how tests should be written and defines also a technology to use.
 
-There are hard dependencies in SINUS to C#, .NET-Versuibs, MS-Test, Chrome and Selenium including BaseClasses and pre-defined patterns.
-SINUS focuses on a Given-When-Then approach of writing tests (BDT - Behaviour Driven Testing) including required human readable descriptions.
+There are hard dependencies in SINUS to C#, .NET-Versions, MS-Test, Chrome and Selenium including BaseClasses and pre-defined patterns.
+SINUS focuses on a Given-When-Then approach of writing tests (BDT - Behaviour Driven Testing) including human readable descriptions.
 Accessing objects in the UI is preferred by IDs.
 
 Example:
 
 ```csharp
     [TestMethod]
-    public void Given_ABrowserOpensGoogle_When_ReadingTheTitle_Then_TitleShouldBeSet()
-        => this.Test()
-            .GivenABrowserAt("Google", "http://www.google.at")
-            .When("Reading the title", (browser, data) => data["Title"] = browser.Title)
-            .Then("Title should be set", (browser, data) => Assert.IsNotNull(data["Title"]))
-            .Dispose();
+    public void Given_ABrowserOpensGoogle_When_ReadingTheTitle_Then_TitleShouldBeSetToGoogle()
+        => this.Test(r => r
+            .GivenABrowserAt("http://www.google.at")
+            .When((browser, data) => data.Actual = browser.Title)
+            .Then((browser, data) => data.Should().ActualBe("Google")));
 ```
 
 Calling the test:
 
 ```batch
-dotnet test --filter "FullyQualifiedName=WebNativeDEV.SINUS.Tests.BrowserTests.Given_ABrowserOpensGoogle_When_ReadingTheTitle_Then_TitleShouldBeSet"
+dotnet test --filter "FullyQualifiedName=WebNativeDEV.SINUS.Tests.BrowserTests.Given_ABrowserOpensGoogle_When_ReadingTheTitle_Then_TitleShouldBeSetToGoogle"
 ```
 
 By reducing the complexity you are not able to use all of the features Selenium has.

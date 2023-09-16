@@ -19,7 +19,8 @@ using System.Threading.Tasks;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
 using WebNativeDEV.SINUS.Core.Execution.Contracts;
 using WebNativeDEV.SINUS.Core.Execution.Exceptions;
-using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
+using WebNativeDEV.SINUS.Core.Execution.Model;
+using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 using WebNativeDEV.SINUS.Core.Logging;
 using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.Core.Sut;
@@ -242,8 +243,14 @@ internal sealed class ExecutionEngine : IExecutionEngine
                     exception.Message);
 
                 returnValue.Exceptions.Add(new ExecutionEngineRunException("creation of web application failed", exception));
-                returnValue.ResetHttpClient();
-                returnValue.ResetWebApplicationFactory();
+
+                returnValue.HttpClient?.CancelPendingRequests();
+                returnValue.HttpClient?.Dispose();
+                returnValue.HttpClient = null;
+                returnValue.WebApplicationFactory?.CloseCreatedHost();
+                returnValue.WebApplicationFactory?.Dispose();
+                returnValue.WebApplicationFactory = null;
+
                 successful = false;
                 break;
             }

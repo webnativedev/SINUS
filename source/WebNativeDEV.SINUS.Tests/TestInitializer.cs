@@ -34,7 +34,9 @@ namespace WebNativeDEV.SINUS.Tests
         /// </summary>
         [AssemblyCleanup]
         public static void AssemblyCleanup()
-            => TestBaseExtensions.KillChromeZombieProcesses(null!, MaxAgeOfProessInMinutes);
+        {
+            TestBaseExtensions.KillChromeZombieProcesses(null!, MaxAgeOfProessInMinutes);
+        }
 
         /// <summary>
         /// Maintenance Test related to the number of output folders.
@@ -42,7 +44,10 @@ namespace WebNativeDEV.SINUS.Tests
         /// </summary>
         [TestMethod]
         public void Maintenance_CountOfResultFoldersBelow200()
-            => new Action(() => this.CountResultFoldersBelowParameter(max: 200)).Should().NotThrow();
+        {
+            TestBaseSingletonContainer.TestBaseUsageStatisticsManager.Register(this);
+            new Action(() => this.CountResultFoldersBelowParameter(max: 200)).Should().NotThrow();
+        }
 
         /// <summary>
         /// Maintenance test related to zombie processes.
@@ -50,7 +55,10 @@ namespace WebNativeDEV.SINUS.Tests
         /// </summary>
         [TestMethod]
         public void Maintenance_ProcessesKilled()
-            => new Action(() => this.CountChromeZombieProcesses(MaxAgeOfProessInMinutes)).Should().NotThrow();
+        {
+            TestBaseSingletonContainer.TestBaseUsageStatisticsManager.Register(this);
+            new Action(() => this.CountChromeZombieProcesses(MaxAgeOfProessInMinutes)).Should().NotThrow();
+        }
     }
 }
 
@@ -58,6 +66,7 @@ namespace WebNativeDEV.SINUS.Tests.ZZZ
 {
     using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using WebNativeDEV.SINUS.Core.MsTest;
     using WebNativeDEV.SINUS.Core.MsTest.Extensions;
     using WebNativeDEV.SINUS.Core.Sut;
     using WebNativeDEV.SINUS.MsTest;
@@ -75,8 +84,9 @@ namespace WebNativeDEV.SINUS.Tests.ZZZ
         /// the naming influences the execution order in mstest.
         /// </summary>
         [TestMethod("Final Summary")]
-        public void TestSummary()
+        public void Maintenance_TestSummary()
         {
+            TestBaseSingletonContainer.TestBaseUsageStatisticsManager.Register(this);
             this.AssertOnDataLeak().Should().BeTrue();
         }
     }

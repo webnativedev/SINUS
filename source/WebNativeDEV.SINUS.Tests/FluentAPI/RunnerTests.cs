@@ -7,6 +7,7 @@ namespace WebNativeDEV.SINUS.Tests.FluentAPI;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using WebNativeDEV.SINUS.Core.Requirements;
 using WebNativeDEV.SINUS.MsTest;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'Type_or_Member'.
@@ -81,6 +82,7 @@ public class RunnerTests : TestBase
 
     [TestMethod]
     [ExpectedException(typeof(AssertInconclusiveException))]
+    [BusinessRequirement("set inconclusive if no code in when-block")]
     public void Given_ARunner_When_NotExecutingAnyCode_Then_TheTestShouldBeInconclusive()
     {
         this.Test(r => r

@@ -8,7 +8,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using WebNativeDEV.SINUS.Core.Events;
@@ -17,6 +19,7 @@ using WebNativeDEV.SINUS.Core.Execution.Contracts;
 using WebNativeDEV.SINUS.Core.FluentAPI;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 using WebNativeDEV.SINUS.Core.FluentAPI.Model;
+using WebNativeDEV.SINUS.Core.MsTest.Contracts;
 using WebNativeDEV.SINUS.Core.Sut.Contracts;
 using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 using WebNativeDEV.SINUS.MsTest;
@@ -40,6 +43,25 @@ public class TestBaseScopeContainer
         this.NamingConventionManager = new TestNamingConventionManager(this);
         this.IsPreparedOnly = false;
         this.Exceptions = new ExceptionStore();
+
+        var stackTrace = new StackTrace(1, true);
+        MethodBase? methodBase = null;
+        foreach (var frame in stackTrace.GetFrames())
+        {
+            var method = frame.GetMethod();
+            if(method?.GetCustomAttributes(typeof(TestMethodAttribute), true)?.Any() ?? false)
+            {
+                methodBase = method;
+                break;
+            }
+        }
+
+        this.Method = methodBase
+            ?? throw new InvalidOperationException("test method could not be evaluated");
+
+        this.Runner = new Runner(this);
+
+        this.TestBaseUsageStatisticsManager.Register(this);
     }
 
     /// <summary>
@@ -56,6 +78,16 @@ public class TestBaseScopeContainer
     /// Gets the assembly context.
     /// </summary>
     public TestContext? AssemblyTestContext => TestBaseSingletonContainer.AssemblyTestContext;
+
+    /// <summary>
+    /// Gets the usage statistic manager.
+    /// </summary>
+    public ITestBaseUsageStatisticsManager TestBaseUsageStatisticsManager => TestBaseSingletonContainer.TestBaseUsageStatisticsManager;
+
+    /// <summary>
+    /// Gets the reflection object for the method.
+    /// </summary>
+    public MethodBase Method { get; private set; }
 
     /// <summary>
     /// Gets a reference to the test base.
@@ -90,7 +122,7 @@ public class TestBaseScopeContainer
     /// <summary>
     /// Gets the naming convention manager.
     /// </summary>
-    internal TestNamingConventionManager NamingConventionManager { get; }
+    internal ITestNamingConventionManager NamingConventionManager { get; }
 
     /// <summary>
     /// Gets the logger factory.
@@ -110,7 +142,7 @@ public class TestBaseScopeContainer
     /// <summary>
     /// Gets or sets the runner.
     /// </summary>
-    internal IBrowserRunner? Runner { get; set; }
+    internal IBrowserRunner Runner { get; set; }
 
     /// <summary>
     /// Gets the execution engine.
