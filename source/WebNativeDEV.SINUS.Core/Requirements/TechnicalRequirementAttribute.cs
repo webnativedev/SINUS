@@ -20,7 +20,7 @@ public sealed class TechnicalRequirementAttribute : Attribute
     /// Initializes a new instance of the <see cref="TechnicalRequirementAttribute"/> class.
     /// </summary>
     /// <param name="description">A description that shows the purpose.</param>
-    public TechnicalRequirementAttribute(string description)
+    public TechnicalRequirementAttribute(params string[] description)
     {
         this.Description = description;
     }
@@ -28,5 +28,5 @@ public sealed class TechnicalRequirementAttribute : Attribute
     /// <summary>
     /// Gets the description of the requirement.
     /// </summary>
-    public string Description { get; }
+    public string[] Description { get; }
 }

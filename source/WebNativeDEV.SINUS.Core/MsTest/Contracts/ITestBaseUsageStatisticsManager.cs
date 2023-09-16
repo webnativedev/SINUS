@@ -38,6 +38,36 @@ public interface ITestBaseUsageStatisticsManager
     string AttributeWafDisposed { get; }
 
     /// <summary>
+    /// Gets the attribute value of business requirement.
+    /// </summary>
+    string AttributeBusinessRequirement { get; }
+
+    /// <summary>
+    /// Gets the attribute value of business requirements.
+    /// </summary>
+    string AttributeBusinessRequirements { get; }
+
+    /// <summary>
+    /// Gets the attribute value of the out of scope information.
+    /// </summary>
+    string AttributeOutOfScope { get; }
+
+    /// <summary>
+    /// Gets the attribute value of the technical approval.
+    /// </summary>
+    string AttributeTechnicalApproval { get; }
+
+    /// <summary>
+    /// Gets the attribute value of the technical requirement.
+    /// </summary>
+    string AttributeTechnicalRequirement { get; }
+
+    /// <summary>
+    /// Gets the attribute value of the technical requirements.
+    /// </summary>
+    string AttributeTechnicalRequirements { get; }
+
+    /// <summary>
     /// Registers an execution of a test.
     /// </summary>
     /// <param name="scope">Test dependencies.</param>
@@ -90,4 +120,16 @@ public interface ITestBaseUsageStatisticsManager
     /// </summary>
     /// <param name="filter">a Filter to search for specific test names.</param>
     void PrintUsageStatistic(string? filter = null);
+
+    /// <summary>
+    /// Prints the business requirements of all tests.
+    /// </summary>
+    /// <param name="filter">a Filter to search for specific test names.</param>
+    void PrintBusinessRequirements(string? filter = null);
+
+    /// <summary>
+    /// Prints the technical requirements of all tests.
+    /// </summary>
+    /// <param name="filter">a Filter to search for specific test names.</param>
+    void PrintTechnicalRequirements(string? filter = null);
 }

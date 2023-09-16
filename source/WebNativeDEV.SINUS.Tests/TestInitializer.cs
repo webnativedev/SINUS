@@ -84,7 +84,7 @@ namespace WebNativeDEV.SINUS.Tests.ZZZ
         /// the naming influences the execution order in mstest.
         /// </summary>
         [TestMethod("Final Summary")]
-        public void Maintenance_TestSummary()
+        public void Maintenance_ZZZ_TestSummary()
         {
             TestBaseSingletonContainer.TestBaseUsageStatisticsManager.Register(this);
             this.AssertOnDataLeak().Should().BeTrue();

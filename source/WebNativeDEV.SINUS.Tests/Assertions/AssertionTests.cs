@@ -25,6 +25,7 @@ using WebNativeDEV.SINUS.MsTest;
 public class AssertionTests : TestBase
 {
     [TestMethod]
+    [BusinessRequirement("B001:Check actual of RunStore for null value")]
     public void Given_FluentAssertions_When_DataIsUsed_Then_ItShouldNotBeNull()
         => this.Test(r => r
             .Given("FluentAssertions")

@@ -81,6 +81,8 @@ public static class TestBaseExtensions
                     data.ContainsKey(TestBaseSingletonContainer.TestBaseUsageStatisticsManager.AttributeWafDisposed));
 
         TestBaseSingletonContainer.TestBaseUsageStatisticsManager.PrintUsageStatistic();
+        TestBaseSingletonContainer.TestBaseUsageStatisticsManager.PrintBusinessRequirements();
+        TestBaseSingletonContainer.TestBaseUsageStatisticsManager.PrintTechnicalRequirements();
         return true;
 
 #pragma warning restore S1215 // "GC.Collect" should not be called
