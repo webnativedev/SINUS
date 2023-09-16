@@ -219,7 +219,7 @@ internal sealed class ExecutionEngine : IExecutionEngine
         {
             try
             {
-                successful = this.CreateWaf(parameter, returnValue);
+                successful = CreateWaf(parameter, returnValue);
                 lastException = null;
             }
             catch (IOException exception)
