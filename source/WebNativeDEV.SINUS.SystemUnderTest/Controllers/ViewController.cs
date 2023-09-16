@@ -38,7 +38,7 @@ public class ViewController : ControllerBase
             """
                 <html><head><title>SINUS TestSystem</title></head>
                 <body>
-                    <h1>Hello World</h1>
+                    <h1 id="titleText">Hello World</h1>
                 </body>
                 </html>
             """, "text/html");

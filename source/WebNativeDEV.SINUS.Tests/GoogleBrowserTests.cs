@@ -62,8 +62,6 @@ public sealed class GoogleBrowserTests : TestBase
     [TestMethod]
     [TestCategory("external")]
     [ExpectedException(typeof(AssertInconclusiveException))]
-    [TechnicalApproval("Empty When-Block leads to inconclusive result.")]
-    [TechnicalApproval("Browser injected correctly in Then block.")]
     public void Given_ABrowserLoadingGoogle_When_Nothing_Then_ResultInconclusive()
     => this.Test(r => r
         .GivenABrowserAt(this.Google)

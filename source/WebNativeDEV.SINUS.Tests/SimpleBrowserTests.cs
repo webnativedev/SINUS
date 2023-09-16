@@ -119,9 +119,26 @@ public class SimpleBrowserTests : TestBase
                 data.Store(browser.PageSource);
                 data.Store(browser.Title);
                 data.Store(browser.Url);
+                data.Store(browser.HumanReadablePageName);
+                data.Store(browser.GetBaseObject());
                 data.Store("element active: " + (browser.FindActiveElement()?.Text ?? "<none>"));
             })
             .Then("no exception should be thrown")
             .DebugPrint());
+    }
+
+    [TestMethod]
+    public void Given_ABrowserOnRandomEndpoint_When_CallingDifferentBrowserActions_Then_NoThrow()
+    {
+        this.Test(r => r
+            .GivenASystemAndABrowserAtRandomEndpoint<Program>(this.simpleView)
+            .When("Calling Browser", (browser, data) =>
+            {
+                data.Store("text", browser.FindElement("titleText").Text);
+                data.Store("countTitles", browser.FindElements("//@titleText").Count());
+                browser.NavigateTo("about:blank");
+            })
+            .ThenNoError()
+            .DebugPrint()).Should().BeSuccessful();
     }
 }

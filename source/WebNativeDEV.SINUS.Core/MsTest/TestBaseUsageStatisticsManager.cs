@@ -63,11 +63,6 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
     public string AttributeOutOfScope => "OutOfScope";
 
     /// <summary>
-    /// Gets the attribute value of the technical approval.
-    /// </summary>
-    public string AttributeTechnicalApproval => "AttributeTechnicalApproval";
-
-    /// <summary>
     /// Gets the attribute value of the technical requirement.
     /// </summary>
     public string AttributeTechnicalRequirement => "AttributeTechnicalRequirement";
@@ -101,11 +96,6 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
 
         this.StoreAttribute<OutOfScopeAttribute>(
             this.AttributeOutOfScope,
-            scope,
-            (attr, result) => result.Add((description: attr.Description, level: "method")));
-
-        this.StoreAttribute<TechnicalApprovalAttribute>(
-            this.AttributeTechnicalApproval,
             scope,
             (attr, result) => result.Add((description: attr.Description, level: "method")));
 

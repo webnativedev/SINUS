@@ -53,11 +53,6 @@ public interface ITestBaseUsageStatisticsManager
     string AttributeOutOfScope { get; }
 
     /// <summary>
-    /// Gets the attribute value of the technical approval.
-    /// </summary>
-    string AttributeTechnicalApproval { get; }
-
-    /// <summary>
     /// Gets the attribute value of the technical requirement.
     /// </summary>
     string AttributeTechnicalRequirement { get; }
