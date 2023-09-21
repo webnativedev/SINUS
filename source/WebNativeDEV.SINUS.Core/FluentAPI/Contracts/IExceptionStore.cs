@@ -24,11 +24,6 @@ public interface IExceptionStore
     bool HasUncheckedElements { get; }
 
     /// <summary>
-    /// Gets the unchecked exceptions.
-    /// </summary>
-    IList<Exception> UncheckedExceptions { get; }
-
-    /// <summary>
     /// Count elements of type.
     /// </summary>
     /// <typeparam name="T">Identifying exception type.</typeparam>

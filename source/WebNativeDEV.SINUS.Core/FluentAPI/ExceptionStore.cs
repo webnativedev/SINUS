@@ -37,10 +37,6 @@ internal class ExceptionStore : IExceptionStore
     public bool HasUncheckedElements => this.list.Exists(e => !e.IsCheckedInThenClause);
 
     /// <inheritdoc/>
-    public IList<Exception> UncheckedExceptions =>
-        this.list.Where(e => !e.IsCheckedInThenClause).Select(x => x.Exception).ToList();
-
-    /// <inheritdoc/>
     public void Add(RunCategory runCategory, Exception exception)
     {
         var item = new ExceptionStoreItem(runCategory, exception);
