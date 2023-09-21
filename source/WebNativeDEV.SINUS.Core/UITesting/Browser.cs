@@ -12,7 +12,6 @@ using System.Diagnostics.CodeAnalysis;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
 using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.Core.UITesting.Contracts;
-using WebNativeDEV.SINUS.MsTest;
 
 /// <summary>
 /// The browser class represents an instance of a view

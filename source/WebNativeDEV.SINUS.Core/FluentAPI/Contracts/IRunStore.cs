@@ -77,6 +77,13 @@ public interface IRunStore
     T Read<T>(string key);
 
     /// <summary>
+    /// Gets the instances from store based on the key.
+    /// </summary>
+    /// <param name="prefix">Identifier prefix for the instance to get.</param>
+    /// <returns>An instance list from the store.</returns>
+    IList<object?> ReadPrefix(string prefix);
+
+    /// <summary>
     /// Reads the value that is returned by the system under test as a result.
     /// </summary>
     /// <typeparam name="T">Type the result is checked against and casted into.</typeparam>
@@ -147,4 +154,17 @@ public interface IRunStore
     /// <param name="systemUnderTest">The system under test.</param>
     /// <returns>An instance of the store to be used as fluent api.</returns>
     IRunStore StoreSut(object? systemUnderTest);
+
+    /// <summary>
+    /// Counts the number of items that match the condition.
+    /// </summary>
+    /// <param name="condition">The condition to match.</param>
+    /// <returns>The count of elements as integer.</returns>
+    public int Count(Func<KeyValuePair<string, object?>, bool> condition);
+
+    /// <summary>
+    /// Waits until a state is met.
+    /// </summary>
+    /// <param name="condition">Checks whether the desired state is reached.</param>
+    void WaitUntil(Func<IRunStore, bool> condition);
 }

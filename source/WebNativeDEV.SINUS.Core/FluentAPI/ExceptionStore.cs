@@ -4,13 +4,14 @@
 
 namespace WebNativeDEV.SINUS.Core.FluentAPI;
 
+using FluentAssertions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
+using WebNativeDEV.SINUS.Core.FluentAPI.Events;
 using WebNativeDEV.SINUS.Core.FluentAPI.Model;
+using WebNativeDEV.SINUS.Core.MsTest;
 
 /// <summary>
 /// The exception store.
@@ -18,6 +19,16 @@ using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 internal class ExceptionStore : IExceptionStore
 {
     private readonly List<ExceptionStoreItem> list = new();
+    private readonly TestBaseScopeContainer scope;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ExceptionStore"/> class.
+    /// </summary>
+    /// <param name="scope">Dependency container.</param>
+    public ExceptionStore(TestBaseScopeContainer scope)
+    {
+        this.scope = scope;
+    }
 
     /// <inheritdoc/>
     public int Count => this.list.Count;
@@ -26,9 +37,28 @@ internal class ExceptionStore : IExceptionStore
     public bool HasUncheckedElements => this.list.Exists(e => !e.IsCheckedInThenClause);
 
     /// <inheritdoc/>
+    public IList<Exception> UncheckedExceptions =>
+        this.list.Where(e => !e.IsCheckedInThenClause).Select(x => x.Exception).ToList();
+
+    /// <inheritdoc/>
     public void Add(RunCategory runCategory, Exception exception)
     {
-        this.list.Add(new ExceptionStoreItem(runCategory, exception));
+        var item = new ExceptionStoreItem(runCategory, exception);
+
+        if (exception is AggregateException aggException)
+        {
+            this.scope.EventBus.Publish(this, new ExceptionChangedEventBusEventArgs(item));
+
+            foreach (var e in aggException.InnerExceptions)
+            {
+                this.Add(runCategory, e);
+            }
+
+            return;
+        }
+
+        this.list.Add(item);
+        this.scope.EventBus.Publish(this, new ExceptionChangedEventBusEventArgs(item));
     }
 
     /// <inheritdoc/>
@@ -50,7 +80,11 @@ internal class ExceptionStore : IExceptionStore
     /// <inheritdoc/>
     public void SetAllChecked()
     {
-        this.list.ForEach(item => item.IsCheckedInThenClause = true);
+        this.list.ForEach(item =>
+        {
+            item.IsCheckedInThenClause = true;
+            this.scope.EventBus.Publish(this, new ExceptionChangedEventBusEventArgs(item));
+        });
     }
 
     /// <inheritdoc/>
@@ -59,9 +93,10 @@ internal class ExceptionStore : IExceptionStore
     {
         this.list.ForEach(item =>
         {
-            if(item.Exception is T)
+            if (item.Exception is T)
             {
                 item.IsCheckedInThenClause = true;
+                this.scope.EventBus.Publish(this, new ExceptionChangedEventBusEventArgs(item));
             }
         });
     }

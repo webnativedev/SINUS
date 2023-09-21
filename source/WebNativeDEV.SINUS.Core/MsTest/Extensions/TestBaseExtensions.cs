@@ -6,11 +6,8 @@ namespace WebNativeDEV.SINUS.Core.MsTest.Extensions;
 
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Diagnostics;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
-using WebNativeDEV.SINUS.Core.Sut;
-using WebNativeDEV.SINUS.Core.UITesting;
 using WebNativeDEV.SINUS.MsTest;
 
 /// <summary>

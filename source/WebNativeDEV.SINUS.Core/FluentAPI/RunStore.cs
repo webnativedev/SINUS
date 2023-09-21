@@ -8,11 +8,9 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using WebNativeDEV.SINUS.Core.Events.Contracts;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 using WebNativeDEV.SINUS.Core.FluentAPI.Events;
 using WebNativeDEV.SINUS.Core.MsTest;
-using WebNativeDEV.SINUS.MsTest;
 
 /// <summary>
 /// Represents the store that is used in test runners.
@@ -149,6 +147,15 @@ internal sealed class RunStore : IRunStore
     }
 
     /// <inheritdoc/>
+    public IList<object?> ReadPrefix(string prefix)
+    {
+        return this.store
+                .Where(x => x.Key.StartsWith(prefix, StringComparison.InvariantCulture))
+                .Select(x => x.Value)
+                .ToList();
+    }
+
+    /// <inheritdoc/>
     public object? ReadObject(string key)
     {
         if (!this.store.ContainsKey(key))
@@ -207,6 +214,39 @@ internal sealed class RunStore : IRunStore
             value?.GetType()?.FullName ?? "<null>");
 
         return this;
+    }
+
+    /// <inheritdoc/>
+    public int Count(Func<KeyValuePair<string, object?>, bool> condition)
+    {
+        int count = 0;
+
+        foreach (var item in this.store)
+        {
+            count += condition(item) ? 1 : 0;
+        }
+
+        return count;
+    }
+
+    /// <inheritdoc/>
+    public void WaitUntil(Func<IRunStore, bool> condition)
+    {
+        var waitTask = Task.Run(async () =>
+        {
+            while (condition?.Invoke(this) ?? true)
+            {
+                await Task.Delay(100).ConfigureAwait(false);
+            }
+        });
+
+        Task.Run(async () =>
+        {
+            if (waitTask != await Task.WhenAny(waitTask, Task.Delay(5000)).ConfigureAwait(false))
+            {
+                throw new TimeoutException();
+            }
+        }).Wait();
     }
 
     /// <summary>

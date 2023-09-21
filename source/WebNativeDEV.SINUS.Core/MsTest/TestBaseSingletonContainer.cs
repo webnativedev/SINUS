@@ -4,25 +4,15 @@
 
 namespace WebNativeDEV.SINUS.Core.MsTest;
 
-using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WebNativeDEV.SINUS.Core.Events.Contracts;
-using WebNativeDEV.SINUS.Core.Events;
-using WebNativeDEV.SINUS.Core.Execution.Contracts;
 using WebNativeDEV.SINUS.Core.Execution;
+using WebNativeDEV.SINUS.Core.Execution.Contracts;
 using WebNativeDEV.SINUS.Core.Logging;
 using WebNativeDEV.SINUS.Core.MsTest.Contracts;
-using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 using WebNativeDEV.SINUS.Core.UITesting;
-using Microsoft.Extensions.DependencyInjection;
-using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
-using WebNativeDEV.SINUS.Core.FluentAPI;
+using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 
 /// <summary>
 /// IoC handling for the test base.

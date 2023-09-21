@@ -7,19 +7,8 @@ namespace WebNativeDEV.SINUS.Tests.MsTest;
 using FluentAssertions;
 using global::WebNativeDEV.SINUS.MsTest;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NSubstitute;
-using NSubstitute.Routing.Handlers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using WebNativeDEV.SINUS.Core.Assertions;
-using WebNativeDEV.SINUS.Core.FluentAPI;
-using WebNativeDEV.SINUS.Core.MsTest;
-using WebNativeDEV.SINUS.Core.MsTest.Contracts;
-using WebNativeDEV.SINUS.SystemUnderTest.Services.Abstractions;
+using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'Type_or_Member'.
 #pragma warning disable SA1600 // Elements should be documented
@@ -30,7 +19,7 @@ public class MsTestTests : TestBase
     [TestMethod]
     public void Given_MinimalTest_When_CheckResult_Then_DataSuccessShouldBePresent()
     {
-        this.Test(r => { }).Success.Should().BeTrue();
+        this.Test(r => { }).Outcome.Should().Be(TestOutcome.Success);
     }
 
     [TestMethod]

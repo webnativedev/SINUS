@@ -8,7 +8,6 @@ using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebNativeDEV.SINUS.Core.Assertions;
 using WebNativeDEV.SINUS.Core.MsTest.Extensions;
-using WebNativeDEV.SINUS.Core.UITesting;
 using WebNativeDEV.SINUS.Core.UITesting.Model;
 using WebNativeDEV.SINUS.MsTest;
 using WebNativeDEV.SINUS.SystemUnderTest;
@@ -141,4 +140,11 @@ public class SimpleBrowserTests : TestBase
             .ThenNoError()
             .DebugPrint()).Should().BeSuccessful();
     }
+
+    [TestMethod]
+    public void Given_ATestSystem_When_StoringTheTitle_Then_ItShouldBeTheRightValue()
+        => this.Test(r => r
+            .GivenASystemAndABrowserAtRandomEndpoint<Program>(this.simpleView, new BrowserFactoryOptions(headless: false))
+            .When((browser, data) => data.StoreActual(browser.Title))
+            .Then((browser, data) => data.Should().ActualBe("SINUS TestSystem")));
 }

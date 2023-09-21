@@ -5,7 +5,6 @@
 namespace WebNativeDEV.SINUS.Core.UITesting;
 
 using Microsoft.Extensions.Logging;
-using OpenQA.Selenium;
 using System.Diagnostics.CodeAnalysis;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
 using WebNativeDEV.SINUS.Core.MsTest;

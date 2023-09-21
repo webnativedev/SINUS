@@ -6,12 +6,9 @@ namespace WebNativeDEV.SINUS.Core.MsTest.Model;
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.Core.MsTest.Contracts;
-using WebNativeDEV.SINUS.MsTest;
 
 /// <summary>
 /// Result of a test run.
@@ -21,18 +18,21 @@ internal class TestBaseResult : ITestBaseResult
     /// <summary>
     /// Initializes a new instance of the <see cref="TestBaseResult"/> class.
     /// </summary>
-    /// <param name="success">Execution result state.</param>
+    /// <param name="outcome">Execution result state.</param>
     /// <param name="scope">The instance to the dependency store.</param>
-    public TestBaseResult(bool success, TestBaseScopeContainer scope)
+    /// <param name="exceptions">The exceptions if outcome fails.</param>
+    public TestBaseResult(TestOutcome outcome, TestBaseScopeContainer scope, IList<Exception>? exceptions = null)
     {
-        this.Success = success;
+        this.Outcome = outcome;
         this.Scope = scope;
+        this.Exceptions = exceptions;
     }
 
-    /// <summary>
-    /// Gets a value indicating whether the execution state was successful.
-    /// </summary>
-    public bool Success { get; }
+    /// <inheritdoc/>
+    public TestOutcome Outcome { get; }
+
+    /// <inheritdoc/>
+    public IList<Exception>? Exceptions { get; }
 
     /// <summary>
     /// Gets the test base instance.

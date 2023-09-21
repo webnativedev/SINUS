@@ -6,8 +6,8 @@ namespace WebNativeDEV.SINUS.Tests;
 
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WebNativeDEV.SINUS.Core.Requirements;
 using WebNativeDEV.SINUS.Core.Assertions;
+using WebNativeDEV.SINUS.Core.Requirements;
 using WebNativeDEV.SINUS.MsTest;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'Type_or_Member'.
@@ -61,12 +61,12 @@ public sealed class GoogleBrowserTests : TestBase
 
     [TestMethod]
     [TestCategory("external")]
-    [ExpectedException(typeof(AssertInconclusiveException))]
     public void Given_ABrowserLoadingGoogle_When_Nothing_Then_ResultInconclusive()
     => this.Test(r => r
         .GivenABrowserAt(this.Google)
         .When("Navigation to page finished")
-        .Then("Title should not be null", (browser, data) => browser.Should().NotBeNull()));
+        .Then("Title should not be null", (browser, data) => browser.Should().NotBeNull())
+        .ExpectInconclusive());
 
     [TestMethod]
     [TestCategory("external")]

@@ -35,41 +35,27 @@ public class RunnerTests : TestBase
     }
 
     [TestMethod]
-    [ExpectedException(typeof(AssertFailedException))]
-    public void Given_ARunnerWithAnErrorInWhen_When_ExceptionIsThrown_Then_ThisErrorShouldBeVisibleIfNotCaught()
+    public void Given_ARunnerWithAnErrorInWhen_When_ExceptionIsThrown_Then_ThisErrorShouldBeExpected()
     {
         this.Test(r => r
             .Given("An setup step with an error")
             .When("An excecution occurs", data => throw new Exception("Execution failed"))
-            .ThenNoError());
+            .ThenNoError()
+            .ExpectFail());
     }
 
     [TestMethod]
-    [ExpectedException(typeof(AssertFailedException))]
-    public void Given_ARunnerWithAnErrorInThen_When_ExceptionIsThrown_Then_ThisErrorShouldBeVisible()
+    public void Given_ARunnerWithAnErrorInThen_When_ExceptionIsThrown_Then_ThisErrorShouldBeExpected()
     {
         this.Test(r => r
             .Given("An setup step with an error")
             .When("An excecution occurs", data => data.PrintStore())
-            .Then("The error should be visible", data => throw new Exception("Verification failed")));
+            .Then("The error should be visible", data => throw new Exception("Verification failed"))
+            .ExpectFail());
     }
 
     [TestMethod]
-    [ExpectedException(typeof(AssertFailedException))]
-    public void Given_ARunnerWithAnErrorInThen2x_When_ExceptionIsThrown_Then_ThisErrorShouldBeVisible()
-    {
-        this.Test(r => r
-            .Given("An setup step with an error")
-            .When("An excecution occurs", data => data.PrintStore())
-            .Then(
-                "The error should be visible",
-                data => throw new Exception("Verification failed"),
-                data => throw new Exception("Verification failed")));
-    }
-
-    [TestMethod]
-    [ExpectedException(typeof(AssertFailedException))]
-    public void Given_ARunnerWithAnErrorInThen2x_When_ExceptionIsThrownAndAssertion_Then_ThisErrorShouldBeVisible()
+    public void Given_ARunnerWithAnErrorInThen2x_When_ExceptionIsThrown_Then_ThisErrorShouldBeExpected()
     {
         this.Test(r => r
             .Given("An setup step with an error")
@@ -77,51 +63,65 @@ public class RunnerTests : TestBase
             .Then(
                 "The error should be visible",
                 data => throw new Exception("Verification failed"),
-                data => Assert.Fail("Error happens here")));
+                data => throw new Exception("Verification failed"))
+            .ExpectFail());
     }
 
     [TestMethod]
-    [ExpectedException(typeof(AssertInconclusiveException))]
+    public void Given_ARunnerWithAnErrorInThen2x_When_ExceptionIsThrownAndAssertion_Then_ThisErrorShouldBeExpected()
+    {
+        this.Test(r => r
+            .Given("An setup step with an error")
+            .When("An excecution occurs", data => data.PrintStore())
+            .Then(
+                "The error should be visible",
+                data => throw new Exception("Verification failed"),
+                data => Assert.Fail("Error happens here"))
+            .ExpectFail());
+    }
+
+    [TestMethod]
     [BusinessRequirement("set inconclusive if no code in when-block")]
-    public void Given_ARunner_When_NotExecutingAnyCode_Then_TheTestShouldBeInconclusive()
+    public void Given_ARunner_When_NotExecutingAnyCode_Then_TheTestShouldBeExpectedAsInconclusive()
     {
         this.Test(r => r
             .Given("A setup without code")
             .When("An excecution without code")
-            .Then("A validation without code"));
+            .Then("A validation without code")
+            .ExpectInconclusive());
     }
 
     [TestMethod]
-    [ExpectedException(typeof(AssertInconclusiveException))]
-    public void Given_ARunnerWithGiven_When_NotExecutingAnyCodeInWhen_Then_TheTestShouldBeInconclusive()
+    public void Given_ARunnerWithGiven_When_NotExecutingAnyCodeInWhen_Then_TheTestShouldBeExpectedAsInconclusive()
     {
         this.Test(r => r
             .Given("A setup without code", data => data["test"] = 11)
             .When("An excecution without code")
             .Then("A validation without code")
-            .DebugPrint());
+            .DebugPrint()
+            .ExpectInconclusive());
     }
 
     [TestMethod]
-    [ExpectedException(typeof(AssertInconclusiveException))]
-    public void Given_ARunnerWithGivenAndThen_When_NotExecutingAnyCodeInWhen_Then_TheTestShouldBeInconclusive()
+    public void Given_ARunnerWithGivenAndThen_When_NotExecutingAnyCodeInWhen_Then_TheTestShouldBeExpectedAsInconclusive()
     {
         this.Test(r => r
             .Given("A setup without code", data => data["test"] = 11)
             .When("An excecution without code")
             .Then("A validation without code", data => data["test2"] = data["test"])
-            .DebugPrint());
+            .DebugPrint()
+            .ExpectInconclusive());
     }
 
     [TestMethod]
-    [ExpectedException(typeof(AssertInconclusiveException))]
-    public void Given_ARunnerWithThen_When_NotExecutingAnyCodeInWhen_Then_TheTestShouldBeInconclusive()
+    public void Given_ARunnerWithThen_When_NotExecutingAnyCodeInWhen_Then_TheTestShouldBeExpectedAsInconclusive()
     {
         this.Test(r => r
             .Given("A setup without code")
             .When("An excecution without code")
             .Then("A validation without code", data => data["test2"] = 22)
-            .DebugPrint());
+            .DebugPrint()
+            .ExpectInconclusive());
     }
 
     [TestMethod]
@@ -168,7 +168,6 @@ public class RunnerTests : TestBase
     }
 
     [TestMethod]
-    [ExpectedException(typeof(AssertFailedException))]
     public void Given_ARunnerWithRunStore_When_StoringActualAsStringAndReadAsInt_Then_Throw()
     {
         this.Test(r => r
@@ -180,11 +179,11 @@ public class RunnerTests : TestBase
                 check.Should().NotBe(3);
             })
             .Then("exception occurs")
-            .DebugPrint());
+            .DebugPrint()
+            .ExpectFail());
     }
 
     [TestMethod]
-    [ExpectedException(typeof(AssertFailedException))]
     public void Given_ARunnerWithRunStore_When_StoringMultipleStrings_Then_CannotReadByType()
     {
         this.Test(r => r
@@ -199,46 +198,47 @@ public class RunnerTests : TestBase
                 check.Should().NotBe("2");
             })
             .Then("exception occurs")
-            .DebugPrint());
+            .DebugPrint()
+            .ExpectFail());
     }
 
     [TestMethod]
-    [ExpectedException(typeof(AssertFailedException))]
-    public void Given_SimpleFlow_When_ExceptionOccurs_Then_NoErrorFunctionShouldFail()
+    public void Given_SimpleFlow_When_ExceptionOccurs_Then_NoErrorFunctionShouldExpectFail()
         => this.Test(r => r
             .Given()
             .When(data => throw new InvalidDataException())
-            .ThenNoError());
+            .ThenNoError()
+            .ExpectFail());
 
     [TestMethod]
-    [ExpectedException(typeof(AssertFailedException))]
-    public void Given_SimpleDocumentedFlow_When_ExceptionOccurs_Then_NoErrorFunctionShouldFail()
+    public void Given_SimpleDocumentedFlow_When_ExceptionOccurs_Then_NoErrorFunctionShouldExpectFail()
         => this.Test(r => r
             .Given("a simple flow")
             .When("exception occured", data => throw new InvalidDataException())
-            .ThenNoError("no error"));
+            .ThenNoError("no error")
+            .ExpectFail());
 
     [TestMethod]
-    [ExpectedException(typeof(AssertFailedException))]
-    public void Given_SimpleFlow_When_Working_Then_ShouldFailFunctionShouldFail()
+    public void Given_SimpleFlow_When_Working_Then_ShouldFailFunctionShouldExpectFail()
         => this.Test(r => r
             .Given()
             .When(data => { })
-            .ThenShouldHaveFailed());
+            .ThenShouldHaveFailed()
+            .ExpectFail());
 
     [TestMethod]
-    [ExpectedException(typeof(AssertFailedException))]
-    public void Given_SimpleFlow_When_Working_Then_ShouldFailWithFunctionShouldFail()
+    public void Given_SimpleFlow_When_Working_Then_ShouldFailWithFunctionShouldExpectFail()
         => this.Test(r => r
             .Given()
             .When(data => { })
-            .ThenShouldHaveFailedWith<Exception>());
+            .ThenShouldHaveFailedWith<Exception>()
+            .ExpectFail());
 
     [TestMethod]
-    [ExpectedException(typeof(AssertFailedException))]
-    public void Given_SimpleDocumentedFlow_When_Working_Then_ShouldFailFunctionShouldFail()
-        => this.Test(r => r
-            .Given("a simple flow")
-            .When("exception occured", data => { })
-            .ThenShouldHaveFailed("no error"));
+    public void Given_SimpleDocumentedFlow_When_Working_Then_ShouldFailFunctionShouldExpectFail()
+    => this.Test(r => r
+        .Given("a simple flow")
+        .When("exception occured", data => { })
+        .ThenShouldHaveFailed("no error")
+        .ExpectFail());
 }

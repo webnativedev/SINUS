@@ -5,11 +5,6 @@
 namespace WebNativeDEV.SINUS.Core.UITesting.Contracts;
 
 using OpenQA.Selenium;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WebNativeDEV.SINUS.Core.UITesting.Model;
 using WebNativeDEV.SINUS.MsTest;
 

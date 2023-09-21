@@ -5,7 +5,6 @@
 namespace WebNativeDEV.SINUS.Tests.Internals.Logging;
 
 using FluentAssertions;
-using WebNativeDEV.SINUS.MsTest;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Logging.Console;
@@ -14,6 +13,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Text;
 using WebNativeDEV.SINUS.Core.Logging;
+using WebNativeDEV.SINUS.MsTest;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'Type_or_Member'.
 #pragma warning disable SA1600 // Elements should be documented

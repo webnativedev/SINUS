@@ -4,17 +4,22 @@
 
 namespace WebNativeDEV.SINUS.Core.UITesting.Model;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 /// <summary>
 /// Represents all settings that can be configured from outside.
 /// </summary>
 public class BrowserFactoryOptions
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BrowserFactoryOptions"/> class.
+    /// </summary>
+    /// <param name="headless">The headless option.</param>
+    /// <param name="ignoreSslErrors">The ignore ssl option.</param>
+    public BrowserFactoryOptions(bool headless = true, bool ignoreSslErrors = true)
+    {
+        this.Headless = headless;
+        this.IgnoreSslErrors = ignoreSslErrors;
+    }
+
     /// <summary>
     /// Gets or sets a value indicating whether to start as Headless or not.
     /// </summary>

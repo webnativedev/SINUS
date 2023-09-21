@@ -9,9 +9,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WebNativeDEV.SINUS.Core.Events;
 using WebNativeDEV.SINUS.Core.FluentAPI.Events;
 using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 using WebNativeDEV.SINUS.Core.Requirements;
@@ -43,7 +40,7 @@ public class EventTests : TestBase
             RunCategory.Given,
             RunCategory.When,
             RunCategory.Then,
-            RunCategory.Dispose);
+            RunCategory.Close);
         categories.Should().HaveCount(4);
     }
 
@@ -64,14 +61,56 @@ public class EventTests : TestBase
             RunCategory.When,
             RunCategory.Then,
             RunCategory.Debug,
-            RunCategory.Dispose);
+            RunCategory.Close);
         categories.Should().HaveCount(5);
+    }
+
+    [TestMethod]
+    public void Given_AFailingTest_When_Fail_Then_CheckedExceptionsShouldBeVisibleInListenMethod()
+    {
+        var events = new List<ExceptionChangedEventBusEventArgs>();
+
+        this.Test(r => r
+            .Listen<ExceptionChangedEventBusEventArgs>(
+                (sender, data, e) => events.Add(e))
+            .Given()
+            .When(data => throw new InvalidOperationException())
+            .ThenShouldHaveFailedWith<InvalidOperationException>()
+            .DebugPrint());
+
+        events.Select(e => e.Exception.GetType().Name + "_" + e.IsChecked)
+              .Should()
+              .ContainInOrder(
+                "InvalidOperationException_False",
+                "InvalidOperationException_True");
+        events.Should().HaveCount(2);
+    }
+
+    [TestMethod]
+    public void Given_AFailingTest_When_FailInGiven_Then_CheckedExceptionsShouldBeVisibleInListenMethod()
+    {
+        var events = new List<ExceptionChangedEventBusEventArgs>();
+
+        this.Test(r => r
+            .Listen<ExceptionChangedEventBusEventArgs>(
+                (sender, data, e) => events.Add(e))
+            .Given(data => throw new InvalidOperationException())
+            .When(data => throw new InvalidDataException())
+            .ThenShouldHaveFailedWith<InvalidOperationException>()
+            .DebugPrint());
+
+        events.Select(e => e.Exception.GetType().Name + "_" + e.IsChecked)
+              .Should()
+              .ContainInOrder(
+                "InvalidOperationException_False",
+                "InvalidOperationException_True");
+        events.Should().HaveCount(2);
     }
 
     [TestMethod]
     public void Given_ANormalTest_When_RunningWithDebug_Then_AllExecutionEventsShouldBeFilled()
     {
-        List<ExecutedEventBusEventArgs> args = new ();
+        var args = new List<ExecutedEventBusEventArgs>();
 
         this.Test(r => r
             .Listen<ExecutedEventBusEventArgs>((sender, data, e) => args.Add(e))

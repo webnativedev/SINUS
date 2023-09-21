@@ -5,38 +5,29 @@
 namespace WebNativeDEV.SINUS.Core.FluentAPI;
 
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Microsoft.VisualStudio.TestPlatform.Utilities;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata;
-using WebNativeDEV.SINUS.Core.Events.Contracts;
 using WebNativeDEV.SINUS.Core.Events.EventArguments;
-using WebNativeDEV.SINUS.Core.Execution;
-using WebNativeDEV.SINUS.Core.Execution.Contracts;
 using WebNativeDEV.SINUS.Core.Execution.Model;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 using WebNativeDEV.SINUS.Core.FluentAPI.Events;
 using WebNativeDEV.SINUS.Core.FluentAPI.Model;
-using WebNativeDEV.SINUS.Core.Logging;
 using WebNativeDEV.SINUS.Core.MsTest;
-using WebNativeDEV.SINUS.Core.MsTest.Extensions;
-using WebNativeDEV.SINUS.Core.Sut;
+using WebNativeDEV.SINUS.Core.MsTest.Contracts;
 using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 using WebNativeDEV.SINUS.Core.UITesting.Model;
-using WebNativeDEV.SINUS.MsTest;
 
 /// <summary>
 /// Base Class for Runners.
 /// </summary>
-internal sealed partial class Runner : IBrowserRunner
+internal sealed partial class Runner : IBrowserRunner, ICloseable
 {
     private const string DefaultEndpoint = "https://localhost:10001";
 
     private readonly ILogger logger;
     private readonly TestBaseScopeContainer scope;
+    private bool isCloseCalled;
     private bool disposedValue;
 
     /// <summary>
@@ -58,6 +49,23 @@ internal sealed partial class Runner : IBrowserRunner
     {
         this.Dispose(true);
         GC.SuppressFinalize(this);
+    }
+
+    /// <inheritdoc/>
+    public void Close()
+    {
+        if (this.isCloseCalled)
+        {
+            return;
+        }
+
+        this.RunAction(
+            runCategory: RunCategory.Close,
+            action: () =>
+            {
+                this.scope.Shutdown();
+            });
+        this.isCloseCalled = true;
     }
 
     private Runner RunCreateSut(
@@ -176,6 +184,7 @@ internal sealed partial class Runner : IBrowserRunner
         }
         else if (this.scope.HttpClient != null && output.HttpClient != null)
         {
+            this.scope.HttpClient.CancelPendingRequests();
             this.scope.HttpClient.Dispose();
             this.scope.HttpClient = output.HttpClient;
         }
@@ -354,32 +363,10 @@ internal sealed partial class Runner : IBrowserRunner
         {
             if (disposing)
             {
-                this.RunAction(
-                    runCategory: RunCategory.Dispose,
-                    action: () =>
-                    {
-                        this.scope.Shutdown();
-                    });
+                this.Close();
             }
 
             this.disposedValue = true;
-
-            if (this.scope.IsPreparedOnly)
-            {
-                this.logger.LogWarning("The test result is evaluated as inconclusive, because it was rated 'only-prepared' when seeing no 'When'-part.");
-                Assert.Inconclusive("The test result is evaluated as inconclusive, because it was rated 'only-prepared' when seeing no 'When'-part.");
-            }
-
-            if (this.scope.Exceptions.HasUncheckedElements)
-            {
-                this.logger.LogError(
-                    "The test result is evaluated as failed, because exceptions occured. Count: {Count}; Types: {Types}",
-                    this.scope.Exceptions.Count,
-                    this.scope.Exceptions.GetContentAsString());
-                Assert.Fail($"The test result is evaluated as failed, because exceptions occured. Count: {this.scope.Exceptions.Count}; Types: {this.scope.Exceptions.GetContentAsString()}");
-            }
-
-            this.logger.LogInformation("The test result is evaluated as successful. (Checked Exceptions: {CheckedExceptionCount})", this.scope.Exceptions.Count);
         }
     }
 }

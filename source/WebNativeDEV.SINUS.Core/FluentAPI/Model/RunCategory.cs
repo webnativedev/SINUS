@@ -35,7 +35,7 @@ public enum RunCategory
     Debug,
 
     /// <summary>
-    /// Removes all elements (especially required for unmanaged resources like the WebDriver).
+    /// Closes all elements.
     /// </summary>
-    Dispose,
+    Close,
 }

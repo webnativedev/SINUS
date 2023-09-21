@@ -8,10 +8,7 @@ using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
 using WebNativeDEV.SINUS.Core.ArgumentValidation.Exceptions;
 using WebNativeDEV.SINUS.Core.MsTest;
@@ -58,12 +55,12 @@ public class EnsureTests : TestBase
              .ThenShouldHaveFailedWith<ArgumentValidationException>());
 
     [TestMethod]
-    [ExpectedException(typeof(AssertFailedException))]
     public void Given_AFailingTest_When_Fail_Then_WrongExceptionExpectedShouldThrow()
         => this.Test(r => r
             .Given(data => data["value"] = null)
              .When(data => Ensure.NotNull(data["value"]))
-             .ThenShouldHaveFailedWith<IOException>());
+             .ThenShouldHaveFailedWith<IOException>()
+            .ExpectFail());
 
     [TestMethod]
     public void Given_AValue_When_CallingArgumentValidationNotNullWithNull_Then_AGeneralExceptionShouldHaveBeenThrown()

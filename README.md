@@ -3,7 +3,7 @@
 [![Main](https://github.com/webnativedev/SINUS/actions/workflows/dotnet_main.yml/badge.svg)](https://github.com/webnativedev/SINUS/actions/workflows/dotnet_main.yml) [![CodeQL](https://github.com/webnativedev/SINUS/actions/workflows/codeql.yml/badge.svg)](https://github.com/webnativedev/SINUS/actions/workflows/codeql.yml) ![Nuget](https://img.shields.io/nuget/v/WebNativeDEV.SINUS.Core) ![Nuget](https://img.shields.io/nuget/dt/WebNativeDEV.SINUS.Core?logo=nuget) [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=webnativedev_SINUS&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=webnativedev_SINUS) [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=webnativedev_SINUS&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=webnativedev_SINUS) [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=webnativedev_SINUS&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=webnativedev_SINUS) [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=webnativedev_SINUS&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=webnativedev_SINUS) [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=webnativedev_SINUS&metric=bugs)](https://sonarcloud.io/summary/new_code?id=webnativedev_SINUS) [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=webnativedev_SINUS&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=webnativedev_SINUS)
 
 
-![Example Video](/docs/demo-medium.gif "Example Video")
+![Example Screenshot](/docs/sinus-screenshot.png "Example Screenshot")
 
 Main idea of this package is to provide a readable and easy way to perform web UI tests.
 Hereby the package is opinionated and makes some decisions that need to be accepted for the usage of this package.
@@ -17,11 +17,11 @@ Example:
 
 ```csharp
     [TestMethod]
-    public void Given_ABrowserOpensGoogle_When_ReadingTheTitle_Then_TitleShouldBeSetToGoogle()
+    public void Given_ATestSystem_When_StoringTheTitle_Then_ItShouldBeTheRightValue()
         => this.Test(r => r
-            .GivenABrowserAt("http://www.google.at")
-            .When((browser, data) => data.Actual = browser.Title)
-            .Then((browser, data) => data.Should().ActualBe("Google")));
+            .GivenASystemAndABrowserAtRandomEndpoint<Program>(this.simpleView, new BrowserFactoryOptions(headless: false))
+            .When((browser, data) => data.StoreActual(browser.Title))
+            .Then((browser, data) => data.Should().ActualBe("SINUS TestSystem")));
 ```
 
 Calling the test:

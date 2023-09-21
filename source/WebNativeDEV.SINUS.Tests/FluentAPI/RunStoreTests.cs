@@ -6,15 +6,10 @@ namespace WebNativeDEV.SINUS.Tests.FluentAPI;
 
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NSubstitute;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using WebNativeDEV.SINUS.Core.Assertions;
-using WebNativeDEV.SINUS.Core.FluentAPI;
 using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.MsTest;
 

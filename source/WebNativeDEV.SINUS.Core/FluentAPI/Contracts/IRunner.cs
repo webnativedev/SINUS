@@ -77,6 +77,16 @@ public interface IRunner : IGiven, IGivenWithSut, IGivenWithSimpleSut, IWhen, IT
     IGivenWithSimpleSut GivenASimpleSystem(Func<object> sutFactory);
 
     /// <summary>
+    /// Allows to define the Given-Action in a Given-When-Then sequence.
+    /// </summary>
+    /// <param name="sutFactory">The factory that creates a simple Sut.</param>
+    /// <returns>
+    /// An object that will point to the runner.
+    /// The interface helps to reduce the set of options to only the appropriate in the sequence.
+    /// </returns>
+    IGivenWithSimpleSut GivenASimpleSystem(Func<IRunStore, object> sutFactory);
+
+    /// <summary>
     /// Allows to define the Then-Action in a Given-When-Then sequence.
     /// </summary>
     /// <param name="description">Plain text description.</param>

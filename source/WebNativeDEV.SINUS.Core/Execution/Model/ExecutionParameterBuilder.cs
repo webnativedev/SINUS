@@ -4,13 +4,9 @@
 
 namespace WebNativeDEV.SINUS.Core.Execution.Model;
 
-using OpenQA.Selenium.Interactions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WebNativeDEV.SINUS.Core.FluentAPI;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 using WebNativeDEV.SINUS.Core.MsTest;
@@ -66,10 +62,14 @@ internal sealed class ExecutionParameterBuilder : ExecutionParameter
                     this.Actions.Add(a);
                 }
             }
+
+            return this;
         }
-        else if (action != null)
+
+        if (action != null)
         {
             this.Actions.Add(action);
+            return this;
         }
 
         return this;

@@ -4,12 +4,6 @@
 
 namespace WebNativeDEV.SINUS.Core.Events.Contracts;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 /// <summary>
 /// Interface that covers subscribing and publishing of events.
 /// </summary>

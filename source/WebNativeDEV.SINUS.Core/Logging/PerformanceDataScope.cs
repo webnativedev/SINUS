@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
-using WebNativeDEV.SINUS.Core.Execution;
 
 /// <summary>
 /// Represents a manager class responsible for starting and ending a defined scope of execution

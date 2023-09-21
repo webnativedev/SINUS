@@ -5,28 +5,14 @@
 namespace WebNativeDEV.SINUS.MsTest;
 
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
-using WebNativeDEV.SINUS.Core.Events;
-using WebNativeDEV.SINUS.Core.Events.Contracts;
-using WebNativeDEV.SINUS.Core.Execution;
-using WebNativeDEV.SINUS.Core.Execution.Contracts;
-using WebNativeDEV.SINUS.Core.FluentAPI;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
-using WebNativeDEV.SINUS.Core.Logging;
+using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.Core.MsTest.Contracts;
-using WebNativeDEV.SINUS.Core.MsTest.Extensions;
 using WebNativeDEV.SINUS.Core.MsTest.Model;
-using WebNativeDEV.SINUS.Core.Sut;
-using WebNativeDEV.SINUS.Core.UITesting;
-using WebNativeDEV.SINUS.Core.UITesting.Contracts;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 /// <summary>
 /// Represents an abstract test base that allows later unit tests to
@@ -83,8 +69,44 @@ public abstract class TestBase
     {
         var scope = new TestBaseScopeContainer(this);
         Ensure.NotNull(action).Invoke(scope.Runner);
+        (scope.Runner as ICloseable)?.Close();
 
+        InterpretResult(scope);
         scope.Runner.Dispose();
-        return new TestBaseResult(true, scope);
+
+        return new TestBaseResult(TestOutcome.Success, scope);
+    }
+
+    private static void InterpretResult(TestBaseScopeContainer scope)
+    {
+        var logger = scope.CreateLogger<TestBase>();
+
+        if (scope.IsPreparedOnly)
+        {
+            logger.LogWarning("The test result is evaluated as inconclusive, because it was rated 'only-prepared' when seeing no 'When'-part.");
+            if (scope.ExpectedOutcome != TestOutcome.Inconclusive)
+            {
+                Assert.Inconclusive("The test result is evaluated as inconclusive, because it was rated 'only-prepared' when seeing no 'When'-part.");
+            }
+
+            return;
+        }
+
+        if (scope.Exceptions.HasUncheckedElements)
+        {
+            logger.LogError(
+                "The test result is evaluated as failed, because exceptions occured. Count: {Count}; Types: {Types}",
+                scope.Exceptions.Count,
+                scope.Exceptions.GetContentAsString());
+
+            if (scope.ExpectedOutcome != TestOutcome.Failure)
+            {
+                Assert.Fail($"The test result is evaluated as failed, because exceptions occured. Count: {scope.Exceptions.Count}; Types: {scope.Exceptions.GetContentAsString()}");
+            }
+
+            return;
+        }
+
+        logger.LogInformation("The test result is evaluated as successful. (Checked Exceptions: {CheckedExceptionCount})", scope.Exceptions.Count);
     }
 }

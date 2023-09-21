@@ -7,12 +7,9 @@ namespace WebNativeDEV.SINUS.Core.MsTest;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using WebNativeDEV.SINUS.Core.Events;
 using WebNativeDEV.SINUS.Core.Events.Contracts;
 using WebNativeDEV.SINUS.Core.Execution.Contracts;
@@ -42,14 +39,14 @@ public class TestBaseScopeContainer
         this.DataBag = new RunStore(this);
         this.NamingConventionManager = new TestNamingConventionManager(this);
         this.IsPreparedOnly = false;
-        this.Exceptions = new ExceptionStore();
+        this.Exceptions = new ExceptionStore(this);
 
         var stackTrace = new StackTrace(1, true);
         MethodBase? methodBase = null;
         foreach (var frame in stackTrace.GetFrames())
         {
             var method = frame.GetMethod();
-            if(method?.GetCustomAttributes(typeof(TestMethodAttribute), true)?.Any() ?? false)
+            if (method?.GetCustomAttributes(typeof(TestMethodAttribute), true)?.Any() ?? false)
             {
                 methodBase = method;
                 break;
@@ -68,6 +65,11 @@ public class TestBaseScopeContainer
     /// Gets or sets a value indicating whether the test is only a placeholder for later or not.
     /// </summary>
     public bool IsPreparedOnly { get; set; }
+
+    /// <summary>
+    /// Gets or sets the expected outcome of the test.
+    /// </summary>
+    public TestOutcome ExpectedOutcome { get; set; }
 
     /// <summary>
     /// Gets the exceptions that occured during the execution.

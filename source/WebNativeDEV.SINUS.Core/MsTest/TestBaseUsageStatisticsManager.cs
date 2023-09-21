@@ -5,22 +5,12 @@
 namespace WebNativeDEV.SINUS.Core.MsTest;
 
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing.Printing;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 using WebNativeDEV.SINUS.Core.MsTest.Contracts;
 using WebNativeDEV.SINUS.Core.Requirements;
-using WebNativeDEV.SINUS.Core.UITesting;
 using WebNativeDEV.SINUS.MsTest;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 /// <summary>
 /// Manages the usage of tests.

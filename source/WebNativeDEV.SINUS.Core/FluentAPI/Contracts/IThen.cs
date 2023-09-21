@@ -38,4 +38,16 @@ public interface IThen : IDisposable
     /// <param name="value">The value from a key-value pair to add in the debug printing.</param>
     /// <returns>An instance to the runner, so it can be disposed.</returns>
     IThen DebugPrint(string key, object? value);
+
+    /// <summary>
+    /// Method that is used to set the expectation of the test to fail.
+    /// </summary>
+    /// <returns>An instance to the runner, so it can be disposed.</returns>
+    IDisposable ExpectFail();
+
+    /// <summary>
+    /// Method that is used to set the expectation of the test to inconclusive.
+    /// </summary>
+    /// <returns>An instance to the runner, so it can be disposed.</returns>
+    IDisposable ExpectInconclusive();
 }

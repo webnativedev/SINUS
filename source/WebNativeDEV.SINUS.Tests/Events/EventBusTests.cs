@@ -6,15 +6,7 @@ namespace WebNativeDEV.SINUS.Tests.Events;
 
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WebNativeDEV.SINUS.Core.Assertions;
-using WebNativeDEV.SINUS.Core.Events;
-using WebNativeDEV.SINUS.Core.Events.Contracts;
-using WebNativeDEV.SINUS.Core.FluentAPI;
 using WebNativeDEV.SINUS.Core.FluentAPI.Events;
 using WebNativeDEV.SINUS.Core.Requirements;
 using WebNativeDEV.SINUS.MsTest;

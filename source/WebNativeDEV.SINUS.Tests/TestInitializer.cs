@@ -70,7 +70,6 @@ namespace WebNativeDEV.SINUS.Tests.ZZZ
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using WebNativeDEV.SINUS.Core.MsTest;
     using WebNativeDEV.SINUS.Core.MsTest.Extensions;
-    using WebNativeDEV.SINUS.Core.Sut;
     using WebNativeDEV.SINUS.MsTest;
 
     /// <summary>

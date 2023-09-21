@@ -4,25 +4,14 @@
 
 namespace WebNativeDEV.SINUS.Core.FluentAPI;
 
-using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NSubstitute;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata;
-using WebNativeDEV.SINUS.Core.Events.Contracts;
 using WebNativeDEV.SINUS.Core.Events.EventArguments;
 using WebNativeDEV.SINUS.Core.Execution;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 using WebNativeDEV.SINUS.Core.FluentAPI.Model;
-using WebNativeDEV.SINUS.Core.Logging;
-using WebNativeDEV.SINUS.Core.MsTest;
-using WebNativeDEV.SINUS.Core.MsTest.Extensions;
-using WebNativeDEV.SINUS.Core.Sut;
 using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 using WebNativeDEV.SINUS.Core.UITesting.Model;
-using WebNativeDEV.SINUS.MsTest;
 
 /// <summary>
 /// Base Class for Runners.
@@ -77,6 +66,12 @@ internal sealed partial class Runner
         => this.RunAction(
                 runCategory: RunCategory.Given,
                 action: this.InvokeAction((data) => data.StoreSut(sutFactory?.Invoke())));
+
+    /// <inheritdoc/>
+    public IGivenWithSimpleSut GivenASimpleSystem(Func<IRunStore, object> sutFactory)
+        => this.RunAction(
+                runCategory: RunCategory.Given,
+                action: this.InvokeAction((data) => data.StoreSut(sutFactory?.Invoke(this.scope.DataBag))));
 
     /// <inheritdoc/>
     public IGivenWithSimpleSut GivenASimpleSystem(string description, object sut)
@@ -458,4 +453,18 @@ internal sealed partial class Runner
         => this.RunAction(
                 runCategory: RunCategory.Then,
                 actions: this.InvokeAction(actions));
+
+    /// <inheritdoc/>
+    public IDisposable ExpectFail()
+    {
+        this.scope.ExpectedOutcome = TestOutcome.Failure;
+        return this;
+    }
+
+    /// <inheritdoc/>
+    public IDisposable ExpectInconclusive()
+    {
+        this.scope.ExpectedOutcome = TestOutcome.Inconclusive;
+        return this;
+    }
 }

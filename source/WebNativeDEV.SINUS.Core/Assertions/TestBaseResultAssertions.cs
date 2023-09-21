@@ -7,14 +7,8 @@ namespace WebNativeDEV.SINUS.Core.Assertions;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using FluentAssertions.Primitives;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WebNativeDEV.SINUS.Core.FluentAPI;
-using WebNativeDEV.SINUS.Core.MsTest;
+using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 using WebNativeDEV.SINUS.Core.MsTest.Contracts;
 
 /// <summary>
@@ -46,8 +40,8 @@ public class TestBaseResultAssertions :
     {
         Execute.Assertion
          .BecauseOf(because, becauseArgs)
-         .ForCondition(this.Subject.Success)
-         .FailWith("Expected true, but Actual '{0}'", this.Subject.Success);
+         .ForCondition(this.Subject.Outcome == TestOutcome.Success)
+         .FailWith("Expected success, but Actual '{0}'", this.Subject.Outcome);
 
         return new AndConstraint<TestBaseResultAssertions>(this);
     }

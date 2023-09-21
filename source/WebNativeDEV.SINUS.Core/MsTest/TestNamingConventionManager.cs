@@ -5,11 +5,9 @@
 namespace WebNativeDEV.SINUS.Core.MsTest;
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
 using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 using WebNativeDEV.SINUS.Core.MsTest.Contracts;
@@ -37,7 +35,7 @@ public class TestNamingConventionManager : ITestNamingConventionManager
     {
         this.TestName = testName;
 
-        if(this.TestName.StartsWith("Maintenance_", StringComparison.InvariantCulture))
+        if (this.TestName.StartsWith("Maintenance_", StringComparison.InvariantCulture))
         {
             this.GivenDescription = string.Empty;
             this.WhenDescription = string.Empty;

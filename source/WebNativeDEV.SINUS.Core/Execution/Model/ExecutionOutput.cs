@@ -4,12 +4,8 @@
 
 namespace WebNativeDEV.SINUS.Core.Execution.Model;
 
-using NSubstitute.Core;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WebNativeDEV.SINUS.Core.Execution.Contracts;
 using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 using WebNativeDEV.SINUS.Core.Sut.Contracts;

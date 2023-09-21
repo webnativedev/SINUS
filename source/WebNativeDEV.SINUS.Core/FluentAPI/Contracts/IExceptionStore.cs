@@ -6,9 +6,6 @@ namespace WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 
 /// <summary>
@@ -25,6 +22,11 @@ public interface IExceptionStore
     /// Gets a value indicating whether elements exist that are unchecked.
     /// </summary>
     bool HasUncheckedElements { get; }
+
+    /// <summary>
+    /// Gets the unchecked exceptions.
+    /// </summary>
+    IList<Exception> UncheckedExceptions { get; }
 
     /// <summary>
     /// Count elements of type.

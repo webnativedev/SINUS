@@ -36,13 +36,13 @@ public class TimeProviderTests : TestBase
             .DebugPrint());
 
     [TestMethod]
-    [ExpectedException(typeof(AssertFailedException))]
     public void Given_TimeController_When_DependencyTimeProviderIsNull_Then_Throw()
         => this.Test(r => r
             .Given("a time controller", data => data.StoreSut(new TimeController(null!, null!)))
             .When("sut can not be created", data => data["not-available"] = 1)
             .Then("Check if controller exists", (data) => Assert.IsNotNull(data.ReadSut<TimeController>()))
-            .DebugPrint());
+            .DebugPrint()
+            .ExpectFail());
 
     [TestMethod]
     public void Given_TimeControllerWithMockedSetup_When_GetSeconds_Then_MockedResultShouldBePresent()

@@ -5,18 +5,11 @@
 namespace WebNativeDEV.SINUS.Core.Execution;
 
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel;
-using NSubstitute.Core;
-using OpenQA.Selenium.Interactions;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
 using System.Globalization;
 using System.Linq;
-using System.Reflection.Metadata;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
 using WebNativeDEV.SINUS.Core.Execution.Contracts;
 using WebNativeDEV.SINUS.Core.Execution.Exceptions;
@@ -26,7 +19,6 @@ using WebNativeDEV.SINUS.Core.Logging;
 using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.Core.Sut;
 using WebNativeDEV.SINUS.Core.Sut.Contracts;
-using WebNativeDEV.SINUS.MsTest;
 
 /// <summary>
 /// The execution engine.
@@ -113,7 +105,7 @@ internal sealed class ExecutionEngine : IExecutionEngine
         var sutType = Ensure.NotNull(parameter?.SutType, nameof(parameter.SutType));
         returnValue.SutEndpoint = CalculateSutEndpoint(parameter);
 
-        // if endpoint is null then in-memory, else public
+        // if endpoint is null then in-memory, otherwise public
         var wafType = typeof(SinusWebApplicationFactory<>).MakeGenericType(sutType);
         ISinusWebApplicationFactory? waf = Activator.CreateInstance(
             wafType,

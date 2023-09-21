@@ -7,11 +7,8 @@ namespace WebNativeDEV.SINUS.Core.Sut;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.Core.Sut.Contracts;
-using WebNativeDEV.SINUS.Core.UITesting;
-using WebNativeDEV.SINUS.MsTest;
 
 /// <summary>
 /// Spawns a publicly available application that can be tested via Selenium.

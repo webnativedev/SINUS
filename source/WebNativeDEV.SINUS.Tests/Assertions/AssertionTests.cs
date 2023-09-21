@@ -6,7 +6,6 @@ namespace WebNativeDEV.SINUS.Tests.Assertions;
 
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WebNativeDEV.SINUS.Core.ArgumentValidation;
 using WebNativeDEV.SINUS.Core.Assertions;
 using WebNativeDEV.SINUS.Core.Requirements;
 using WebNativeDEV.SINUS.MsTest;
@@ -40,12 +39,12 @@ public class AssertionTests : TestBase
             .Then(data => data.Should().NotBeNull()));
 
     [TestMethod]
-    [ExpectedException(typeof(AssertFailedException))]
     public void Given_FluentAssertions_When_CheckActual_Then_CheckForNullThrowsAnError()
         => this.Test(r => r
             .Given("Assertions extended and actual value available")
             .When("Running assert with null", data => data.Actual = "test")
-            .Then("exception should be thrown", data => data.Should().ActualBeNull()));
+            .Then("exception should be thrown", data => data.Should().ActualBeNull())
+            .ExpectFail());
 
     [TestMethod]
     public void Given_FluentAssertions_When_CheckActualAfterMethodStore_Then_CheckForNullThrowsNoError()
@@ -55,12 +54,12 @@ public class AssertionTests : TestBase
             .ThenNoError());
 
     [TestMethod]
-    [ExpectedException(typeof(AssertFailedException))]
     public void Given_FluentAssertions_When_CheckActual_Then_CheckForNotNullThrowsAnError()
         => this.Test(r => r
             .Given("Assertions extended and actual value not available")
             .When("Running assert with not null", data => data.InitActual())
-            .Then("exception should be thrown", data => data.Should().ActualBeNotNull()));
+            .Then("exception should be thrown", data => data.Should().ActualBeNotNull())
+            .ExpectFail());
 
     [TestMethod]
     public void Given_FluentAssertions_When_CheckActualAfterMethodStore_Then_CheckForNotNullThrowsNoError()

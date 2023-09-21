@@ -6,9 +6,6 @@ namespace WebNativeDEV.SINUS.Core.Events;
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WebNativeDEV.SINUS.Core.Events.Contracts;
 using WebNativeDEV.SINUS.Core.Events.EventArguments;
 
@@ -23,7 +20,7 @@ internal class EventBus : IEventBus
     public void Publish<TEventBusEventArgs>(object sender, TEventBusEventArgs e)
             where TEventBusEventArgs : EventBusEventArgs
     {
-        if(!this.handlers.ContainsKey(typeof(TEventBusEventArgs)))
+        if (!this.handlers.ContainsKey(typeof(TEventBusEventArgs)))
         {
             return;
         }

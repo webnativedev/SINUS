@@ -4,6 +4,8 @@
 
 namespace WebNativeDEV.SINUS.Core.MsTest.Contracts;
 
+using WebNativeDEV.SINUS.Core.FluentAPI.Model;
+
 /// <summary>
 /// Result of the main test method.
 /// </summary>
@@ -12,5 +14,10 @@ public interface ITestBaseResult
     /// <summary>
     /// Gets a value indicating whether the state is successful.
     /// </summary>
-    bool Success { get; }
+    TestOutcome Outcome { get; }
+
+    /// <summary>
+    /// Gets the exception of an unsuccessful execution.
+    /// </summary>
+    IList<Exception>? Exceptions { get; }
 }
