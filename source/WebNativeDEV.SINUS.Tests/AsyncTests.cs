@@ -220,6 +220,7 @@ public class AsyncTests : TestBase
             })).Should().BeSuccessful();
     }
 
+    [TestMethod]
     public void Given_AsyncMethodCalls_When_StoringSomeValues_Then_AllAsyncOperationsShouldLeadToAnObject()
     {
         this.Test(r => r
@@ -233,6 +234,37 @@ public class AsyncTests : TestBase
                 data.Should().ActualBe(0815);
             })
             .DebugPrint());
+    }
+
+    [TestMethod]
+    public void Given_AnAsyncCreatedSut_When_Using_Then_ItShouldBeCreatedProperly()
+    {
+        this.Test(r => r
+            .GivenASystemAsync(async () => await GetValue())
+            .When<object>(async (sut, data) => data.Actual = ((int)sut) + await GetValue())
+            .Then(async data => data.Actual.Should().Be(await Task.FromResult(1630))))
+            .Should().BeSuccessful();
+    }
+
+    [TestMethod]
+    public void Given_AnAsyncCreatedSutWithRunStore_When_Using_Then_ItShouldBeCreatedProperly()
+    {
+        this.Test(r => r
+            .GivenASystemAsync(async (data) => data.KeyActual + (await GetValue()).ToString())
+            .When<object>(async (sut, data) => data.Actual = ((string)sut) + (await GetValue()).ToString())
+            .Then(async data => ((string?)data.Actual).Should().Contain(await Task.FromResult("815")))
+            .DebugPrint())
+            .Should().BeSuccessful();
+    }
+
+    [TestMethod]
+    public void Given_AnAsyncCreatedAndDescribedSut_When_Using_Then_ItShouldBeCreatedProperly()
+    {
+        this.Test(r => r
+            .GivenASystemAsync("an async created integer as sut", async () => await GetValue())
+            .When<object>("adding sut and an integer from async method", async (sut, data) => data.Actual = ((int)sut) + await GetValue())
+            .Then("result comparison async should work", async data => data.Actual.Should().Be(await Task.FromResult(1630))))
+            .Should().BeSuccessful();
     }
 
     private static async Task<int> GetValue()

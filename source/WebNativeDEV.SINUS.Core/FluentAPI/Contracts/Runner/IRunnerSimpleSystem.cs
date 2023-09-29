@@ -65,4 +65,35 @@ public interface IRunnerSimpleSystem : IRunner
     /// The interface helps to reduce the set of options to only the appropriate in the sequence.
     /// </returns>
     IGivenWithSimpleSut GivenASystem(object sut);
+
+    /// <summary>
+    /// Allows to define the Given-Action in a Given-When-Then sequence asynchronously.
+    /// </summary>
+    /// <param name="description">Plain text description.</param>
+    /// <param name="sutFactory">The factory that creates a simple Sut.</param>
+    /// <returns>
+    /// An object that will point to the runner.
+    /// The interface helps to reduce the set of options to only the appropriate in the sequence.
+    /// </returns>
+    IGivenWithSimpleSut GivenASystemAsync(string description, Func<Task<object>> sutFactory);
+
+    /// <summary>
+    /// Allows to define the Given-Action in a Given-When-Then sequence asynchronously.
+    /// </summary>
+    /// <param name="sutFactory">The factory that creates a simple Sut.</param>
+    /// <returns>
+    /// An object that will point to the runner.
+    /// The interface helps to reduce the set of options to only the appropriate in the sequence.
+    /// </returns>
+    IGivenWithSimpleSut GivenASystemAsync(Func<Task<object>> sutFactory);
+
+    /// <summary>
+    /// Allows to define the Given-Action in a Given-When-Then sequence asynchronously.
+    /// </summary>
+    /// <param name="sutFactory">The factory that creates a simple Sut.</param>
+    /// <returns>
+    /// An object that will point to the runner.
+    /// The interface helps to reduce the set of options to only the appropriate in the sequence.
+    /// </returns>
+    IGivenWithSimpleSut GivenASystemAsync(Func<IRunStore, Task<object>> sutFactory);
 }

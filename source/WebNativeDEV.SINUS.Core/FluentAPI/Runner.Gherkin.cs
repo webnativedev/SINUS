@@ -6,6 +6,7 @@ namespace WebNativeDEV.SINUS.Core.FluentAPI;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using WebNativeDEV.SINUS.Core.ArgumentValidation;
 using WebNativeDEV.SINUS.Core.Events.EventArguments;
 using WebNativeDEV.SINUS.Core.Execution;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
@@ -124,6 +125,25 @@ internal sealed partial class Runner
                 sutType: typeof(TProgram),
                 sutArgs: args,
                 sutEndpoint: null);
+
+    /// <inheritdoc/>
+    public IGivenWithSimpleSut GivenASystemAsync(string description, Func<Task<object>> sutFactory)
+        => this.RunAction(
+                runCategory: RunCategory.Given,
+                description: description,
+                action: this.InvokeAction(async (data) => data.StoreSut(await Ensure.NotNull(sutFactory).Invoke().ConfigureAwait(false))));
+
+    /// <inheritdoc/>
+    public IGivenWithSimpleSut GivenASystemAsync(Func<Task<object>> sutFactory)
+        => this.RunAction(
+                runCategory: RunCategory.Given,
+                action: this.InvokeAction(async (data) => data.StoreSut(await Ensure.NotNull(sutFactory).Invoke().ConfigureAwait(false))));
+
+    /// <inheritdoc/>
+    public IGivenWithSimpleSut GivenASystemAsync(Func<IRunStore, Task<object>> sutFactory)
+        => this.RunAction(
+                runCategory: RunCategory.Given,
+                action: this.InvokeAction(async (data) => data.StoreSut(await Ensure.NotNull(sutFactory).Invoke(this.scope.DataBag).ConfigureAwait(false))));
 
     /// <inheritdoc/>
     public IWhen When(string? description, Action<IRunStore>? action = null)

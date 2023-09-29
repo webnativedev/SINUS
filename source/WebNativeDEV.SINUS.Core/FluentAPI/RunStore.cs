@@ -277,6 +277,7 @@ internal sealed class RunStore : IRunStore
     {
         var builder = new StringBuilder(10000);
 
+        builder.AppendLine("Content dump:");
         builder.AppendLine("+----------------------------");
         builder.AppendLine(CultureInfo.InvariantCulture, $"| Count: {data.Keys.Count}");
         builder.AppendLine("+----------------------------");
