@@ -65,7 +65,7 @@ public class TimeProviderTests : TestBase
     [TestMethod]
     public void Given_TimeControllerWithMockedSetupAsSut_When_GetSeconds_Then_MockedResultShouldBeSetRight()
         => this.Test(r => r
-            .GivenASimpleSystem(() =>
+            .GivenASystem(() =>
             {
                 var timeProviderMock = Substitute.For<ITimeProvider>();
                 timeProviderMock.GetCurrentSeconds().Returns(1);
@@ -77,7 +77,7 @@ public class TimeProviderTests : TestBase
     [TestMethod]
     public void Given_TimeControllerWithMockedSetupAsSutDocumented_When_GetSeconds_Then_MockedResultShouldBeSetRight()
         => this.Test(r => r
-            .GivenASimpleSystem("a mocked time provider", () =>
+            .GivenASystem("a mocked time provider", () =>
             {
                 var timeProviderMock = Substitute.For<ITimeProvider>();
                 timeProviderMock.GetCurrentSeconds().Returns(1);

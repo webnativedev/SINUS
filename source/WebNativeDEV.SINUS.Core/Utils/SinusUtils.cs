@@ -1,30 +1,34 @@
-﻿// <copyright file="TestBaseExtensions.cs" company="WebNativeDEV">
+﻿// <copyright file="SinusUtils.cs" company="WebNativeDEV">
 // Copyright (c) Daniel Kienböck. All Rights Reserved. Licensed under the MIT License. See LICENSE in the project root for license information.
 // </copyright>
 
-namespace WebNativeDEV.SINUS.Core.MsTest.Extensions;
+namespace WebNativeDEV.SINUS.Core.Utils;
 
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
+using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.MsTest;
 
 /// <summary>
-/// Extension Methods that add value to the test base, but are not required base functionality.
+/// Container for some utility methods.
 /// </summary>
-public static class TestBaseExtensions
+public static class SinusUtils
 {
     private const int SecondsDelay = 3;
 
     /// <summary>
     /// Prints the usage statistics of the browser objects.
     /// </summary>
-    /// <param name="testBase">Required to use the function as extension method.</param>
     /// <param name="filter">Optional filter to search for.</param>
-    public static void PrintUsageStatistic(this TestBase testBase, string? filter = null)
+    public static void PrintUsageStatistic(string? filter = null)
     {
-        Ensure.NotNull(testBase);
         TestBaseSingletonContainer.TestBaseUsageStatisticsManager.PrintBrowserUsageStatistic(filter);
         TestBaseSingletonContainer.TestBaseUsageStatisticsManager.PrintWafUsageStatistic(filter);
     }
@@ -35,15 +39,13 @@ public static class TestBaseExtensions
     /// </summary>
     /// <param name="testBase">Reference to the test base object that is extended.</param>
     /// <param name="max">Maximal amount of folders accepted.</param>
-    public static void CountResultFoldersBelowParameter(this TestBase testBase, int max)
+    public static void CountResultFoldersBelowParameter(TestBase testBase, int max)
     {
-        Ensure.NotNull(testBase);
-
         var logger = TestBaseSingletonContainer.CreateLogger<TestBase>();
 
         // assumption that each Run has a run-directory below
         // the main TestResults folder (as standard)
-        int count = Directory.GetDirectories(Path.Combine(testBase.TestContext.TestRunDirectory ?? ".", "..")).Length;
+        int count = Directory.GetDirectories(Path.Combine(Ensure.NotNull(testBase).TestContext.TestRunDirectory ?? ".", "..")).Length;
 
         if (count >= max)
         {
@@ -56,13 +58,10 @@ public static class TestBaseExtensions
     /// <summary>
     /// Asserts if a browser or a web application factory was not disposed.
     /// </summary>
-    /// <param name="testBase">Reference to the test base object that is extended.</param>
     /// <returns>Successful check or exception on fail.</returns>
-    public static bool AssertOnDataLeak(this TestBase testBase)
+    public static bool AssertOnDataLeak()
     {
 #pragma warning disable S1215 // "GC.Collect" should not be called
-
-        Ensure.NotNull(testBase);
 
         GC.Collect();
         GC.WaitForPendingFinalizers();
@@ -88,12 +87,9 @@ public static class TestBaseExtensions
     /// <summary>
     /// Checks for zombie processes older as defined parameter.
     /// </summary>
-    /// <param name="testBase">Reference to the test base object that is extended.</param>
     /// <param name="maxAgeOfProessInMinutes">Max age for old a process should be to identify it as zombie.</param>
-    public static void CountChromeZombieProcesses(this TestBase testBase, int maxAgeOfProessInMinutes)
+    public static void CountChromeZombieProcesses(int maxAgeOfProessInMinutes)
     {
-        Ensure.NotNull(testBase);
-
         var logger = TestBaseSingletonContainer.CreateLogger<TestBase>();
 
         var processes = GetChromeDriverProcesses(maxAgeOfProessInMinutes);
@@ -101,8 +97,7 @@ public static class TestBaseExtensions
         processes.Should().BeEmpty($"zombie drivers should not exist, but count: {processes.Count}");
 
         logger.LogInformation(
-            "{TestName} - Processcount: {Count} processes older than {AgeInMin} min",
-            testBase.TestName,
+            "Processcount: {Count} processes older than {AgeInMin} min",
             processes.Count,
             maxAgeOfProessInMinutes);
     }
@@ -110,9 +105,8 @@ public static class TestBaseExtensions
     /// <summary>
     /// Kills zombie processes older as defined parameter.
     /// </summary>
-    /// <param name="testBase">Reference to the test base object that is extended.</param>
     /// <param name="maxAgeOfProessInMinutes">Max age for old a process should be to identify it as zombie.</param>
-    public static void KillChromeZombieProcesses(this TestBase testBase, int maxAgeOfProessInMinutes)
+    public static void KillChromeZombieProcesses(int maxAgeOfProessInMinutes)
     {
         var logger = TestBaseSingletonContainer.CreateLogger<TestBase>();
 
@@ -123,8 +117,7 @@ public static class TestBaseExtensions
         }
 
         logger.LogInformation(
-            "{TestName} - Kill Process: {Count} processes older than {AgeInMin} min killed",
-            testBase?.TestName ?? "global",
+            "Kill Process: {Count} processes older than {AgeInMin} min killed",
             processes.Count,
             maxAgeOfProessInMinutes);
     }

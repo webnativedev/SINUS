@@ -38,9 +38,9 @@ internal sealed class BrowserFactory : IBrowserFactory, IDisposable
     }
 
     /// <inheritdoc/>
-    public IBrowser CreateBrowser(Uri url, TestBase testBase, string? humanReadablePageName = null, BrowserFactoryOptions? options = null)
+    public IBrowser CreateBrowser(Uri url, TestBaseScopeContainer scope, string? humanReadablePageName = null, BrowserFactoryOptions? options = null)
     {
-        testBase = Ensure.NotNull(testBase);
+        scope = Ensure.NotNull(scope);
 
         this.logger.LogInformation("Create Browser requested for {Url}", url);
         var driver = TestBaseSingletonContainer.WebDriverFactory.CreateWebDriver(
@@ -49,15 +49,15 @@ internal sealed class BrowserFactory : IBrowserFactory, IDisposable
                 Headless = true,
                 IgnoreSslErrors = true,
             },
-            testBase);
+            scope.TestBase);
 
         driver.Navigate().GoToUrl(url);
 
         return new Browser(
             driver,
-            testBase.TestContext.TestRunResultsDirectory ?? throw new InvalidDataException("LogDir not set"),
+            scope.TestBase.TestContext.TestRunResultsDirectory ?? throw new InvalidDataException("LogDir not set"),
             humanReadablePageName,
-            testBase.TestName);
+            scope.TestName);
     }
 
     /// <summary>

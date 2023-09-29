@@ -7,8 +7,8 @@ namespace WebNativeDEV.SINUS.Tests;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebNativeDEV.SINUS.Core.Assertions;
-using WebNativeDEV.SINUS.Core.MsTest.Extensions;
 using WebNativeDEV.SINUS.Core.UITesting.Model;
+using WebNativeDEV.SINUS.Core.Utils;
 using WebNativeDEV.SINUS.MsTest;
 using WebNativeDEV.SINUS.SystemUnderTest;
 
@@ -82,7 +82,7 @@ public class SimpleBrowserTests : TestBase
             .GivenASystemAndABrowserAtDefaultEndpoint<Program>(this.simpleView)
             .When("storing the title", (browser, data) => data.StoreActual(browser?.Title))
             .Then("it should print usage statistics", (browser, data) => { })
-            .Debug((browser, data) => this.PrintUsageStatistic(this.TestName)));
+            .Debug((browser, data) => SinusUtils.PrintUsageStatistic(data.TestName)));
 
     [TestMethod]
     public void Given_AWebsiteOnRandomEndpoint_When_CallingPrintUsageStatistic_Then_ItShouldReturnOneLeakingBecauseDisposeCalledAfterwards()
@@ -90,7 +90,7 @@ public class SimpleBrowserTests : TestBase
             .GivenASystemAndABrowserAtRandomEndpoint<Program>(this.simpleView)
             .When("storing the title", (browser, data) => data.StoreActual(browser?.Title))
             .Then("it should print usage statistics", (browser, data) => { })
-            .Debug((browser, data) => this.PrintUsageStatistic(this.TestName)));
+            .Debug((browser, data) => SinusUtils.PrintUsageStatistic(data.TestName)));
 
     [TestMethod]
     public void Given_ABrowser_When_StoreData_Then_NoThrow()

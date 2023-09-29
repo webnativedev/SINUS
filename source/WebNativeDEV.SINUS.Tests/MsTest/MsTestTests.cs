@@ -31,7 +31,7 @@ public class MsTestTests : TestBase
             {
                 data["logsDir"] = this.TestContext.TestRunResultsDirectory;
                 data["runDir"] = this.TestContext.TestRunDirectory;
-                data["testName"] = this.TestName;
+                data["testName"] = data.TestName;
             })
             .Then(
                 "all data should be not null",

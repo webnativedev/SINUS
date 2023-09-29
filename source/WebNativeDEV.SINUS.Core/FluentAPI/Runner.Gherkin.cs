@@ -9,6 +9,7 @@ using System;
 using WebNativeDEV.SINUS.Core.Events.EventArguments;
 using WebNativeDEV.SINUS.Core.Execution;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
+using WebNativeDEV.SINUS.Core.FluentAPI.Contracts.Runner;
 using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 using WebNativeDEV.SINUS.Core.UITesting.Model;
@@ -55,33 +56,33 @@ internal sealed partial class Runner
                 action: this.InvokeAction(action));
 
     /// <inheritdoc/>
-    public IGivenWithSimpleSut GivenASimpleSystem(string description, Func<object> sutFactory)
+    public IGivenWithSimpleSut GivenASystem(string description, Func<object> sutFactory)
         => this.RunAction(
                 runCategory: RunCategory.Given,
                 description: description,
                 action: this.InvokeAction((data) => data.StoreSut(sutFactory?.Invoke())));
 
     /// <inheritdoc/>
-    public IGivenWithSimpleSut GivenASimpleSystem(Func<object> sutFactory)
+    public IGivenWithSimpleSut GivenASystem(Func<object> sutFactory)
         => this.RunAction(
                 runCategory: RunCategory.Given,
                 action: this.InvokeAction((data) => data.StoreSut(sutFactory?.Invoke())));
 
     /// <inheritdoc/>
-    public IGivenWithSimpleSut GivenASimpleSystem(Func<IRunStore, object> sutFactory)
+    public IGivenWithSimpleSut GivenASystem(Func<IRunStore, object> sutFactory)
         => this.RunAction(
                 runCategory: RunCategory.Given,
                 action: this.InvokeAction((data) => data.StoreSut(sutFactory?.Invoke(this.scope.DataBag))));
 
     /// <inheritdoc/>
-    public IGivenWithSimpleSut GivenASimpleSystem(string description, object sut)
+    public IGivenWithSimpleSut GivenASystem(string description, object sut)
         => this.RunAction(
                 runCategory: RunCategory.Given,
                 description: description,
                 action: this.InvokeAction((data) => data.StoreSut(sut)));
 
     /// <inheritdoc/>
-    public IGivenWithSimpleSut GivenASimpleSystem(object sut)
+    public IGivenWithSimpleSut GivenASystem(object sut)
         => this.RunAction(
                 runCategory: RunCategory.Given,
                 action: this.InvokeAction((data) => data.StoreSut(sut)));
@@ -324,7 +325,7 @@ internal sealed partial class Runner
                 action: this.InvokeCreateBrowserAction(url, options));
 
     /// <inheritdoc/>
-    public IGivenBrowser GivenASystemAndABrowserAt<TProgram>(string? humanReadablePageName, string endpoint, string url, BrowserFactoryOptions? options = null)
+    public IGivenBrowser GivenASystemAndABrowserAtSpecificEndpoint<TProgram>(string? humanReadablePageName, string endpoint, string url, BrowserFactoryOptions? options = null)
         where TProgram : class
         => this.RunCreateSut(
                 runCategory: RunCategory.Given,
@@ -333,7 +334,7 @@ internal sealed partial class Runner
                 sutEndpoint: endpoint);
 
     /// <inheritdoc/>
-    public IGivenBrowser GivenASystemAndABrowserAt<TProgram>(string endpoint, string url, BrowserFactoryOptions? options = null)
+    public IGivenBrowser GivenASystemAndABrowserAtSpecificEndpoint<TProgram>(string endpoint, string url, BrowserFactoryOptions? options = null)
         where TProgram : class
         => this.RunCreateSut(
                 runCategory: RunCategory.Given,
@@ -342,7 +343,7 @@ internal sealed partial class Runner
                 sutEndpoint: endpoint);
 
     /// <inheritdoc/>
-    public IGivenBrowser GivenASystemAndABrowserAt<TProgram>(string? humanReadablePageName, string endpoint, Uri url, BrowserFactoryOptions? options = null)
+    public IGivenBrowser GivenASystemAndABrowserAtSpecificEndpoint<TProgram>(string? humanReadablePageName, string endpoint, Uri url, BrowserFactoryOptions? options = null)
         where TProgram : class
         => this.RunCreateSut(
                 runCategory: RunCategory.Given,
@@ -351,7 +352,7 @@ internal sealed partial class Runner
                 sutEndpoint: endpoint);
 
     /// <inheritdoc/>
-    public IGivenBrowser GivenASystemAndABrowserAt<TProgram>(string endpoint, Uri url, BrowserFactoryOptions? options = null)
+    public IGivenBrowser GivenASystemAndABrowserAtSpecificEndpoint<TProgram>(string endpoint, Uri url, BrowserFactoryOptions? options = null)
         where TProgram : class
         => this.RunCreateSut(
                 runCategory: RunCategory.Given,

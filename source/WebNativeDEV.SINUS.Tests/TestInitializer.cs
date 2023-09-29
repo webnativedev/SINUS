@@ -11,8 +11,9 @@ namespace WebNativeDEV.SINUS.Tests
 {
     using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using WebNativeDEV.SINUS.Core.Assertions;
     using WebNativeDEV.SINUS.Core.MsTest;
-    using WebNativeDEV.SINUS.Core.MsTest.Extensions;
+    using WebNativeDEV.SINUS.Core.Utils;
     using WebNativeDEV.SINUS.MsTest;
 
     /// <summary>
@@ -37,7 +38,7 @@ namespace WebNativeDEV.SINUS.Tests
         [AssemblyCleanup]
         public static void AssemblyCleanup()
         {
-            TestBaseExtensions.KillChromeZombieProcesses(null!, MaxAgeOfProessInMinutes);
+            SinusUtils.KillChromeZombieProcesses(MaxAgeOfProessInMinutes);
         }
 
         /// <summary>
@@ -47,8 +48,7 @@ namespace WebNativeDEV.SINUS.Tests
         [TestMethod]
         public void Maintenance_CountOfResultFoldersBelow200()
         {
-            TestBaseSingletonContainer.TestBaseUsageStatisticsManager.Register(this);
-            new Action(() => this.CountResultFoldersBelowParameter(max: 200)).Should().NotThrow();
+            this.Maintenance(() => SinusUtils.CountResultFoldersBelowParameter(this, max: 200)).Should().BeSuccessful();
         }
 
         /// <summary>
@@ -58,8 +58,7 @@ namespace WebNativeDEV.SINUS.Tests
         [TestMethod]
         public void Maintenance_ProcessesKilled()
         {
-            TestBaseSingletonContainer.TestBaseUsageStatisticsManager.Register(this);
-            new Action(() => this.CountChromeZombieProcesses(MaxAgeOfProessInMinutes)).Should().NotThrow();
+            this.Maintenance(() => SinusUtils.CountChromeZombieProcesses(MaxAgeOfProessInMinutes)).Should().BeSuccessful();
         }
     }
 }
@@ -68,8 +67,8 @@ namespace WebNativeDEV.SINUS.Tests.ZZZ
 {
     using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using WebNativeDEV.SINUS.Core.MsTest;
-    using WebNativeDEV.SINUS.Core.MsTest.Extensions;
+    using WebNativeDEV.SINUS.Core.Assertions;
+    using WebNativeDEV.SINUS.Core.Utils;
     using WebNativeDEV.SINUS.MsTest;
 
     /// <summary>
@@ -87,8 +86,7 @@ namespace WebNativeDEV.SINUS.Tests.ZZZ
         [TestMethod("Final Summary")]
         public void Maintenance_ZZZ_TestSummary()
         {
-            TestBaseSingletonContainer.TestBaseUsageStatisticsManager.Register(this);
-            this.AssertOnDataLeak().Should().BeTrue();
+            this.Maintenance(() => SinusUtils.AssertOnDataLeak()).Should().BeSuccessful();
         }
     }
 }

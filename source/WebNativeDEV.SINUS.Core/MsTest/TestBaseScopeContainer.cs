@@ -15,6 +15,7 @@ using WebNativeDEV.SINUS.Core.Events.Contracts;
 using WebNativeDEV.SINUS.Core.Execution.Contracts;
 using WebNativeDEV.SINUS.Core.FluentAPI;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
+using WebNativeDEV.SINUS.Core.FluentAPI.Contracts.Runner;
 using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 using WebNativeDEV.SINUS.Core.MsTest.Contracts;
 using WebNativeDEV.SINUS.Core.Sut.Contracts;
@@ -32,9 +33,15 @@ public class TestBaseScopeContainer
     /// Initializes a new instance of the <see cref="TestBaseScopeContainer"/> class.
     /// </summary>
     /// <param name="testBase">Reference to a test.</param>
-    public TestBaseScopeContainer(TestBase testBase)
+    /// <param name="scenario">The name of the scenario.</param>
+    public TestBaseScopeContainer(TestBase testBase, string? scenario)
     {
         this.TestBase = testBase;
+
+        this.TestName = TestNamingConventionManager.DynamicDataDisplayNameAddScenario(
+            this.TestBase.TestContext.TestName,
+            scenario);
+
         this.EventBus = new EventBus();
         this.DataBag = new RunStore(this);
         this.NamingConventionManager = new TestNamingConventionManager(this);
@@ -65,6 +72,11 @@ public class TestBaseScopeContainer
     /// Gets or sets a value indicating whether the test is only a placeholder for later or not.
     /// </summary>
     public bool IsPreparedOnly { get; set; }
+
+    /// <summary>
+    /// Gets or sets the name of the current test.
+    /// </summary>
+    public string TestName { get; set; }
 
     /// <summary>
     /// Gets or sets the expected outcome of the test.
@@ -144,7 +156,7 @@ public class TestBaseScopeContainer
     /// <summary>
     /// Gets or sets the runner.
     /// </summary>
-    internal IBrowserRunner Runner { get; set; }
+    internal IRunnerSystemAndBrowser Runner { get; set; }
 
     /// <summary>
     /// Gets the execution engine.

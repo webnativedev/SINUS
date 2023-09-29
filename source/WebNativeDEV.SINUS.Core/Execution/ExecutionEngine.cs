@@ -110,7 +110,7 @@ internal sealed class ExecutionEngine : IExecutionEngine
         ISinusWebApplicationFactory? waf = Activator.CreateInstance(
             wafType,
             returnValue.SutEndpoint,
-            parameter?.TestBase?.TestName,
+            parameter?.Namings?.TestName,
             parameter?.SutArgs.ToArray())
             as ISinusWebApplicationFactory;
 

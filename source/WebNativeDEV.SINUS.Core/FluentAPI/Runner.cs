@@ -11,17 +11,21 @@ using System.Linq;
 using WebNativeDEV.SINUS.Core.Events.EventArguments;
 using WebNativeDEV.SINUS.Core.Execution.Model;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
+using WebNativeDEV.SINUS.Core.FluentAPI.Contracts.Runner;
 using WebNativeDEV.SINUS.Core.FluentAPI.Events;
 using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 using WebNativeDEV.SINUS.Core.MsTest;
-using WebNativeDEV.SINUS.Core.MsTest.Contracts;
 using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 using WebNativeDEV.SINUS.Core.UITesting.Model;
 
 /// <summary>
 /// Base Class for Runners.
 /// </summary>
-internal sealed partial class Runner : IBrowserRunner, ICloseable
+internal sealed partial class Runner : IRunnerSystemAndBrowser,
+    IGiven, IGivenBrowser, IGivenWithSimpleSut, IGivenWithSut,
+    IWhenBrowser,
+    IThenBrowser,
+    ICloseable
 {
     private const string DefaultEndpoint = "https://localhost:10001";
 
@@ -348,7 +352,7 @@ internal sealed partial class Runner : IBrowserRunner, ICloseable
     {
         return () => this.scope.Browser = this.scope.BrowserFactory.CreateBrowser(
             url,
-            this.scope.TestBase,
+            this.scope,
             humanReadablePageName,
             options);
     }

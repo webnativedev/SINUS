@@ -6,8 +6,11 @@ namespace WebNativeDEV.SINUS.Core.FluentAPI;
 
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Text;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 using WebNativeDEV.SINUS.Core.FluentAPI.Events;
 using WebNativeDEV.SINUS.Core.MsTest;
@@ -17,7 +20,7 @@ using WebNativeDEV.SINUS.Core.MsTest;
 /// </summary>
 internal sealed class RunStore : IRunStore
 {
-    private readonly Dictionary<string, object?> store = new();
+    private readonly ConcurrentDictionary<string, object?> store = new();
     private readonly ILogger logger;
     private readonly TestBaseScopeContainer scope;
 
@@ -36,6 +39,9 @@ internal sealed class RunStore : IRunStore
 
     /// <inheritdoc/>
     public string KeySut => "SystemUnderTest";
+
+    /// <inheritdoc/>
+    public string? TestName => this.scope?.TestName;
 
     /// <summary>
     /// Gets or sets the actual value.
@@ -230,7 +236,7 @@ internal sealed class RunStore : IRunStore
     }
 
     /// <inheritdoc/>
-    public void WaitUntil(Func<IRunStore, bool> condition)
+    public void WaitUntil(Func<IRunStore, bool> condition, int timeoutInMs = 5000)
     {
         var waitTask = Task.Run(async () =>
         {
@@ -242,7 +248,7 @@ internal sealed class RunStore : IRunStore
 
         Task.Run(async () =>
         {
-            if (waitTask != await Task.WhenAny(waitTask, Task.Delay(5000)).ConfigureAwait(false))
+            if (waitTask != await Task.WhenAny(waitTask, Task.Delay(timeoutInMs)).ConfigureAwait(false))
             {
                 throw new TimeoutException();
             }
@@ -267,18 +273,30 @@ internal sealed class RunStore : IRunStore
     /// </summary>
     /// <param name="data">The key/value pair to print.</param>
     /// <returns>The RunStore for a fluent api.</returns>
-    private IRunStore Print(Dictionary<string, object?> data)
+    private IRunStore Print(IDictionary<string, object?> data)
     {
-        this.logger.LogInformation("+----------------------------");
-        this.logger.LogInformation("| Count: {Count}", data.Keys.Count);
-        this.logger.LogInformation("+----------------------------");
+        var builder = new StringBuilder(10000);
 
-        foreach (var key in data.Keys)
+        builder.AppendLine("+----------------------------");
+        builder.AppendLine(CultureInfo.InvariantCulture, $"| Count: {data.Keys.Count}");
+        builder.AppendLine("+----------------------------");
+
+        var keys = data.Keys.ToList();
+        foreach (var key in keys)
         {
-            this.logger.LogInformation("| {Key}: {Value} (Type: {Type})", key, data[key] ?? "<null>", data[key]?.GetType()?.FullName ?? "<null>");
+            string value = "<null>";
+            if (data.TryGetValue(key, out var rawValue))
+            {
+                value = rawValue?.ToString() ?? "<null>";
+            }
+
+            string typeName = value.GetType().FullName ?? "<null>";
+            builder.AppendLine(CultureInfo.InvariantCulture, $"| {key}: {value} (Type: {typeName})");
         }
 
-        this.logger.LogInformation("+----------------------------");
+        builder.AppendLine("+----------------------------");
+
+        this.logger.LogInformation("{StoreContent}", builder.ToString());
 
         return this;
     }

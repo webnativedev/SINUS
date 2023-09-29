@@ -20,6 +20,11 @@ public interface IRunStore
     string KeySut { get; }
 
     /// <summary>
+    /// Gets the tests name (including scenario adaption).
+    /// </summary>
+    string? TestName { get; }
+
+    /// <summary>
     /// Gets or sets the actual value.
     /// </summary>
     object? Actual { get; set; }
@@ -166,5 +171,6 @@ public interface IRunStore
     /// Waits until a state is met.
     /// </summary>
     /// <param name="condition">Checks whether the desired state is reached.</param>
-    void WaitUntil(Func<IRunStore, bool> condition);
+    /// <param name="timeoutInMs">Timeout in MiliSeconds.</param>
+    void WaitUntil(Func<IRunStore, bool> condition, int timeoutInMs = 5000);
 }

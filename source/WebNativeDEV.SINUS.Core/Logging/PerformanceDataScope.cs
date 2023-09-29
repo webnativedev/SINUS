@@ -7,6 +7,7 @@ namespace WebNativeDEV.SINUS.Core.Logging;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
 
 /// <summary>
@@ -35,7 +36,12 @@ internal sealed class PerformanceDataScope : IDisposable
 
         if (prefix != null || description != null)
         {
-            this.logger.LogInformation("{Prefix}{Description}", this.prefix, description ?? string.Empty);
+            this.logger.LogInformation(
+                "{Prefix}{Description} (TaskId: {TaskId}, ThreadId: {ThreadId})",
+                this.prefix,
+                description ?? string.Empty,
+                Task.CurrentId?.ToString(CultureInfo.InvariantCulture) ?? "<null>",
+                Environment.CurrentManagedThreadId);
         }
 
         this.stopwatch = Stopwatch.StartNew();
@@ -82,7 +88,13 @@ internal sealed class PerformanceDataScope : IDisposable
     {
         var prefixCalculated = prefix == null ? string.Empty : prefix + ": ";
 
-        logger.LogInformation("{Prefix}-> skip {Count} actions ({Description})\n", prefixCalculated, actionsCount, description ?? string.Empty);
+        logger.LogInformation(
+            "{Prefix}-> skip {Count} actions ({Description}) (TaskId: {TaskId}, ThreadId: {ThreadId})\n",
+            prefixCalculated,
+            actionsCount,
+            description ?? string.Empty,
+            Task.CurrentId?.ToString(CultureInfo.InvariantCulture) ?? "<null>",
+            Environment.CurrentManagedThreadId);
     }
 
     /// <summary>

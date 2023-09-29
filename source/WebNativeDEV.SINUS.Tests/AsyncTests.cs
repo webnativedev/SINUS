@@ -9,13 +9,17 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using NSubstitute.Extensions;
 using System;
+using System.Reflection;
+using System.Runtime.InteropServices.ObjectiveC;
 using System.Threading;
 using WebNativeDEV.SINUS.Core.Assertions;
+using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.MsTest;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'Type_or_Member'.
 #pragma warning disable SA1600 // Elements should be documented
 #pragma warning disable SA1201 // Elements should appear in the correct order
+#pragma warning disable SA1204 // Static elements should appear before instance elements
 
 [TestClass]
 public class AsyncTests : TestBase
@@ -99,7 +103,7 @@ public class AsyncTests : TestBase
     }
 
     [TestMethod]
-    public void Given_TestBusFromMassTransit_When_ExecutingARequest_Then_NoErrorShouldHappen()
+    public void Given_EventDrivenPattern_When_HandleARequest_Then_ResponsesShouldBeReceived()
     {
         // see: https://masstransit.io/documentation/concepts/testing
         // In most cases, developers want to test that
@@ -107,7 +111,7 @@ public class AsyncTests : TestBase
         // * consumer behavior is as expected, and
         // * messages are published and/or sent.
         this.Test(r => r
-            .GivenASimpleSystem(data =>
+            .GivenASystem(data =>
             {
                 var consumer = Substitute.For<IConsumer<TestingEvent>>();
                 var producer = Substitute.For<IProducer<TestedEvent>>();
@@ -137,5 +141,106 @@ public class AsyncTests : TestBase
             {
                 data.Count(x => x.Value is TestedEvent).Should().Be(9);
             })).Should().BeSuccessful();
+    }
+
+    [TestMethod]
+    public void Given_ALotOfAsyncTasks_When_StoringSomeValuesInTasks_Then_AllAsyncOperationsShouldLeadToAnObject()
+    {
+        this.Test(r => r
+            .Given(data => data.Sut = (string id) => this.Given_AsyncTasks_When_StoringSomeValuesInTasks_Then_AllAsyncOperationsShouldLeadToAnObject($"RunIndex{id}"))
+            .When(data =>
+            {
+                int currentValue = 1;
+                var tasks = new List<Task>();
+                for (int i = 0; i < 10; i++)
+                {
+                    tasks.Add(Task.Run(() =>
+                    {
+                        string id = (currentValue++).ToString("00");
+
+                        data[$"created {id}"] = DateTime.Now.ToLongTimeString();
+
+                        try
+                        {
+                            data[$"started Process: {id}"] = DateTime.Now.ToLongTimeString();
+                            (data.Sut as Action<string> ?? throw new InvalidDataException()).Invoke(id);
+                            data[$"stopped Process: {id}"] = DateTime.Now.ToLongTimeString();
+                        }
+                        catch (Exception exc)
+                        {
+                            throw new InvalidOperationException($"Execution failed in {id}: " + exc.Message, exc);
+                        }
+                    }));
+                }
+
+                data.Actual = tasks.ToArray();
+            })
+            .Then(data =>
+            {
+                var tasks = data.Actual as Task[] ?? throw new InvalidDataException();
+                Task.WaitAll(tasks, 600_000);
+            })
+            .DebugPrint()).Should().BeSuccessful();
+    }
+
+    public static string DefaultDataDisplayName(MethodInfo methodInfo, object[] data)
+        => TestNamingConventionManager.DynamicDataDisplayNameAddValueFromLastArgument(methodInfo, data);
+
+    public static IEnumerable<object?[]> NoValues => new[] { new object?[] { string.Empty }, };
+
+    [TestMethod]
+    [DynamicData(
+        nameof(NoValues),
+        DynamicDataDisplayName = nameof(DefaultDataDisplayName))]
+    public void Given_AsyncTasks_When_StoringSomeValuesInTasks_Then_AllAsyncOperationsShouldLeadToAnObject(string scenario)
+    {
+        this.Test(scenario, r => r
+            .Given()
+            .When(data =>
+            {
+                for (int i = 0; i < 50; i++)
+                {
+                    int index = i;
+                    Task.Run(() =>
+                    {
+                        data.Store(new Tuple<int, Guid>(index, Guid.NewGuid()));
+                    });
+                }
+            })
+            .Then(data =>
+            {
+                data.WaitUntil(store => store.Count(item => item.Value is Tuple<int, Guid>) == 100, 60_000);
+            })
+            .Debug(data =>
+            {
+                if (string.IsNullOrWhiteSpace(scenario))
+                {
+                    data.PrintStore();
+                }
+            })).Should().BeSuccessful();
+    }
+
+    public void Given_AsyncMethodCalls_When_StoringSomeValues_Then_AllAsyncOperationsShouldLeadToAnObject()
+    {
+        this.Test(r => r
+            .Given()
+            .When(async data =>
+            {
+                data.Actual = await GetValue();
+            })
+            .Then(data =>
+            {
+                data.Should().ActualBe(0815);
+            })
+            .DebugPrint());
+    }
+
+    private static async Task<int> GetValue()
+    {
+        var t = Task.FromResult(0815);
+
+        Task.WaitAll(Task.Delay(200), t);
+
+        return await t;
     }
 }

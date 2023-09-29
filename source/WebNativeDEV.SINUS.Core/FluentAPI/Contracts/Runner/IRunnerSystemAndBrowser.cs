@@ -1,83 +1,25 @@
-﻿// <copyright file="IBrowserRunner.cs" company="WebNativeDEV">
+﻿// <copyright file="IRunnerSystemAndBrowser.cs" company="WebNativeDEV">
 // Copyright (c) Daniel Kienböck. All Rights Reserved. Licensed under the MIT License. See LICENSE in the project root for license information.
 // </copyright>
 
-namespace WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
+namespace WebNativeDEV.SINUS.Core.FluentAPI.Contracts.Runner;
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using WebNativeDEV.SINUS.Core.UITesting.Model;
 
 /// <summary>
-/// Represents an interface that manages the execution of a test based on a given-when-then sequence.
-/// This interface allows to create a proper Fluent API including the browser.
+/// Represents in the given-when-then sequence the given part that includes systems and browser.
+/// This interface allows to create a proper Fluent API.
 /// </summary>
-public interface IBrowserRunner : IRunner, IGivenBrowser, IWhenBrowser, IThenBrowser
+public interface IRunnerSystemAndBrowser : IRunnerBrowser, IRunnerSystem, IRunnerSimpleSystem, IDisposable
 {
     /// <summary>
     /// Allows to define the Browser-based Given-Action in a Given-When-Then sequence.
     /// </summary>
-    /// <param name="humanReadablePageName">The logical information about the page.</param>
-    /// <param name="url">Url that should be loaded by the browser initially.</param>
-    /// <param name="options">Configures the browser factory.</param>
-    /// <returns>
-    /// An object that will point to the runner.
-    /// The interface helps to reduce the set of options to only
-    /// the appropriate in the sequence.
-    /// </returns>
-    IGivenBrowser GivenABrowserAt(string? humanReadablePageName, Uri url, BrowserFactoryOptions? options = null);
-
-    /// <summary>
-    /// Allows to define the Browser-based Given-Action in a Given-When-Then sequence.
-    /// </summary>
-    /// <param name="url">Url that should be loaded by the browser initially.</param>
-    /// <param name="options">Configures the browser factory.</param>
-    /// <returns>
-    /// An object that will point to the runner.
-    /// The interface helps to reduce the set of options to only
-    /// the appropriate in the sequence.
-    /// </returns>
-    IGivenBrowser GivenABrowserAt(Uri url, BrowserFactoryOptions? options = null);
-
-    /// <summary>
-    /// Allows to define the Browser-based Given-Action in a Given-When-Then sequence.
-    /// </summary>
-    /// <param name="humanReadablePageName">The logical information about the page.</param>
-    /// <param name="url">Url that should be loaded by the browser initially.</param>
-    /// <param name="options">Configures the browser factory.</param>
-    /// <returns>
-    /// An object that will point to the runner.
-    /// The interface helps to reduce the set of options to only
-    /// the appropriate in the sequence.
-    /// </returns>
-    IGivenBrowser GivenABrowserAt(string? humanReadablePageName, string url, BrowserFactoryOptions? options = null);
-
-    /// <summary>
-    /// Allows to define the Browser-based Given-Action in a Given-When-Then sequence.
-    /// </summary>
-    /// <param name="url">Url that should be loaded by the browser initially.</param>
-    /// <param name="options">Configures the browser factory.</param>
-    /// <returns>
-    /// An object that will point to the runner.
-    /// The interface helps to reduce the set of options to only
-    /// the appropriate in the sequence.
-    /// </returns>
-    IGivenBrowser GivenABrowserAt(string url, BrowserFactoryOptions? options = null);
-
-    /// <summary>
-    /// Allows to define the Browser-based Given-Action in a Given-When-Then sequence.
-    /// </summary>
-    /// <param name="website">Tuple containing a human readable name and an URL.</param>
-    /// <param name="options">Configures the browser factory.</param>
-    /// <returns>
-    /// An object that will point to the runner.
-    /// The interface helps to reduce the set of options to only
-    /// the appropriate in the sequence.
-    /// </returns>
-    IGivenBrowser GivenABrowserAt((string? humanReadablePageName, string url) website, BrowserFactoryOptions? options = null);
-
-    /// <summary>
-    /// Allows to define the Browser-based Given-Action in a Given-When-Then sequence.
-    /// </summary>
     /// <typeparam name="TProgram">Generic pointing to the class that bootstraps the Sut.</typeparam>
     /// <param name="humanReadablePageName">The logical information about the page.</param>
     /// <param name="endpoint">Url that should be loaded by the browser initially.</param>
@@ -88,7 +30,7 @@ public interface IBrowserRunner : IRunner, IGivenBrowser, IWhenBrowser, IThenBro
     /// The interface helps to reduce the set of options to only
     /// the appropriate in the sequence.
     /// </returns>
-    IGivenBrowser GivenASystemAndABrowserAt<TProgram>(string? humanReadablePageName, string endpoint, string url, BrowserFactoryOptions? options = null)
+    IGivenBrowser GivenASystemAndABrowserAtSpecificEndpoint<TProgram>(string? humanReadablePageName, string endpoint, string url, BrowserFactoryOptions? options = null)
         where TProgram : class;
 
     /// <summary>
@@ -103,7 +45,7 @@ public interface IBrowserRunner : IRunner, IGivenBrowser, IWhenBrowser, IThenBro
     /// The interface helps to reduce the set of options to only
     /// the appropriate in the sequence.
     /// </returns>
-    IGivenBrowser GivenASystemAndABrowserAt<TProgram>(string endpoint, string url, BrowserFactoryOptions? options = null)
+    IGivenBrowser GivenASystemAndABrowserAtSpecificEndpoint<TProgram>(string endpoint, string url, BrowserFactoryOptions? options = null)
         where TProgram : class;
 
     /// <summary>
@@ -119,7 +61,7 @@ public interface IBrowserRunner : IRunner, IGivenBrowser, IWhenBrowser, IThenBro
     /// The interface helps to reduce the set of options to only
     /// the appropriate in the sequence.
     /// </returns>
-    IGivenBrowser GivenASystemAndABrowserAt<TProgram>(string? humanReadablePageName, string endpoint, Uri url, BrowserFactoryOptions? options = null)
+    IGivenBrowser GivenASystemAndABrowserAtSpecificEndpoint<TProgram>(string? humanReadablePageName, string endpoint, Uri url, BrowserFactoryOptions? options = null)
         where TProgram : class;
 
     /// <summary>
@@ -134,7 +76,7 @@ public interface IBrowserRunner : IRunner, IGivenBrowser, IWhenBrowser, IThenBro
     /// The interface helps to reduce the set of options to only
     /// the appropriate in the sequence.
     /// </returns>
-    IGivenBrowser GivenASystemAndABrowserAt<TProgram>(string endpoint, Uri url, BrowserFactoryOptions? options = null)
+    IGivenBrowser GivenASystemAndABrowserAtSpecificEndpoint<TProgram>(string endpoint, Uri url, BrowserFactoryOptions? options = null)
         where TProgram : class;
 
     /// <summary>

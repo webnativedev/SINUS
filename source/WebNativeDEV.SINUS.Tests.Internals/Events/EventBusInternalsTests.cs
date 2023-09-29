@@ -20,7 +20,7 @@ public class EventBusInternalsTests : TestBase
     [TestMethod]
     public void Given_ANewTestBus_When_PublishingEvents_Then_TheyShouldBeReceived()
     => this.Test(r => r
-        .GivenASimpleSystem(new EventBus())
+        .GivenASystem(new EventBus())
         .When<IEventBus>((sut, data) =>
         {
             sut.Subscribe<EventBusEventArgs>((sender, e) =>
@@ -36,7 +36,7 @@ public class EventBusInternalsTests : TestBase
     [TestMethod]
     public void Given_ANewTestBusDocumented_When_PublishingEvents_Then_TheyShouldBeReceived()
         => this.Test(r => r
-            .GivenASimpleSystem("a new eventbus", new EventBus())
+            .GivenASystem("a new eventbus", new EventBus())
             .When<IEventBus>("publish and subscribe", (sut, data) =>
             {
                 sut.Subscribe<EventBusEventArgs>((sender, e) =>

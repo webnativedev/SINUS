@@ -23,7 +23,7 @@ public class TestNamingConventionManager : ITestNamingConventionManager
     /// </summary>
     /// <param name="scope">The dependency store.</param>
     public TestNamingConventionManager(TestBaseScopeContainer scope)
-        : this(Ensure.NotNull(scope).TestBase.TestName)
+        : this(Ensure.NotNull(scope).TestName)
     {
     }
 
@@ -100,7 +100,11 @@ public class TestNamingConventionManager : ITestNamingConventionManager
     public static string DynamicDataDisplayNameAddScenario(string? testName, string? scenario)
     {
         testName = Ensure.NotNull(testName);
-        Ensure.NotNull(scenario);
+
+        if (string.IsNullOrWhiteSpace(scenario))
+        {
+            return testName;
+        }
 
         var newName = testName.Replace(
                 "_Then",

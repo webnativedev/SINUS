@@ -6,8 +6,9 @@ namespace WebNativeDEV.SINUS.Tests.Internals.ZZZ
 {
     using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using WebNativeDEV.SINUS.Core.Assertions;
     using WebNativeDEV.SINUS.Core.MsTest;
-    using WebNativeDEV.SINUS.Core.MsTest.Extensions;
+    using WebNativeDEV.SINUS.Core.Utils;
     using WebNativeDEV.SINUS.MsTest;
 
     /// <summary>
@@ -25,8 +26,7 @@ namespace WebNativeDEV.SINUS.Tests.Internals.ZZZ
         [TestMethod("Final Internals Summary")]
         public void Maintenance_InternalTestSummary()
         {
-            TestBaseSingletonContainer.TestBaseUsageStatisticsManager.Register(this);
-            this.AssertOnDataLeak().Should().BeTrue();
+            this.Maintenance(() => SinusUtils.AssertOnDataLeak()).Should().BeSuccessful();
         }
     }
 }

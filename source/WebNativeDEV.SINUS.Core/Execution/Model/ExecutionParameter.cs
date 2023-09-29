@@ -6,7 +6,7 @@ namespace WebNativeDEV.SINUS.Core.Execution.Model;
 
 using System;
 using System.Collections.Generic;
-using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
+using WebNativeDEV.SINUS.Core.FluentAPI.Contracts.Runner;
 using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 using WebNativeDEV.SINUS.Core.MsTest.Contracts;
 using WebNativeDEV.SINUS.MsTest;

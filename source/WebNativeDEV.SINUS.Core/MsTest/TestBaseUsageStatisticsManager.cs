@@ -63,16 +63,24 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
     public string AttributeTechnicalRequirements => "AttributeTechnicalRequirements";
 
     /// <inheritdoc/>
-    public TestBaseScopeContainer Register(TestBase testBase)
+    public TestBaseScopeContainer Register(TestBase testBase, string? scenario = null)
     {
-        return new TestBaseScopeContainer(testBase);
+        return new TestBaseScopeContainer(testBase, scenario);
     }
 
     /// <inheritdoc/>
     public void Register(TestBaseScopeContainer scope)
     {
-        this.usages.Add(scope.TestBase.TestName, new Dictionary<string, object>());
-        this.usages[scope.TestBase.TestName].Add("scope", scope);
+        try
+        {
+            this.usages.Add(scope.TestName, new Dictionary<string, object>());
+        }
+        catch (ArgumentException exc)
+        {
+            throw new InvalidDataException("test name already stored in usage manager, please rename your test", exc);
+        }
+
+        this.usages[scope.TestName].Add("scope", scope);
 
         this.StoreAttribute<BusinessRequirementAttribute>(
             this.AttributeBusinessRequirement,
@@ -343,7 +351,7 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
 
         if (result.Any())
         {
-            this.usages[scope.TestBase.TestName].Add(key, result);
+            this.usages[scope.TestName].Add(key, result);
         }
     }
 
@@ -362,7 +370,7 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
 
         if (result.Any())
         {
-            this.usages[scope.TestBase.TestName].Add(key, result);
+            this.usages[scope.TestName].Add(key, result);
         }
     }
 }

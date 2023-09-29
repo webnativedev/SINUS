@@ -50,6 +50,6 @@ internal class ExceptionStoreItem
     /// <returns>The plain text readable string.</returns>
     public string GetTupleString()
     {
-        return $"({this.RunCategory}, {this.Exception.GetType().Name}, {this.IsCheckedInThenClauseName})";
+        return $"({this.RunCategory}, {this.Exception.GetType().Name}, '{this.Exception.Message}', {this.IsCheckedInThenClauseName})";
     }
 }

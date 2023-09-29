@@ -80,7 +80,7 @@ Consider:
 
 ### Unit Tests
 
-Unit tests should be "FIRST" (fast, isolated/independent, repeatable, self-validating, thorough).
+Unit tests should be "FIRST" (fast, independent, repeatable, self-validating, thorough) and RITE (readable, isolated, thorough, explicit).
 
 Do not test:
 

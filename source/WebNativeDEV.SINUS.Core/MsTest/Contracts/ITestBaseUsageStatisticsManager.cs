@@ -68,8 +68,9 @@ public interface ITestBaseUsageStatisticsManager
     /// Registers an execution of a test by name and context.
     /// </summary>
     /// <param name="testBase">The testbase of the test to especially retrieve its test context.</param>
+    /// <param name="scenario">The name of the scenario.</param>
     /// <returns>Generated dependencies container.</returns>
-    TestBaseScopeContainer Register(TestBase testBase);
+    TestBaseScopeContainer Register(TestBase testBase, string? scenario = null);
 
     /// <summary>
     /// Sets attributes.

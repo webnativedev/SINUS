@@ -37,6 +37,7 @@ public static class TestBaseSingletonContainer
         BrowserFactory = new BrowserFactory();
         ExecutionEngine = new ExecutionEngine();
         TestBaseUsageStatisticsManager = new TestBaseUsageStatisticsManager();
+        TestBaseStrategy = new SimpleTestBaseStrategy();
     }
 
     /// <summary>
@@ -63,6 +64,11 @@ public static class TestBaseSingletonContainer
     /// Gets or sets the usage statistics manager for tests.
     /// </summary>
     public static ITestBaseUsageStatisticsManager TestBaseUsageStatisticsManager { get; set; }
+
+    /// <summary>
+    /// Gets or sets the test base strategy.
+    /// </summary>
+    public static ITestBaseStrategy TestBaseStrategy { get; set; }
 
     /// <summary>
     /// Gets or sets the execution engine.

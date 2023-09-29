@@ -7,7 +7,7 @@ namespace WebNativeDEV.SINUS.Core.Execution.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
+using WebNativeDEV.SINUS.Core.FluentAPI.Contracts.Runner;
 using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.Core.MsTest.Contracts;
@@ -26,7 +26,7 @@ internal sealed class ExecutionParameterBuilder : ExecutionParameter
     /// <param name="namings">The naming convention checker.</param>
     /// <param name="runCategory">The run category.</param>
     /// <param name="exceptionsCount">The count of exceptions.</param>
-    internal ExecutionParameterBuilder(TestBase testBase, IBrowserRunner? runner, ITestNamingConventionManager namings, RunCategory runCategory, int exceptionsCount)
+    internal ExecutionParameterBuilder(TestBase testBase, IRunnerBrowser? runner, ITestNamingConventionManager namings, RunCategory runCategory, int exceptionsCount)
     {
         this.TestBase = testBase;
         this.Runner = runner;
