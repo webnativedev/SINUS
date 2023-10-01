@@ -5,6 +5,7 @@
 namespace WebNativeDEV.SINUS.SystemUnderTest;
 
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using WebNativeDEV.SINUS.SystemUnderTest.Services;
 using WebNativeDEV.SINUS.SystemUnderTest.Services.Abstractions;
 using WebNativeDEV.SINUS.SystemUnderTest.Services.Mock;
@@ -46,7 +47,8 @@ public partial class Program
         var shouldStartWithError = externalArgs.Contains("start-with-exception");
 
         Console.WriteLine("    +-----------------------------");
-        Console.WriteLine("    | Start: ");
+        var taskId = Task.CurrentId?.ToString(CultureInfo.InvariantCulture) ?? " <null>";
+        Console.WriteLine($"    | Start: (TaskId: {taskId}, ThreadId: {Environment.CurrentManagedThreadId})");
         Console.WriteLine("    |      Args: ");
         args.ToList().ForEach(x => Console.WriteLine($"    |          * {x}"));
         Console.WriteLine("    |      Mocking: " + (shouldMock ? "activated" : "deactivated"));
@@ -98,7 +100,8 @@ public partial class Program
         app.Run();
 
         Console.WriteLine("    +-----------------------------");
-        Console.WriteLine("    | Shutdown: ");
+        taskId = Task.CurrentId?.ToString(CultureInfo.InvariantCulture) ?? " <null>";
+        Console.WriteLine($"    | Shutdown: (TaskId: {taskId}, ThreadId: {Environment.CurrentManagedThreadId})");
         Console.WriteLine("    |      Args: ");
         args.ToList().ForEach(x => Console.WriteLine($"    |          * {x}"));
         shouldMock = args.Contains("--ExecutionMode=Mock");

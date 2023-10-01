@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -91,7 +92,11 @@ public abstract class AbstractTestBaseStrategy : ITestBaseStrategy
 
         if (scope.IsPreparedOnly)
         {
-            logger.LogWarning("The test result is evaluated as inconclusive for test '{TestName}', because it was rated 'only-prepared' when seeing no 'When'-part.", scope.TestName);
+            logger.LogWarning(
+                "The test result is evaluated as inconclusive for test '{TestName}', because it was rated 'only-prepared' when seeing no 'When'-part. (TaskId: {TaskId}, ThreadId: {ThreadId})",
+                scope.TestName,
+                Task.CurrentId?.ToString(CultureInfo.InvariantCulture) ?? "<null>",
+                Environment.CurrentManagedThreadId);
             if (scope.ExpectedOutcome != TestOutcome.Inconclusive && shouldThrow)
             {
                 Assert.Inconclusive($"The test result is evaluated as inconclusive for test '{scope.TestName}', because it was rated 'only-prepared' when seeing no 'When'-part.");
@@ -103,10 +108,12 @@ public abstract class AbstractTestBaseStrategy : ITestBaseStrategy
         if (scope.Exceptions.HasUncheckedElements)
         {
             logger.LogError(
-                "The test result is evaluated as failed for test '{TestName}', because exceptions occured.\nCount: {Count}; Types: {Types}",
+                "The test result is evaluated as failed for test '{TestName}', because exceptions occured.\nCount: {Count}; Types: {Types} (TaskId: {TaskId}, ThreadId: {ThreadId})",
                 scope.TestName,
                 scope.Exceptions.Count,
-                scope.Exceptions.GetContentAsString());
+                scope.Exceptions.GetContentAsString(),
+                Task.CurrentId?.ToString(CultureInfo.InvariantCulture) ?? "<null>",
+                Environment.CurrentManagedThreadId);
 
             if (scope.ExpectedOutcome != TestOutcome.Failure && shouldThrow)
             {
@@ -116,7 +123,12 @@ public abstract class AbstractTestBaseStrategy : ITestBaseStrategy
             return;
         }
 
-        logger.LogInformation("The test result is evaluated as successful for test '{TestName}'. (Checked Exceptions: {CheckedExceptionCount})", scope.TestName, scope.Exceptions.Count);
+        logger.LogInformation(
+            "The test result is evaluated as successful for test '{TestName}'. (Checked Exceptions: {CheckedExceptionCount}, TaskId: {TaskId}, ThreadId: {ThreadId})",
+            scope.TestName,
+            scope.Exceptions.Count,
+            Task.CurrentId?.ToString(CultureInfo.InvariantCulture) ?? "<null>",
+            Environment.CurrentManagedThreadId);
     }
 
     /// <summary>

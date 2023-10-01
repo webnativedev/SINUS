@@ -5,6 +5,8 @@
 namespace WebNativeDEV.SINUS.SystemUnderTest.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
+using System.Threading.Tasks;
 using WebNativeDEV.SINUS.SystemUnderTest.Services.Abstractions;
 
 /// <summary>
@@ -35,7 +37,12 @@ public class TimeController : ControllerBase
     [HttpGet("/time/sec")]
     public int GetSeconds()
     {
-        this.logger.LogInformation("Check for seconds in provider {Provider}", this.timeProvider.ToString());
+        this.logger.LogInformation(
+            "Check for seconds in provider {Provider} (TaskId: {TaskId}, ThreadId: {ThreadId})",
+            this.timeProvider.ToString(),
+            Task.CurrentId?.ToString(CultureInfo.InvariantCulture) ?? " <null>",
+            Environment.CurrentManagedThreadId);
+
         return this.timeProvider.GetCurrentSeconds();
     }
 }

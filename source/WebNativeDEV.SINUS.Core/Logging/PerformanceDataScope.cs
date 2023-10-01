@@ -115,9 +115,11 @@ internal sealed class PerformanceDataScope : IDisposable
             {
                 this.stopwatch.Stop();
                 this.logger.LogInformation(
-                    "{Prefix}" + MainMessageBody + " {Elapsed} ms",
+                    "{Prefix}" + MainMessageBody + " {Elapsed} ms (TaskId: {TaskId}, ThreadId: {ThreadId})",
                     this.prefix,
-                    this.stopwatch.ElapsedMilliseconds);
+                    this.stopwatch.ElapsedMilliseconds,
+                    Task.CurrentId?.ToString(CultureInfo.InvariantCulture) ?? "<null>",
+                    Environment.CurrentManagedThreadId);
             }
 
             this.disposedValue = true;

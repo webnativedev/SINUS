@@ -70,10 +70,12 @@ internal class SinusConsoleFormatter : ConsoleFormatter, IDisposable
             if (string.IsNullOrWhiteSpace(performanceLogMessage))
             {
                 textWriter.WriteLine();
+                textWriter.Flush();
                 return;
             }
 
             textWriter.WriteLine(PerformanceDataScope.ReduceLogMessage(message) + Environment.NewLine);
+            textWriter.Flush();
             return;
         }
 
@@ -81,6 +83,7 @@ internal class SinusConsoleFormatter : ConsoleFormatter, IDisposable
             message.StartsWith("The test result is evaluated as", StringComparison.InvariantCulture))
         {
             textWriter.WriteLine(message);
+            textWriter.Flush();
             return;
         }
 
@@ -97,6 +100,8 @@ internal class SinusConsoleFormatter : ConsoleFormatter, IDisposable
             textWriter.WriteLine($"    {line}");
             first = false;
         }
+
+        textWriter.Flush();
     }
 
     /// <summary>

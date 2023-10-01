@@ -7,6 +7,7 @@ namespace WebNativeDEV.SINUS.Tests;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebNativeDEV.SINUS.Core.Assertions;
+using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.Core.UITesting.Model;
 using WebNativeDEV.SINUS.Core.Utils;
 using WebNativeDEV.SINUS.MsTest;
@@ -85,6 +86,29 @@ public class SimpleBrowserTests : TestBase
             .Debug((browser, data) => SinusUtils.PrintUsageStatistic(data.TestName)));
 
     [TestMethod]
+    public void Given_AWebsite_When_CallingPrintUsageStatisticAfterwards_Then_ItShouldNotReturnOneLeakingBecauseDisposeCalledAfterwards()
+    {
+        string? testName = null;
+
+        this.Test(r => r
+                .GivenASystemAndABrowserAtDefaultEndpoint<Program>(this.simpleView)
+                .When((browser, data) => data.StoreActual(browser?.Title))
+                .ThenNoError()
+                .Debug(data => testName = data.TestName));
+
+        SinusUtils.PrintUsageStatistic(
+            testName ?? throw new InvalidDataException("testname not stored in debug phase"));
+
+        TestBaseSingletonContainer.TestBaseUsageStatisticsManager.CheckAttribute(
+            testName,
+            data => data.ContainsKey(TestBaseSingletonContainer.TestBaseUsageStatisticsManager.AttributeBrowserCreated) &&
+                    data.ContainsKey(TestBaseSingletonContainer.TestBaseUsageStatisticsManager.AttributeBrowserDisposed) &&
+                    data.ContainsKey(TestBaseSingletonContainer.TestBaseUsageStatisticsManager.AttributeWafCreated) &&
+                    data.ContainsKey(TestBaseSingletonContainer.TestBaseUsageStatisticsManager.AttributeWafDisposed))
+            .Should().BeTrue();
+    }
+
+    [TestMethod]
     public void Given_AWebsiteOnRandomEndpoint_When_CallingPrintUsageStatistic_Then_ItShouldReturnOneLeakingBecauseDisposeCalledAfterwards()
         => this.Test(r => r
             .GivenASystemAndABrowserAtRandomEndpoint<Program>(this.simpleView)
@@ -144,7 +168,8 @@ public class SimpleBrowserTests : TestBase
     [TestMethod]
     public void Given_ATestSystem_When_StoringTheTitle_Then_ItShouldBeTheRightValue()
         => this.Test(r => r
-            .GivenASystemAndABrowserAtRandomEndpoint<Program>(this.simpleView, new BrowserFactoryOptions(headless: false))
+            .GivenASystemAndABrowserAtRandomEndpoint<Program>("SimpleView", "/simpleView")
             .When((browser, data) => data.StoreActual(browser.Title))
-            .Then((browser, data) => data.Should().ActualBe("SINUS TestSystem")));
+            .Then((browser, data) => data.Should().ActualBe("SINUS TestSystem"))
+            .DebugPrint());
 }

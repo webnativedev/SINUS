@@ -4,9 +4,7 @@
 
 namespace WebNativeDEV.SINUS.MsTest;
 
-using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenQA.Selenium.DevTools.V114.Debugger;
 using System;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts.Runner;

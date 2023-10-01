@@ -260,6 +260,6 @@ internal sealed class ExecutionEngine : IExecutionEngine
 
 #pragma warning restore CA1031 // don't catch general exceptions
 
-        this.logger.LogInformation("Execution was {Successful}", successful ? "successful" : "not successful");
+        this.logger.LogInformation("Creating the system-under-test was {Successful}", successful ? "successful" : "not successful");
     }
 }

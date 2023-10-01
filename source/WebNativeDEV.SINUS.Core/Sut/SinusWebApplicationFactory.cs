@@ -112,7 +112,11 @@ internal sealed class SinusWebApplicationFactory<TEntryPoint> : WebApplicationFa
 
         var dummyHost = builder.Build();
 
-        builder.ConfigureWebHost(webHostBuilder => webHostBuilder.UseKestrel());
+        builder.ConfigureWebHost(webHostBuilder =>
+        {
+            webHostBuilder.UseKestrel();
+            webHostBuilder.UseSetting("isKestrelHost", "yes");
+        });
 
         this.customHost = builder.Build();
         this.customHost.Start();

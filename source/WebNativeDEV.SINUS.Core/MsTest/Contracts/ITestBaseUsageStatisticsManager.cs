@@ -85,15 +85,17 @@ public interface ITestBaseUsageStatisticsManager
     /// </summary>
     /// <param name="testName">The test to check.</param>
     /// <param name="check">Check function validating the state.</param>
+    /// <param name="shouldThrow">Throws exception if attribute check fails.</param>
     /// <returns>Whether or not the data is in correct state.</returns>
-    bool CheckAttribute(string testName, Func<Dictionary<string, object>, bool> check);
+    bool CheckAttribute(string testName, Func<Dictionary<string, object>, bool> check, bool shouldThrow = false);
 
     /// <summary>
     /// Checks all dictionaries for correctness.
     /// </summary>
     /// <param name="check">Check function validating the state.</param>
+    /// <param name="shouldThrow">Throws exception if attribute check fails.</param>
     /// <returns>Whether or not the data is in correct state.</returns>
-    bool CheckAttribute(Func<Dictionary<string, object>, bool> check);
+    bool CheckAttribute(Func<Dictionary<string, object>, bool> check, bool shouldThrow = false);
 
     /// <summary>
     /// Prints the usage statistics of the browser objects.

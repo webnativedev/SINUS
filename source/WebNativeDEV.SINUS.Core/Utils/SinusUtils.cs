@@ -68,15 +68,26 @@ public static class SinusUtils
         GC.WaitForFullGCComplete();
         Thread.Sleep(TimeSpan.FromSeconds(SecondsDelay));
 
-        TestBaseSingletonContainer.TestBaseUsageStatisticsManager.CheckAttribute(
-            data => data.ContainsKey(TestBaseSingletonContainer.TestBaseUsageStatisticsManager.AttributeBrowserCreated) &&
-                    data.ContainsKey(TestBaseSingletonContainer.TestBaseUsageStatisticsManager.AttributeBrowserDisposed));
-
-        TestBaseSingletonContainer.TestBaseUsageStatisticsManager.CheckAttribute(
-            data => data.ContainsKey(TestBaseSingletonContainer.TestBaseUsageStatisticsManager.AttributeWafCreated) &&
-                    data.ContainsKey(TestBaseSingletonContainer.TestBaseUsageStatisticsManager.AttributeWafDisposed));
-
         TestBaseSingletonContainer.TestBaseUsageStatisticsManager.PrintUsageStatistic();
+
+        TestBaseSingletonContainer.TestBaseUsageStatisticsManager.CheckAttribute(
+            data => (
+                        data.ContainsKey(TestBaseSingletonContainer.TestBaseUsageStatisticsManager.AttributeBrowserCreated) &&
+                        data.ContainsKey(TestBaseSingletonContainer.TestBaseUsageStatisticsManager.AttributeBrowserDisposed))
+                    || (
+                        !data.ContainsKey(TestBaseSingletonContainer.TestBaseUsageStatisticsManager.AttributeBrowserCreated) &&
+                        !data.ContainsKey(TestBaseSingletonContainer.TestBaseUsageStatisticsManager.AttributeBrowserDisposed)),
+            shouldThrow: true).Should().BeTrue();
+
+        TestBaseSingletonContainer.TestBaseUsageStatisticsManager.CheckAttribute(
+            data => (
+                        data.ContainsKey(TestBaseSingletonContainer.TestBaseUsageStatisticsManager.AttributeWafCreated) &&
+                        data.ContainsKey(TestBaseSingletonContainer.TestBaseUsageStatisticsManager.AttributeWafDisposed))
+                    || (
+                        !data.ContainsKey(TestBaseSingletonContainer.TestBaseUsageStatisticsManager.AttributeWafCreated) &&
+                        !data.ContainsKey(TestBaseSingletonContainer.TestBaseUsageStatisticsManager.AttributeWafDisposed)),
+            shouldThrow: true).Should().BeTrue();
+
         TestBaseSingletonContainer.TestBaseUsageStatisticsManager.PrintBusinessRequirements();
         TestBaseSingletonContainer.TestBaseUsageStatisticsManager.PrintTechnicalRequirements();
         return true;

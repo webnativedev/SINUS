@@ -230,17 +230,23 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
     }
 
     /// <inheritdoc/>
-    public bool CheckAttribute(string testName, Func<Dictionary<string, object>, bool> check)
+    public bool CheckAttribute(string testName, Func<Dictionary<string, object>, bool> check, bool shouldThrow = false)
     {
-        return !check.Invoke(this.usages[testName]);
+        var result = check.Invoke(this.usages[testName]);
+        if (!result && shouldThrow)
+        {
+            throw new InvalidDataException($"attribute check failed for test {testName}");
+        }
+
+        return result;
     }
 
     /// <inheritdoc/>
-    public bool CheckAttribute(Func<Dictionary<string, object>, bool> check)
+    public bool CheckAttribute(Func<Dictionary<string, object>, bool> check, bool shouldThrow = false)
     {
         foreach (var usage in this.usages)
         {
-            if (!this.CheckAttribute(usage.Key, check))
+            if (!this.CheckAttribute(usage.Key, check, shouldThrow))
             {
                 return false;
             }
