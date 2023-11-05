@@ -108,4 +108,4 @@ The test result is evaluated as successful for test 'Given_ATestSystem_When_Stor
 By reducing the complexity you are not able to use all of the features Selenium has.
 Nevertheless, the most common features are supported and covered by SINUS in a nicely shaped API that guides you through the test case and will add logging so that errors can be found simpler without any effort on the test-developer side.
 
-[Getting Started](./docs/GettingStarted.md) | [Strategy](./docs/TestStrategy.md)
+[Getting Started](./docs/GettingStarted.md) | [Strategy](./docs/TestStrategy.md) | [Considerations](./docs/Considerations.md)
