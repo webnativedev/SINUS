@@ -5,6 +5,7 @@
 namespace WebNativeDEV.SINUS.SystemUnderTest.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
 
 /// <summary>
 /// Represents the view controller that is responsible to deliver html code.
@@ -33,12 +34,16 @@ public class ViewController : ControllerBase
     [Produces("text/html")]
     public ContentResult Get()
     {
-        this.logger.LogInformation("View Accessed Get()");
+        this.logger.LogInformation(
+            "View Accessed Get() (TaskId: {TaskId}, ThreadId: {ThreadId})",
+            Task.CurrentId?.ToString(CultureInfo.InvariantCulture) ?? " <null>",
+            Environment.CurrentManagedThreadId);
+
         return this.Content(
             """
                 <html><head><title>SINUS TestSystem</title></head>
                 <body>
-                    <h1>Hello World</h1>
+                    <h1 id="titleText">Hello World</h1>
                 </body>
                 </html>
             """, "text/html");

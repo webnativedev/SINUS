@@ -26,6 +26,11 @@ public interface IBrowser : IDisposable
     string? PageSource { get; }
 
     /// <summary>
+    /// Gets the human readable page name.
+    /// </summary>
+    string? HumanReadablePageName { get; }
+
+    /// <summary>
     /// Gets the native selenium object, but as object to reduce the dependency to selenium.
     /// Should not be needed and is only a fallback if something essentially is missing in the
     /// framework, that requires native access.

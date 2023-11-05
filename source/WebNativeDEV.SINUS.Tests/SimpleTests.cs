@@ -4,8 +4,10 @@
 
 namespace WebNativeDEV.SINUS.Tests;
 
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WebNativeDEV.SINUS.Core.MsTest.Assertions;
+using WebNativeDEV.SINUS.Core.Assertions;
+using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.MsTest;
 using WebNativeDEV.SINUS.SystemUnderTest;
 using WebNativeDEV.SINUS.SystemUnderTest.Services.Abstractions;
@@ -18,8 +20,11 @@ using WebNativeDEV.SINUS.SystemUnderTest.Services.Mock;
 public class SimpleTests : TestBase
 {
     [TestMethod]
-    public void Given_TheMockTimeProvider_When_GettingTheCurrentSeconds_Then_ValueEquals59_AsTripleAPattern()
+    public void Given_TheMockTimeProvider_When_GettingTheCurrentSeconds_Then_ValueEquals59AsTripleAPattern()
     {
+        // Init
+        TestBaseSingletonContainer.TestBaseUsageStatisticsManager.Register(this);
+
         // Arrange
         ITimeProvider provider = new MockTimeProvider();
 
@@ -27,49 +32,44 @@ public class SimpleTests : TestBase
         var actual = provider.GetCurrentSeconds();
 
         // Assert
-        Assert.AreEqual(expected: 59, actual);
+        actual.Should().Be(59);
     }
 
     [TestMethod]
-    [ExpectedException(typeof(AssertInconclusiveException))]
-    public void Given_TheMockTimeProvider_When_GettingTheCurrentSeconds_Then_ValueEquals59_AsGherkinPreparation()
+    public void Given_TheMockTimeProvider_When_GettingTheCurrentSeconds_Then_ValueEquals59AsGherkinPreparation()
     {
-        this.Test()
+        this.Test(r => r
             .Given("The Mock Time Provider")
             .When("Ask for the current seconds")
             .Then("Check for the mocked value 59")
-            .Dispose();
+            .ExpectInconclusive());
     }
 
     [TestMethod]
-    public void Given_TheMockTimeProvider_When_GettingTheCurrentSeconds_Then_ValueEquals59_AsGherkin()
+    public void Given_TheMockTimeProvider_When_GettingTheCurrentSeconds_Then_ValueEquals59AsGherkin()
     {
-        this.Test()
+        this.Test(r => r
             .Given(
                 "The Mock Time Provider",
                 (data) => data.StoreSut(new MockTimeProvider()))
             .When(
                 "Ask for the current seconds",
                 (data) => data.StoreActual(data.ReadSut<MockTimeProvider>().GetCurrentSeconds()))
-            .Then(
-                "Check for the mocked value 59",
-                data => Assert.That.AreEqualToActual(data, 59))
-            .Debug(data => data.Print())
-            .Dispose();
+            .Then("Check for the mocked value 59", data => data.Should().ActualBe(59))
+            .Debug(data => data.PrintStore()));
     }
 
     [TestMethod]
-    public void Given_TheMockTimeProviderViaHttp_When_GettingTheCurrentSeconds_Then_ValueEquals59_AsGherkin()
+    public void Given_TheMockTimeProviderViaHttp_When_GettingTheCurrentSeconds_Then_ValueEquals59AsGherkin()
     {
-        this.Test()
+        this.Test(r => r
             .GivenASystem<Program>("The Mock Time Provider via http")
             .When(
                 "Ask for the current seconds",
                 (client, data) => data.StoreActual(client.GetStringAsync("/time/sec").GetAwaiter().GetResult()))
             .Then(
                 "Check for the mocked value 59",
-                data => Assert.That.AreEqualToActual(data, "59"))
-            .DebugPrint()
-            .Dispose();
+                data => data.Should().ActualBe("59"))
+            .DebugPrint());
     }
 }

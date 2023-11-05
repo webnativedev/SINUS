@@ -9,6 +9,8 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using WebNativeDEV.SINUS.Core.ArgumentValidation;
+using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 
 /// <summary>
@@ -20,35 +22,38 @@ using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 internal sealed class Browser : IBrowser
 #pragma warning restore CA1724
 {
-    private readonly IWebDriver driver;
     private readonly string contentFolder;
     private readonly string id;
+    private IWebDriver? driver;
     private bool disposedValue;
-    private ILogger? logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Browser"/> class.
     /// </summary>
     /// <param name="driver">Underlying Selenium WebDrivers.</param>
     /// <param name="contentFolder">Folder to store data.</param>
+    /// <param name="humanReadablePageName">Logical page name.</param>
     /// <param name="id">Single identifier that identifies the browser uniquely inside the test session.</param>
-    /// <param name="loggerFactory">The factory to create logger-objects.</param>
-    public Browser(IWebDriver driver, ILoggerFactory loggerFactory, string contentFolder = "./", string? id = null)
+    public Browser(IWebDriver driver, string contentFolder = "./", string? humanReadablePageName = null, string? id = null)
     {
-        this.LoggerFactory = loggerFactory;
+        this.Logger = TestBaseSingletonContainer.CreateLogger<Browser>();
         this.Logger.LogInformation(
             "Broswer object created {DriverName} - logger: {LoggerName} - content: {ContentFolder}",
             driver?.GetType()?.ToString() ?? "null",
             this.Logger.GetType().ToString(),
             contentFolder);
 
-        this.driver = driver ?? throw new ArgumentNullException(nameof(driver), "driver null");
+        this.driver = Ensure.NotNull(driver, nameof(driver));
         this.contentFolder = contentFolder;
+        this.HumanReadablePageName = humanReadablePageName;
         this.id = id ?? "<no id>";
 
-        if(id != null)
+        if (id != null)
         {
-            TestsIncludingBrowsers.Add(id);
+            TestBaseSingletonContainer.TestBaseUsageStatisticsManager.SetAttribute(
+                this.id,
+                TestBaseSingletonContainer.TestBaseUsageStatisticsManager.AttributeBrowserCreated,
+                true);
         }
     }
 
@@ -61,22 +66,12 @@ internal sealed class Browser : IBrowser
         this.Dispose(disposing: false);
     }
 
-    /// <summary>
-    /// Gets a list of test-identifiers that includes a browser.
-    /// </summary>
-    public static List<string> TestsIncludingBrowsers { get; } = new List<string>();
-
-    /// <summary>
-    /// Gets a list of test-identifiers that released the browser after using it.
-    /// </summary>
-    public static List<string> TestsDisposingBrowsers { get; } = new List<string>();
-
     /// <inheritdoc/>
     public string? Title
     {
         get
         {
-            this.Logger.LogInformation("Title requested {Title}", this.driver.Title ?? "null");
+            this.Logger.LogInformation("Title requested {Title}", this.driver?.Title ?? "null");
             return this.driver?.Title;
         }
     }
@@ -86,10 +81,8 @@ internal sealed class Browser : IBrowser
     {
         get
         {
-            this.Logger.LogInformation("Url requested {Url}", this.driver.Url ?? "null");
-            return this.driver?.Url == null
-                ? null
-                : new Uri(this.driver.Url);
+            this.Logger.LogInformation("Url requested {Url}", this.driver?.Url ?? "null");
+            return new Uri(this.driver?.Url ?? throw new InvalidOperationException("no Url available"));
         }
     }
 
@@ -98,26 +91,18 @@ internal sealed class Browser : IBrowser
     {
         get
         {
-            this.Logger.LogInformation("PageSource requested {Source}", this.driver.PageSource ?? "null");
-            return this.driver.PageSource;
+            this.Logger.LogInformation("PageSource requested {Source}", this.driver?.PageSource ?? "null");
+            return this.driver?.PageSource;
         }
     }
 
-    /// <summary>
-    /// Gets the factory to create logger instances.
-    /// </summary>
-    private ILoggerFactory LoggerFactory { get; }
+    /// <inheritdoc/>
+    public string? HumanReadablePageName { get; }
 
     /// <summary>
     /// Gets the logger instance.
     /// </summary>
-    private ILogger Logger
-    {
-        get
-        {
-            return this.logger ??= this.LoggerFactory.CreateLogger<Browser>();
-        }
-    }
+    private ILogger Logger { get; }
 
     /// <inheritdoc/>
     public object? GetBaseObject()
@@ -131,9 +116,9 @@ internal sealed class Browser : IBrowser
     {
         this.Logger.LogInformation("Find Elements based on xpath: {XPath}", xpath);
 
-        return this.driver
-            .FindElements(By.XPath(xpath))
-            .Select(webElement => new Content(webElement));
+        return Ensure.NotNull(this.driver)
+                .FindElements(By.XPath(xpath))
+                .Select(webElement => new Content(webElement));
     }
 
     /// <inheritdoc/>
@@ -145,7 +130,7 @@ internal sealed class Browser : IBrowser
             timeoutInSeconds);
         if (timeoutInSeconds <= 0)
         {
-            return new Content(this.driver.FindElement(By.Id(id)));
+            return new Content(Ensure.NotNull(this.driver).FindElement(By.Id(id)));
         }
 
         var wait = new WebDriverWait(this.driver, TimeSpan.FromSeconds(timeoutInSeconds));
@@ -159,7 +144,7 @@ internal sealed class Browser : IBrowser
     {
         this.Logger.LogInformation("Navigate to {Url}", url?.ToString() ?? "null");
 
-        this.driver.Navigate().GoToUrl(url);
+        this.driver?.Navigate()?.GoToUrl(url);
         return this;
     }
 
@@ -171,7 +156,7 @@ internal sealed class Browser : IBrowser
     public IContent FindActiveElement()
     {
         this.Logger.LogInformation("Find Active Element");
-        return new Content(this.driver.SwitchTo().ActiveElement());
+        return new Content(Ensure.NotNull(this.driver).SwitchTo().ActiveElement());
     }
 
     /// <inheritdoc/>
@@ -179,7 +164,7 @@ internal sealed class Browser : IBrowser
     {
         this.Logger.LogInformation("Execute Javascript {JS} on {Count} items", js, content?.Length ?? 0);
 
-        ((IJavaScriptExecutor)this.driver).ExecuteScript(
+        (this.driver as IJavaScriptExecutor)?.ExecuteScript(
             js,
             content?.Select(x => x.GetBaseObject()) ?? Array.Empty<object>());
         return this;
@@ -210,6 +195,16 @@ internal sealed class Browser : IBrowser
     }
 
     /// <summary>
+    /// Shows the object in the debugger.
+    /// </summary>
+    /// <returns>A representative plain text string.</returns>
+    [ExcludeFromCodeCoverage]
+    private string GetDebuggerDisplay()
+    {
+        return $"Broswer object created {this.driver} - content: {this.contentFolder}";
+    }
+
+    /// <summary>
     /// Implementation of the disposal as called by IDisposable.Dispose.
     /// </summary>
     /// <param name="disposing">True if called by Dispose; False if called by Destructor.</param>
@@ -220,21 +215,18 @@ internal sealed class Browser : IBrowser
             if (disposing)
             {
                 this.Logger.LogInformation("Driver quitted");
+
                 this.driver?.Quit();
-                TestsDisposingBrowsers.Add(this.id);
+                this.driver?.Dispose();
+                this.driver = null;
+
+                TestBaseSingletonContainer.TestBaseUsageStatisticsManager.SetAttribute(
+                    this.id,
+                    TestBaseSingletonContainer.TestBaseUsageStatisticsManager.AttributeBrowserDisposed,
+                    true);
             }
 
             this.disposedValue = true;
         }
-    }
-
-    /// <summary>
-    /// Shows the object in the debugger.
-    /// </summary>
-    /// <returns>A representative plain text string.</returns>
-    [ExcludeFromCodeCoverage]
-    private string GetDebuggerDisplay()
-    {
-        return $"Broswer object created {this.driver} - content: {this.contentFolder}";
     }
 }

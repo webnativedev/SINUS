@@ -4,6 +4,10 @@
 
 namespace WebNativeDEV.SINUS.Core.UITesting.Contracts;
 
+using WebNativeDEV.SINUS.Core.MsTest;
+using WebNativeDEV.SINUS.Core.UITesting.Model;
+using WebNativeDEV.SINUS.MsTest;
+
 /// <summary>
 /// This interface represents a factory for creating Browsers of a given type (e.g.: Chrome).
 /// </summary>
@@ -13,7 +17,9 @@ public interface IBrowserFactory
     /// Factory method that creates a browser object that can be used to interact with web pages.
     /// </summary>
     /// <param name="url">Initial URL to navigate to.</param>
-    /// <param name="id">Single identifier that identifies the browser uniquely inside the test session.</param>
+    /// <param name="scope">A reference to the dependency container.</param>
+    /// <param name="humanReadablePageName">Logical name of the page (e.g.: Google and not https://...).</param>
+    /// <param name="options">Configures the browser factory.</param>
     /// <returns>An instance of a browser.</returns>
-    IBrowser CreateBrowser(Uri url, string id);
+    IBrowser CreateBrowser(Uri url, TestBaseScopeContainer scope, string? humanReadablePageName = null, BrowserFactoryOptions? options = null);
 }

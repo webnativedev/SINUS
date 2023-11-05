@@ -4,106 +4,373 @@
 
 namespace WebNativeDEV.SINUS.Core.FluentAPI;
 
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using WebNativeDEV.SINUS.Core.Events.EventArguments;
+using WebNativeDEV.SINUS.Core.Execution.Model;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
-using WebNativeDEV.SINUS.MsTest;
+using WebNativeDEV.SINUS.Core.FluentAPI.Contracts.Runner;
+using WebNativeDEV.SINUS.Core.FluentAPI.Events;
+using WebNativeDEV.SINUS.Core.FluentAPI.Model;
+using WebNativeDEV.SINUS.Core.MsTest;
+using WebNativeDEV.SINUS.Core.UITesting.Contracts;
+using WebNativeDEV.SINUS.Core.UITesting.Model;
 
 /// <summary>
-/// Represents a class that manages the execution of a test based on a given-when-then sequence.
-/// This interface allows to create a proper Fluent API.
+/// Base Class for Runners.
 /// </summary>
-internal class Runner : BaseRunner, IRunner, IGiven, IGivenWithSut, IWhen, IThen
+internal sealed partial class Runner : IRunnerSystemAndBrowser,
+    IGiven, IGivenBrowser, IGivenWithSimpleSut, IGivenWithSut,
+    IWhenBrowser,
+    IThenBrowser,
+    ICloseable
 {
+    private const string DefaultEndpoint = "https://localhost:10001";
+
+    private readonly ILogger logger;
+    private readonly TestBaseScopeContainer scope;
+    private bool isCloseCalled;
+    private bool disposedValue;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Runner"/> class.
     /// </summary>
-    /// <param name="testBase">Reference to the test base creating the runner.</param>
-    public Runner(TestBase testBase)
-        : base(testBase)
+    /// <param name="scope">Reference to the scope dependencies.</param>
+    public Runner(TestBaseScopeContainer scope)
     {
+        this.scope = scope;
+
+        this.logger = scope.CreateLogger<Runner>();
+        this.logger.LogDebug("Created a log for base-runner");
     }
 
     /// <summary>
-    /// Finalizes an instance of the <see cref="Runner"/> class.
+    /// Disposes the object as defined in IDisposable.
     /// </summary>
-    [ExcludeFromCodeCoverage]
-    ~Runner()
+    public void Dispose()
     {
-        this.Dispose(disposing: false);
+        this.Dispose(true);
+        GC.SuppressFinalize(this);
     }
 
     /// <inheritdoc/>
-    public IGiven Given(string description, Action<RunStore>? action = null)
-        => (IGiven)this.Run(
-            RunCategory.Given,
-            description,
-            () => action?.Invoke(this.DataBag),
-            false);
-
-    /// <inheritdoc/>
-    public IGivenWithSut GivenASystem<TProgram>(string description)
-            where TProgram : class
-        => (IGivenWithSut)this.Run(
-                RunCategory.Given,
-                $"a SUT in memory: " + description,
-                () => this.CreateSut<TProgram>(),
-                false);
-
-    /// <inheritdoc/>
-    public IWhen When(string description, Action<RunStore>? action = null)
+    public void Close()
     {
-        this.IsPreparedOnly = this.IsPreparedOnly || action == null;
+        if (this.isCloseCalled)
+        {
+            return;
+        }
 
-        return (IWhen)this.Run(
-            RunCategory.When,
-            description,
-            () => action?.Invoke(this.DataBag),
-            false);
+        this.RunAction(
+            runCategory: RunCategory.Close,
+            action: () =>
+            {
+                this.scope.Shutdown();
+            });
+        this.isCloseCalled = true;
     }
 
-    /// <inheritdoc/>
-    public IWhen When(string description, Action<HttpClient, RunStore>? action)
+    private Runner RunCreateSut(
+            RunCategory runCategory,
+            Type? sutType,
+            IEnumerable<string>? sutArgs,
+            string? sutEndpoint,
+            string? description = null)
     {
-        this.IsPreparedOnly = this.IsPreparedOnly || action == null;
-
-        return (IWhen)this.Run(
-            RunCategory.When,
-            description,
-            () => action?.Invoke(
-                this.HttpClient,
-                this.DataBag),
-            false);
+        return this.Run(
+            new ExecutionParameterBuilder(
+                this.scope,
+                runCategory)
+            .AddDescription(description)
+            .AddRunActions(false)
+            .AddSetupActions(null)
+            .AddActions(null, null)
+            .AddCreateSut(true)
+            .AddSutType(sutType)
+            .AddSutArgs(sutArgs)
+            .AddSutEndpoint(sutEndpoint)
+            .Build());
     }
 
-    /// <inheritdoc/>
-    public IThen Then(string description, params Action<RunStore>[] actions)
+    private Runner RunCreateSut(
+            RunCategory runCategory,
+            Action<ExecutionSetupParameters>? setupAction,
+            Type? sutType,
+            string? sutEndpoint,
+            string? description = null)
     {
-        List<Action> pureAction = new();
-        actions.ToList().ForEach(action => pureAction.Add(() => action?.Invoke(this.DataBag)));
-
-        return (IThen)this.Run(
-                RunCategory.Then,
-                description,
-                pureAction,
-                true);
+        return this.Run(
+            new ExecutionParameterBuilder(
+                this.scope,
+                runCategory)
+            .AddDescription(description)
+            .AddRunActions(true)
+            .AddSetupActions(setupAction)
+            .AddActions(null, null)
+            .AddCreateSut(true)
+            .AddSutType(sutType)
+            .AddSutArgs(null)
+            .AddSutEndpoint(sutEndpoint)
+            .Build());
     }
 
-    /// <inheritdoc/>
-    public IDisposable Debug(Action<RunStore>? action = null)
-        => this.Run(
-            RunCategory.Debug,
-            string.Empty,
-            () => action?.Invoke(this.DataBag),
-            true);
+    private Runner RunCreateSut(
+            RunCategory runCategory,
+            Action? action,
+            Type? sutType,
+            string? sutEndpoint,
+            string? description = null)
+    {
+        return this.Run(
+            new ExecutionParameterBuilder(
+                this.scope,
+                runCategory)
+            .AddDescription(description)
+            .AddRunActions(true)
+            .AddSetupActions(null)
+            .AddActions(action, null)
+            .AddCreateSut(true)
+            .AddSutType(sutType)
+            .AddSutArgs(null)
+            .AddSutEndpoint(sutEndpoint)
+            .Build());
+    }
 
-    /// <inheritdoc/>
-    public IDisposable DebugPrint()
-        => this.Run(
-                RunCategory.Debug,
-                string.Empty,
-                () => this.DataBag.Print(),
-                true);
+    private Runner RunAction(
+            RunCategory runCategory,
+            Action? action,
+            string? description = null)
+    {
+        return this.Run(
+            new ExecutionParameterBuilder(
+                this.scope,
+                runCategory)
+            .AddDescription(description)
+            .AddRunActions(true)
+            .AddSetupActions(null)
+            .AddActions(action, null)
+            .AddCreateSut(false)
+            .AddSutType(null)
+            .AddSutArgs(null)
+            .AddSutEndpoint(null)
+            .Build());
+    }
+
+    private Runner RunAction(
+            RunCategory runCategory,
+            IList<Action?>? actions,
+            string? description = null)
+    {
+        return this.Run(
+            new ExecutionParameterBuilder(
+                this.scope,
+                runCategory)
+            .AddDescription(description)
+            .AddRunActions(true)
+            .AddSetupActions(null)
+            .AddActions(null, actions)
+            .AddCreateSut(false)
+            .AddSutType(null)
+            .AddSutArgs(null)
+            .AddSutEndpoint(null)
+            .Build());
+    }
+
+    private Runner Run(ExecutionParameter parameter)
+    {
+        var output = this.scope.ExecutionEngine.Run(parameter);
+
+        if (this.scope.HttpClient == null && output.HttpClient != null)
+        {
+            this.scope.HttpClient = output.HttpClient;
+        }
+        else if (this.scope.HttpClient != null && output.HttpClient != null)
+        {
+            this.scope.HttpClient.CancelPendingRequests();
+            this.scope.HttpClient.Dispose();
+            this.scope.HttpClient = output.HttpClient;
+        }
+
+        if (this.scope.WebApplicationFactory == null && output.WebApplicationFactory != null)
+        {
+            this.scope.WebApplicationFactory = output.WebApplicationFactory;
+        }
+        else if (this.scope.WebApplicationFactory != null && output.WebApplicationFactory != null)
+        {
+            this.scope.WebApplicationFactory.Dispose();
+            this.scope.WebApplicationFactory = output.WebApplicationFactory;
+        }
+
+        foreach (var e in output.Exceptions)
+        {
+            this.scope.Exceptions.Add(parameter.RunCategory, e);
+        }
+
+        this.scope.IsPreparedOnly = this.scope.IsPreparedOnly ||
+            (output.IsPreparedOnly && parameter.RunCategory == RunCategory.When);
+
+        if (output.RunCategory != RunCategory.Listen)
+        {
+            this.scope.EventBus.Publish(this, new ExecutedEventBusEventArgs(output));
+        }
+
+        return this;
+    }
+
+    private Action? InvokeAction<TSut>(Action<TSut, IRunStore>? action)
+        where TSut : class
+    {
+        if (action == null)
+        {
+            return null;
+        }
+
+        return () => action.Invoke(this.scope.DataBag.ReadSut<TSut>(), this.scope.DataBag);
+    }
+
+    private IList<Action?>? InvokeAction(Action<IRunStore>[] actions)
+    {
+        if (actions == null)
+        {
+            return null;
+        }
+
+        List<Action?> pureActions = new();
+        actions
+            .ToList()
+            .ForEach(action =>
+                {
+                    var pureAction = this.InvokeAction(action);
+                    if (pureAction != null)
+                    {
+                        pureActions.Add(pureAction);
+                    }
+                });
+
+        return pureActions;
+    }
+
+    private IList<Action?>? InvokeAction(Action<IBrowser, IRunStore>[] actions)
+    {
+        if (actions == null)
+        {
+            return null;
+        }
+
+        List<Action?> pureAction = new();
+        actions
+            .ToList()
+            .ForEach(action => pureAction.Add(this.InvokeAction(action)));
+
+        return pureAction;
+    }
+
+    private Action? InvokeAction(Action<IRunStore>? action)
+    {
+        if (action == null)
+        {
+            return null;
+        }
+
+        return () => action.Invoke(this.scope.DataBag);
+    }
+
+    private Action? InvokeAction(Action<HttpClient, IRunStore>? action)
+    {
+        if (action == null)
+        {
+            return null;
+        }
+
+        return () => action?.Invoke(
+            this.scope.HttpClient ?? throw new InvalidOperationException("HttpClient was not set in an operation"),
+            this.scope.DataBag);
+    }
+
+    private Action? InvokeAction(Action<IBrowser, IRunStore>? action)
+    {
+        if (action == null)
+        {
+            return null;
+        }
+
+        return () => action?.Invoke(
+                this.scope.Browser ?? throw new InvalidOperationException("no browser created"),
+                this.scope.DataBag);
+    }
+
+    private Action? InvokeAction<TEventBusEventArgs>(object sender, TEventBusEventArgs? e, Action<object, IRunStore, TEventBusEventArgs> handler, Func<object, IRunStore, TEventBusEventArgs, bool>? filter)
+        where TEventBusEventArgs : EventBusEventArgs
+    {
+        if (handler == null)
+        {
+            return null;
+        }
+
+        if (e == null)
+        {
+            throw new InvalidCastException();
+        }
+
+        return () =>
+        {
+            if (filter?.Invoke(sender, this.scope.DataBag, e) ?? true)
+            {
+                handler.Invoke(sender, this.scope.DataBag, e);
+            }
+        };
+    }
+
+    private Action InvokeCreateBrowserForDefaultSutAction(string? browserPageToStart, BrowserFactoryOptions? options)
+    => this.InvokeCreateBrowserAction(
+        url: new Uri(DefaultEndpoint + (browserPageToStart ?? string.Empty)),
+        options: options);
+
+    private Action InvokeCreateBrowserForDefaultSutAction(string? browserPageToStart, string? humanReadablePageName, BrowserFactoryOptions? options)
+        => this.InvokeCreateBrowserAction(
+            url: new Uri(DefaultEndpoint + (browserPageToStart ?? string.Empty)),
+            humanReadablePageName: humanReadablePageName,
+            options: options);
+
+    private Action<ExecutionSetupParameters> InvokeCreateBrowserForRandomSutAction(string? browserPageToStart, BrowserFactoryOptions? options)
+        => (param) => this.InvokeCreateBrowserAction(
+            url: new Uri(param.Endpoint + (browserPageToStart ?? string.Empty)),
+            options: options)?.Invoke();
+
+    private Action<ExecutionSetupParameters> InvokeCreateBrowserForRandomSutAction(string? browserPageToStart, string? humanReadablePageName, BrowserFactoryOptions? options)
+        => (param) => this.InvokeCreateBrowserAction(
+                url: new Uri(param.Endpoint + (browserPageToStart ?? string.Empty)),
+                humanReadablePageName: humanReadablePageName,
+                options: options)?.Invoke();
+
+    private Action InvokeCreateBrowserAction(Uri url, BrowserFactoryOptions? options)
+        => this.InvokeCreateBrowserAction(url, null, options);
+
+    private Action InvokeCreateBrowserAction(Uri url, string? humanReadablePageName, BrowserFactoryOptions? options)
+    {
+        return () => this.scope.Browser = this.scope.BrowserFactory.CreateBrowser(
+            url,
+            this.scope,
+            humanReadablePageName,
+            options);
+    }
+
+    /// <summary>
+    /// Implementation of the disposal as called by IDisposable.Dispose.
+    /// </summary>
+    /// <param name="disposing">True if called by Dispose; False if called by Destructor.</param>
+    private void Dispose(bool disposing)
+    {
+        if (!this.disposedValue)
+        {
+            if (disposing)
+            {
+                this.Close();
+            }
+
+            this.disposedValue = true;
+        }
+    }
 }
