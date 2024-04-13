@@ -286,10 +286,10 @@ internal sealed partial class Runner
                 action: this.InvokeAction(action));
 
     /// <inheritdoc/>
-    public IThen DebugPrint()
+    public IThen DebugPrint(RunStorePrintOrder order = RunStorePrintOrder.KeySorted)
         => this.RunAction(
                 runCategory: RunCategory.Debug,
-                action: () => this.scope.DataBag.PrintStore());
+                action: () => this.scope.DataBag.PrintStore(order));
 
     /// <inheritdoc/>
     public IThen DebugPrint((string, object?)[] additionalData)
@@ -302,6 +302,29 @@ internal sealed partial class Runner
                     {
                         this.scope.DataBag.PrintAdditional(data.Item1, data.Item2);
                     }
+                });
+
+    /// <inheritdoc/>
+    public IThen DebugPrint(RunStorePrintOrder order, (string, object?)[] additionalData)
+        => this.RunAction(
+                runCategory: RunCategory.Debug,
+                action: () =>
+                {
+                    this.scope.DataBag.PrintStore(order);
+                    foreach (var data in additionalData)
+                    {
+                        this.scope.DataBag.PrintAdditional(data.Item1, data.Item2);
+                    }
+                });
+
+    /// <inheritdoc/>
+    public IThen DebugPrint(RunStorePrintOrder order, string key, object? value)
+        => this.RunAction(
+                runCategory: RunCategory.Debug,
+                action: () =>
+                {
+                    this.scope.DataBag.PrintStore(order);
+                    this.scope.DataBag.PrintAdditional(key, value);
                 });
 
     /// <inheritdoc/>

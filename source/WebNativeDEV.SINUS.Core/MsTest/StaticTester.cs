@@ -16,8 +16,6 @@ namespace WebNativeDEV.SINUS.Core.MsTest
 {
     public class StaticTester : TestBase
     {
-        private static readonly StaticTester instance = new();
-
         private StaticTester()
         {
             this.TestContext = new StaticTesterContext();
@@ -29,7 +27,7 @@ namespace WebNativeDEV.SINUS.Core.MsTest
         /// <param name="action">The action to execute.</param>
         /// <returns>The current object for usage as Fluent API.</returns>
         public static ITestBaseResult Test(Action<IRunnerSystemAndBrowser> action)
-            => instance.PublicTest(action);
+            => new StaticTester().PublicTest(action);
 
         /// <summary>
         /// Creates a runner and uses the action to execute the test.
@@ -38,7 +36,7 @@ namespace WebNativeDEV.SINUS.Core.MsTest
         /// <param name="action">The action to execute.</param>
         /// <returns>The current object for usage as Fluent API.</returns>
         public static ITestBaseResult Test(string? scenario, Action<IRunnerSystemAndBrowser> action)
-            => instance.PublicTest(scenario, action);
+            => new StaticTester().PublicTest(scenario, action);
 
         /// <summary>
         /// Creates a runner and uses the action to execute the test.
@@ -48,7 +46,7 @@ namespace WebNativeDEV.SINUS.Core.MsTest
         /// <param name="action">The action to execute.</param>
         /// <returns>The current object for usage as Fluent API.</returns>
         public static ITestBaseResult Test(string? scenario, ITestBaseStrategy strategy, Action<IRunnerSystemAndBrowser> action)
-            => instance.PublicTest(scenario, strategy, action);
+            => new StaticTester().PublicTest(scenario, strategy, action);
 
         /// <summary>
         /// Minimal execution of a maintenance task as action.
@@ -57,7 +55,7 @@ namespace WebNativeDEV.SINUS.Core.MsTest
         /// <param name="action">The action to execute safely.</param>
         /// <returns>Test outcome and exception if any.</returns>
         public static ITestBaseResult Maintenance(Action action)
-            => instance.PublicMaintenance(action);
+            => new StaticTester().PublicMaintenance(action);
 
 
         /// <summary>

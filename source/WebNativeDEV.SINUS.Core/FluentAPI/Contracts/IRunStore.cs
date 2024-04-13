@@ -2,6 +2,8 @@
 // Copyright (c) Daniel Kienböck. All Rights Reserved. Licensed under the MIT License. See LICENSE in the project root for license information.
 // </copyright>
 
+using WebNativeDEV.SINUS.Core.FluentAPI.Model;
+
 namespace WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 
 /// <summary>
@@ -63,8 +65,9 @@ public interface IRunStore
     /// <summary>
     /// Prints the store content.
     /// </summary>
+    /// <param name="order">The field to order the data for printing.</param>
     /// <returns>A reference to the data store for fluent usage.</returns>
-    IRunStore PrintStore();
+    IRunStore PrintStore(RunStorePrintOrder order = RunStorePrintOrder.KeySorted);
 
     /// <summary>
     /// Reads an information if it is the only information with type T.
@@ -137,6 +140,13 @@ public interface IRunStore
     /// <returns>An instance of the store to be used as fluent api.</returns>
     /// <exception cref="ArgumentNullException">Item should not be null.</exception>
     IRunStore Store(string key, object? item);
+
+    /// <summary>
+    /// Stores log entry into to the store.
+    /// </summary>
+    /// <param name="log">Item to log</param>
+    /// <returns>An instance of the store to be used as fluent api.</returns>
+    IRunStore StoreLog(string log);
 
     /// <summary>
     /// Stores the value that is actually calculated normally in a When block.

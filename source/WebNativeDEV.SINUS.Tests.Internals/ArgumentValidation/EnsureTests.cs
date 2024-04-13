@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
 using WebNativeDEV.SINUS.Core.ArgumentValidation.Exceptions;
+using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.Core.Requirements;
 using WebNativeDEV.SINUS.MsTest;

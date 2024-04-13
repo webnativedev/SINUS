@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using WebNativeDEV.SINUS.Core.Execution;
 using WebNativeDEV.SINUS.Core.Execution.Model;
+using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.MsTest;
 
@@ -55,9 +56,11 @@ public class ExecutionEngineTests : TestBase
         .Given(data => data.StoreSut(new ExecutionEngine(Substitute.For<ILoggerFactory>())))
         .When(data => data.StoreActual<ExecutionEngine>(ex => ex.Run(value as ExecutionParameter)))
         .Then(data => data.ReadActual<ExecutionOutput>().Exceptions.Should().BeNullOrEmpty())
-        .DebugPrint(new (string, object?)[]
-        {
-            ("scenario", scenario),
-            ("test", 123),
-        }));
+        .DebugPrint(
+            RunStorePrintOrder.KeySorted,
+            new (string, object?)[]
+            {
+                ("scenario", scenario),
+                ("test", 123),
+            }));
 }

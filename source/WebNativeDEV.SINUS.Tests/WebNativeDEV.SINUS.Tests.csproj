@@ -50,6 +50,7 @@
   <ItemGroup>
     <ProjectReference Include="..\WebNativeDEV.SINUS.Core\WebNativeDEV.SINUS.Core.csproj" />
     <ProjectReference Include="..\WebNativeDEV.SINUS.SystemUnderTest\WebNativeDEV.SINUS.SystemUnderTest.csproj" />
+    <ProjectReference Include="..\WebNativeDEV.SINUS.TestConsole\WebNativeDEV.SINUS.TestConsole.csproj" />
   </ItemGroup>
 
   <ItemGroup>

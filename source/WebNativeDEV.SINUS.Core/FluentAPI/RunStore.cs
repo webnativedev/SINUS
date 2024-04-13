@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 using WebNativeDEV.SINUS.Core.FluentAPI.Events;
+using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 using WebNativeDEV.SINUS.Core.MsTest;
 
 /// <summary>
@@ -95,6 +96,15 @@ internal sealed class RunStore : IRunStore
     public IRunStore Store(object? item)
     {
         return this.Store(Guid.NewGuid().ToString(), item);
+    }
+
+    /// <inheritdoc/>
+    public IRunStore StoreLog(string log)
+    {
+        string keyTime = DateTime.Now.ToString("HH:mm:ss.ffffff", CultureInfo.InvariantCulture);
+        string uniqueGen = Guid.NewGuid().ToString("N").Substring(0, 8);
+        string key = $"{keyTime}_{uniqueGen}";
+        return this.Store(key, log);
     }
 
     /// <summary>
@@ -199,11 +209,10 @@ internal sealed class RunStore : IRunStore
     /// <summary>
     /// Prints the content to the logger.
     /// </summary>
+    /// <param name="order">The field to order the data for printing.</param>
     /// <returns>The RunStore for a fluent api.</returns>
-    public IRunStore PrintStore()
-    {
-        return this.Print(this.store);
-    }
+    public IRunStore PrintStore(RunStorePrintOrder order = RunStorePrintOrder.KeySorted)
+        => this.PrintImplementation(this.store, order);
 
     /// <summary>
     /// Prints the content to the logger.
@@ -272,8 +281,9 @@ internal sealed class RunStore : IRunStore
     /// Prints the content to the logger.
     /// </summary>
     /// <param name="data">The key/value pair to print.</param>
+    /// <param name="order">The field to order the data for printing.</param>
     /// <returns>The RunStore for a fluent api.</returns>
-    private IRunStore Print(IDictionary<string, object?> data)
+    private RunStore PrintImplementation(IDictionary<string, object?> data, RunStorePrintOrder order)
     {
         var builder = new StringBuilder(10000);
 
@@ -282,17 +292,26 @@ internal sealed class RunStore : IRunStore
         builder.AppendLine(CultureInfo.InvariantCulture, $"| Count: {data.Keys.Count}");
         builder.AppendLine("+----------------------------");
 
-        var keys = data.Keys.ToList();
-        foreach (var key in keys)
-        {
-            string value = "<null>";
-            if (data.TryGetValue(key, out var rawValue))
-            {
-                value = rawValue?.ToString() ?? "<null>";
-            }
+        IEnumerable<KeyValuePair<string, string>> dataList = data
+            .Select(x => new KeyValuePair<string, string>(x.Key, x.Value?.ToString() ?? "<null>"))
+            .ToList();
 
-            string typeName = value.GetType().FullName ?? "<null>";
-            builder.AppendLine(CultureInfo.InvariantCulture, $"| {key}: {value} (Type: {typeName})");
+        switch (order)
+        {
+            case RunStorePrintOrder.Unsorted:
+                break;
+            case RunStorePrintOrder.KeySorted:
+                dataList = dataList.OrderBy(dataItem => dataItem.Key);
+                break;
+            case RunStorePrintOrder.ValueSorted:
+                dataList = dataList.OrderBy(dataItem => dataItem.Value);
+                break;
+        }
+
+        foreach (var dataItem in dataList)
+        {
+            string typeName = dataItem.Value?.GetType()?.FullName ?? "<null>";
+            builder.AppendLine(CultureInfo.InvariantCulture, $"| {dataItem.Key}: {dataItem.Value} (Type: {typeName})");
         }
 
         builder.AppendLine("+----------------------------");

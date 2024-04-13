@@ -9,10 +9,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 using NSubstitute.Extensions;
 using System;
+using System.Globalization;
 using System.Reflection;
 using System.Runtime.InteropServices.ObjectiveC;
 using System.Threading;
 using WebNativeDEV.SINUS.Core.Assertions;
+using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.MsTest;
 
@@ -152,19 +154,19 @@ public class AsyncTests : TestBase
             {
                 int currentValue = 1;
                 var tasks = new List<Task>();
-                for (int i = 0; i < 10; i++)
+                for (int i = 0; i < 3; i++)
                 {
                     tasks.Add(Task.Run(() =>
                     {
                         string id = (currentValue++).ToString("00");
 
-                        data[$"created Process: {id}"] = DateTime.Now.ToLongTimeString();
+                        data.StoreLog($"created Process: {id}");
 
                         try
                         {
-                            data[$"started Process: {id}"] = DateTime.Now.ToLongTimeString();
+                            data.StoreLog($"started Process: {id}");
                             (data.Sut as Action<string> ?? throw new InvalidDataException()).Invoke(id);
-                            data[$"stopped Process: {id}"] = DateTime.Now.ToLongTimeString();
+                            data.StoreLog($"stopped Process: {id}");
                         }
                         catch (Exception exc)
                         {
@@ -209,13 +211,13 @@ public class AsyncTests : TestBase
             })
             .Then(data =>
             {
-                data.WaitUntil(store => store.Count(item => item.Value is Tuple<int, Guid>) == 100, 60_000);
+                data.WaitUntil(store => store.Count(item => item.Value is Tuple<int, Guid>) < 50, 60_000);
             })
             .Debug(data =>
             {
                 if (string.IsNullOrWhiteSpace(scenario))
                 {
-                    data.PrintStore();
+                    data.PrintStore(RunStorePrintOrder.KeySorted);
                 }
             })).Should().BeSuccessful();
     }

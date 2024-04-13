@@ -3,16 +3,20 @@ using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.Core.UITesting.Model;
 using WebNativeDEV.SINUS.Core.Utils;
 
-StaticTester.Test(r =>
-    r
-        .GivenABrowserAt("about:blank", new BrowserFactoryOptions(headless: false, ignoreSslErrors: true))
-        .When((browser, store) => browser.ExecuteScript("document.title = 'test'"))
-        .Then((browser, store) =>
-        {
-            if (browser.Title != "test")
-            {
-                throw new InvalidDataException("title not accepted");
-            }
-        }));
+namespace WebNativeDEV.SINUS.TestConsole;
 
-SinusUtils.KillChromeZombieProcesses(2);
+public class Program
+{
+    public static void Main(string[] args)
+        => StaticTester.Test(r =>
+            r
+                .GivenABrowserAt("about:blank", new BrowserFactoryOptions(headless: args.Length != 0, ignoreSslErrors: true))
+                .When((browser, store) => browser.ExecuteScript("document.title = 'test'"))
+                .Then((browser, store) =>
+                {
+                    if (browser.Title != (args.FirstOrDefault("test")))
+                    {
+                        throw new InvalidDataException("title not accepted");
+                    }
+                }));
+}
