@@ -19,6 +19,12 @@ using WebNativeDEV.SINUS.SystemUnderTest.Controllers;
 /// <summary>
 /// These tests demonstrate the basic usage of the ui driven test base by a system reference.
 /// </summary>
+/// <remarks>
+/// Problems with SSL:
+/// > dotnet dev-certs https --clean
+/// > dotnet dev-certs https --trust
+/// - https://stackoverflow.com/questions/53300480/unable-to-configure-https-endpoint-no-server-certificate-was-specified-and-the
+/// </remarks>
 [TestClass]
 public sealed partial class SystemUnderTestTests : TestBase
 {

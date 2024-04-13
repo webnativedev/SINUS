@@ -60,9 +60,7 @@ public class TestBaseScopeContainer
             }
         }
 
-        this.Method = methodBase
-            ?? throw new InvalidOperationException("test method could not be evaluated");
-
+        this.Method = methodBase;
         this.Runner = new Runner(this);
 
         this.TestBaseUsageStatisticsManager.Register(this);
@@ -101,7 +99,7 @@ public class TestBaseScopeContainer
     /// <summary>
     /// Gets the reflection object for the method.
     /// </summary>
-    public MethodBase Method { get; private set; }
+    public MethodBase? Method { get; private set; }
 
     /// <summary>
     /// Gets a reference to the test base.

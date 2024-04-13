@@ -347,7 +347,7 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
     {
         var result = new List<object>();
 
-        foreach (var attribute in scope.Method.GetCustomAttributes(typeof(T), true))
+        foreach (var attribute in scope.Method?.GetCustomAttributes(typeof(T), true) ?? Array.Empty<object>())
         {
             if (attribute is T baAttr)
             {

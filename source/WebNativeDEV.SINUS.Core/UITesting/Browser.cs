@@ -181,7 +181,7 @@ internal sealed class Browser : IBrowser
         this.Logger.LogInformation("Screenshot filename resolved to {Filename}", resolvedFilename);
 
         Screenshot? screenshot = (this.driver as ITakesScreenshot)?.GetScreenshot();
-        screenshot?.SaveAsFile(resolvedFilename, ScreenshotImageFormat.Png);
+        screenshot?.SaveAsFile(resolvedFilename);
         return this;
     }
 
