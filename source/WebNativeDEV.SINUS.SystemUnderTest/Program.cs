@@ -30,7 +30,7 @@ public partial class Program
     [ExcludeFromCodeCoverage(Justification = "framework bootstrap code, no logic included")]
     private static void Main(string[] args)
     {
-        args ??= Array.Empty<string>();
+        args ??= [];
 
         var shouldMock = args.Contains("--ExecutionMode=Mock");
 

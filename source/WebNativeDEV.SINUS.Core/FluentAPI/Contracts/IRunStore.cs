@@ -2,9 +2,9 @@
 // Copyright (c) Daniel Kienböck. All Rights Reserved. Licensed under the MIT License. See LICENSE in the project root for license information.
 // </copyright>
 
-using WebNativeDEV.SINUS.Core.FluentAPI.Model;
-
 namespace WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
+
+using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 
 /// <summary>
 /// Interface representing a run store.
@@ -144,7 +144,7 @@ public interface IRunStore
     /// <summary>
     /// Stores log entry into to the store.
     /// </summary>
-    /// <param name="log">Item to log</param>
+    /// <param name="log">Item to log.</param>
     /// <returns>An instance of the store to be used as fluent api.</returns>
     IRunStore StoreLog(string log);
 

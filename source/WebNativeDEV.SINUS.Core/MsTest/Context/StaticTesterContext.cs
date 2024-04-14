@@ -1,46 +1,62 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿// <copyright file="StaticTesterContext.cs" company="WebNativeDEV">
+// Copyright (c) Daniel Kienböck. All Rights Reserved. Licensed under the MIT License. See LICENSE in the project root for license information.
+// </copyright>
+
+namespace WebNativeDEV.SINUS.Core.MsTest.Context;
+
+using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WebNativeDEV.SINUS.Core.MsTest.Model;
 
-namespace WebNativeDEV.SINUS.Core.MsTest.Context
+/// <summary>
+/// Test context for static tester emulating an ms-test injected context.
+/// </summary>
+internal class StaticTesterContext : TestContext
 {
-    internal class StaticTesterContext : TestContext
+    private readonly IDictionary properties = new Dictionary<object, object>();
+    private readonly ILogger logger;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StaticTesterContext"/> class.
+    /// </summary>
+    public StaticTesterContext()
     {
-        private readonly IDictionary properties = new Dictionary<object, object>();
-        public override IDictionary Properties => properties;
+        this.properties.Add(nameof(this.TestName), "Given_StaticTest_When_Executed_Then_UniqueExecutionStarts-" + Guid.NewGuid().ToString());
+        this.properties.Add(nameof(this.FullyQualifiedTestClassName), "StaticTests");
+        this.properties.Add(nameof(this.TestRunResultsDirectory), ".");
+        this.properties.Add(nameof(this.TestRunDirectory), ".");
+        this.logger = TestBaseSingletonContainer.CreateLogger<StaticTester>();
+    }
 
-        public StaticTesterContext()
-        {
-            this.properties.Add(nameof(this.TestName), "Given_StaticTest_When_Executed_Then_UniqueExecutionStarts-" + Guid.NewGuid().ToString());
-            this.properties.Add(nameof(this.FullyQualifiedTestClassName), "StaticTests");
-            this.properties.Add(nameof(this.TestRunResultsDirectory), ".");
-            this.properties.Add(nameof(this.TestRunDirectory), ".");
-        }
+    /// <summary>
+    /// Gets the properties.
+    /// </summary>
+    public override IDictionary Properties => this.properties;
 
-        /// <inheritdoc />
-        public override void AddResultFile(string fileName)
-        {
-        }
+    /// <inheritdoc />
+    public override void AddResultFile(string fileName)
+        => this.WriteLineImplementation("Result file added: " + fileName);
 
-        public override void Write(string? message)
-        {
-        }
+    /// <inheritdoc/>
+    public override void Write(string? message)
+        => this.WriteLineImplementation(message);
 
-        public override void Write(string format, params object?[] args)
-        {
-        }
+    /// <inheritdoc/>
+    public override void Write(string? format, params object?[] args)
+        => this.WriteLineImplementation(format, args);
 
-        public override void WriteLine(string? message)
-        {
-        }
+    /// <inheritdoc/>
+    public override void WriteLine(string? message)
+        => this.WriteLineImplementation(message);
 
-        public override void WriteLine(string format, params object?[] args)
-        {
-        }
+    /// <inheritdoc/>
+    public override void WriteLine(string? format, params object?[] args)
+        => this.WriteLineImplementation(format, args);
+
+    private void WriteLineImplementation(string? format, params object?[] args)
+    {
+        #pragma warning disable CA2254 // Vorlage muss ein statischer Ausdruck sein
+        this.logger.LogInformation($"StaticTestContext: {format ?? string.Empty}", args);
+        #pragma warning restore CA2254 // Vorlage muss ein statischer Ausdruck sein
     }
 }

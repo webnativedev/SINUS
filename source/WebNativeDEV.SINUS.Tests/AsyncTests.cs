@@ -36,14 +36,9 @@ public class AsyncTests : TestBase
         T Consume();
     }
 
-    public class TestingEvent
+    public class TestingEvent(string? message = null)
     {
-        public TestingEvent(string? message = null)
-        {
-            this.Message = message;
-        }
-
-        public string? Message { get; set; }
+        public string? Message { get; set; } = message;
 
         public override string ToString()
         {
@@ -51,14 +46,9 @@ public class AsyncTests : TestBase
         }
     }
 
-    public class TestedEvent
+    public class TestedEvent(string? message = null)
     {
-        public TestedEvent(string? message = null)
-        {
-            this.Message = message;
-        }
-
-        public string? Message { get; set; }
+        public string? Message { get; set; } = message;
 
         public override string ToString()
         {
@@ -66,17 +56,11 @@ public class AsyncTests : TestBase
         }
     }
 
-    public class TestHandler
+    public class TestHandler(AsyncTests.IProducer<AsyncTests.TestedEvent> producer, AsyncTests.IConsumer<AsyncTests.TestingEvent> consumer)
     {
-        public TestHandler(IProducer<TestedEvent> producer, IConsumer<TestingEvent> consumer)
-        {
-            this.Producer = producer;
-            this.Consumer = consumer;
-        }
+        public IProducer<TestedEvent> Producer { get; } = producer;
 
-        public IProducer<TestedEvent> Producer { get; }
-
-        public IConsumer<TestingEvent> Consumer { get; }
+        public IConsumer<TestingEvent> Consumer { get; } = consumer;
 
         public void Handle()
         {
@@ -94,14 +78,9 @@ public class AsyncTests : TestBase
         }
     }
 
-    public class ContainerEventArgs : EventArgs
+    public class ContainerEventArgs(params object[] data) : EventArgs
     {
-        public ContainerEventArgs(params object[] data)
-        {
-            this.Data = data;
-        }
-
-        public object[] Data { get; set; }
+        public object[] Data { get; set; } = data;
     }
 
     [TestMethod]
@@ -188,7 +167,7 @@ public class AsyncTests : TestBase
     public static string DefaultDataDisplayName(MethodInfo methodInfo, object[] data)
         => TestNamingConventionManager.DynamicDataDisplayNameAddValueFromLastArgument(methodInfo, data);
 
-    public static IEnumerable<object?[]> NoValues => new[] { new object?[] { string.Empty }, };
+    public static IEnumerable<object?[]> NoValues => [[string.Empty],];
 
     [TestMethod]
     [DynamicData(

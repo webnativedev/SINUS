@@ -17,7 +17,7 @@ using WebNativeDEV.SINUS.MsTest;
 /// </summary>
 internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
 {
-    private readonly Dictionary<string, Dictionary<string, object>> usages = new();
+    private readonly Dictionary<string, Dictionary<string, object>> usages = [];
 
     /// <inheritdoc/>
     public string AttributeBrowserCreated => "browser created";
@@ -73,7 +73,7 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
     {
         try
         {
-            this.usages.Add(scope.TestName, new Dictionary<string, object>());
+            this.usages.Add(scope.TestName, []);
         }
         catch (ArgumentException exc)
         {
@@ -135,7 +135,7 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
                           WafCreated: x.Value.ContainsKey(this.AttributeWafCreated),
                           WafDisposed: x.Value.ContainsKey(this.AttributeWafDisposed)))
             .ToList();
-        if (!data.Any())
+        if (data.Count == 0)
         {
             return;
         }
@@ -257,7 +257,7 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
 
     private static void PrintSpecificStatistic(List<(string Title, bool Created, bool Disposed)> data, string category)
     {
-        if (!data.Any())
+        if (data.Count == 0)
         {
             return;
         }
@@ -320,7 +320,7 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
                 Count = group.Count(),
             })
             .ToList();
-        if (!data.Any())
+        if (data.Count == 0)
         {
             return;
         }
@@ -347,7 +347,7 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
     {
         var result = new List<object>();
 
-        foreach (var attribute in scope.Method?.GetCustomAttributes(typeof(T), true) ?? Array.Empty<object>())
+        foreach (var attribute in scope.Method?.GetCustomAttributes(typeof(T), true) ?? [])
         {
             if (attribute is T baAttr)
             {
@@ -355,7 +355,7 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
             }
         }
 
-        if (result.Any())
+        if (result.Count > 0)
         {
             this.usages[scope.TestName].Add(key, result);
         }
@@ -366,7 +366,7 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
     {
         var result = new List<object>();
 
-        foreach (var attribute in scope.Method?.DeclaringType?.GetCustomAttributes(typeof(T), true) ?? Array.Empty<object>())
+        foreach (var attribute in scope.Method?.DeclaringType?.GetCustomAttributes(typeof(T), true) ?? [])
         {
             if (attribute is T baAttr)
             {
@@ -374,7 +374,7 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
             }
         }
 
-        if (result.Any())
+        if (result.Count > 0)
         {
             this.usages[scope.TestName].Add(key, result);
         }

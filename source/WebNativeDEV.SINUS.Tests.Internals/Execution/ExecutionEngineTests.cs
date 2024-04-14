@@ -23,10 +23,9 @@ using WebNativeDEV.SINUS.MsTest;
 public class ExecutionEngineTests : TestBase
 {
     public static IEnumerable<object?[]> ValidValues
-    => new[]
-    {
-        new object?[]
-        {
+    =>
+    [
+        [
             new ExecutionParameter()
             {
                 Actions = { () => { } },
@@ -34,8 +33,8 @@ public class ExecutionEngineTests : TestBase
                 Namings = new TestNamingConventionManager("Given_X_When_Y_Then_Z"),
             },
             "MinimalTest",
-        },
-    };
+        ],
+    ];
 
     /// <summary>
     /// Dynamic Data Display Name calculator proxying to TestNamingConventionManager.
@@ -58,9 +57,5 @@ public class ExecutionEngineTests : TestBase
         .Then(data => data.ReadActual<ExecutionOutput>().Exceptions.Should().BeNullOrEmpty())
         .DebugPrint(
             RunStorePrintOrder.KeySorted,
-            new (string, object?)[]
-            {
-                ("scenario", scenario),
-                ("test", 123),
-            }));
+            [("scenario", scenario), ("test", 123)]));
 }

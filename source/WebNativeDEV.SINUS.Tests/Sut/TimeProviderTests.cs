@@ -25,14 +25,15 @@ public class TimeProviderTests : TestBase
         => this.Test(r => r
             .Given("a time provider", data => data.StoreSut(new TimeProvider()))
             .When("Reading the seconds", data => data.StoreActual<TimeProvider>(sut => sut.GetCurrentSeconds()))
-            .Then("Check if less than 60", (data) => Assert.IsTrue(data.ReadActual<int>() is >= 0 and <= 60)));
+            .Then("Check if less than 60", (data) => data.ReadActual<int>().Should().BeGreaterThanOrEqualTo(0)
+                                                                           .And.BeLessThan(60)));
 
     [TestMethod]
     public void Given_TimeProvider_When_CheckingToString_Then_TheyShouldReturnSomethingValid()
         => this.Test(r => r
             .Given("a time provider", data => data.StoreSut(new TimeProvider()))
             .When("Reading the seconds", data => data.StoreActual<TimeProvider>(sut => sut.ToString()))
-            .Then("Check if string is long", (data) => Assert.IsTrue(data.ReadActual<string>().Length > 16))
+            .Then("Check if string is long", (data) => data.ReadActual<string>().Length.Should().BeGreaterThan(16))
             .DebugPrint());
 
     [TestMethod]
@@ -40,7 +41,7 @@ public class TimeProviderTests : TestBase
         => this.Test(r => r
             .Given("a time controller", data => data.StoreSut(new TimeController(null!, null!)))
             .When("sut can not be created", data => data["not-available"] = 1)
-            .Then("Check if controller exists", (data) => Assert.IsNotNull(data.ReadSut<TimeController>()))
+            .Then("Check if controller exists", (data) => data.ReadSut<TimeController>().Should().NotBeNull())
             .DebugPrint()
             .ExpectFail());
 

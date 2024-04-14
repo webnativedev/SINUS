@@ -130,18 +130,19 @@ internal sealed class ExecutionEngine : IExecutionEngine
         parameter = Ensure.NotNull(parameter);
         var namings = Ensure.NotNull(parameter.Namings);
 
-        List<Action> actions = new();
-        actions.AddRange(
-            parameter.SetupActions.Select<Action<ExecutionSetupParameters>, Action>(
+        List<Action> actions =
+        [
+            .. parameter.SetupActions.Select<Action<ExecutionSetupParameters>, Action>(
                 action => () => action?.Invoke(new ExecutionSetupParameters()
                 {
                     Endpoint = returnValue.SutEndpoint,
-                })));
-
-        actions.AddRange(parameter.Actions);
+                })),
+            .. parameter.Actions,
+        ];
 
         var actionCount = actions.Count;
 
+        // I believe the warning is wrong, so I disabled it
         if (!parameter.RunActions || actionCount == 0)
         {
             string skipDescription = namings.GetReadableDescription(
@@ -188,6 +189,15 @@ internal sealed class ExecutionEngine : IExecutionEngine
                         exc.GetType().ToString(),
                         exc.Message);
                     this.logger.LogError("Stacktrace:\n{StackTrace}", exc.StackTrace);
+
+                    if(exc is AggregateException aggregateException)
+                    {
+                        foreach(Exception innerExc in aggregateException.InnerExceptions)
+                        {
+                            this.logger.LogError("Inner-Stacktrace:\n{StackTrace}", innerExc.StackTrace);
+                        }
+                    }
+
                     returnValue.Exceptions.Add(exc);
                 }
 

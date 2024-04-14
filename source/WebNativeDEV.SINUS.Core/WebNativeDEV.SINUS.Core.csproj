@@ -28,12 +28,12 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <WarningLevel>9999</WarningLevel>
-    <NoWarn>1701;1702;NU5100</NoWarn>
+    <NoWarn>1701;1702;NU5100;SA1010;SA1009</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <WarningLevel>9999</WarningLevel>
-    <NoWarn>1701;1702;NU5100</NoWarn>
+    <NoWarn>1701;1702;NU5100;SA1010;SA1009</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

@@ -230,14 +230,14 @@ internal sealed partial class Runner : IRunnerSystemAndBrowser,
         return () => action.Invoke(this.scope.DataBag.ReadSut<TSut>(), this.scope.DataBag);
     }
 
-    private IList<Action?>? InvokeAction(Action<IRunStore>[] actions)
+    private List<Action?>? InvokeAction(Action<IRunStore>[] actions)
     {
         if (actions == null)
         {
             return null;
         }
 
-        List<Action?> pureActions = new();
+        List<Action?> pureActions = [];
         actions
             .ToList()
             .ForEach(action =>
@@ -252,14 +252,14 @@ internal sealed partial class Runner : IRunnerSystemAndBrowser,
         return pureActions;
     }
 
-    private IList<Action?>? InvokeAction(Action<IBrowser, IRunStore>[] actions)
+    private List<Action?>? InvokeAction(Action<IBrowser, IRunStore>[] actions)
     {
         if (actions == null)
         {
             return null;
         }
 
-        List<Action?> pureAction = new();
+        List<Action?> pureAction = [];
         actions
             .ToList()
             .ForEach(action => pureAction.Add(this.InvokeAction(action)));

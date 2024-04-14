@@ -29,14 +29,13 @@ using WebNativeDEV.SINUS.MsTest;
 public class EnsureTests : TestBase
 {
     public static IEnumerable<object?[]> ValidValues
-        => new[]
-        {
-            new object?[] { "test", "TestString" },
-            new object?[] { new int?(5), "NullableTestInt5" },
-            new object?[] { 1, "IntOne" },
-            new object?[] { 2.3, "DoubleTwoPointThree" },
-            new object?[] { new DateTime(2023, 1, 1, 1, 1, 1, 1, 1, DateTimeKind.Utc), "DateTimeTest" },
-        };
+        => [
+            ["test", "TestString"],
+            [new int?(5), "NullableTestInt5"],
+            [1, "IntOne"],
+            [2.3, "DoubleTwoPointThree"],
+            [new DateTime(2023, 1, 1, 1, 1, 1, 1, 1, DateTimeKind.Utc), "DateTimeTest"],
+        ];
 
     /// <summary>
     /// Dynamic Data Display Name calculator proxying to TestNamingConventionManager.

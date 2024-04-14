@@ -53,7 +53,7 @@ public class TestBaseScopeContainer
         foreach (var frame in stackTrace.GetFrames())
         {
             var method = frame.GetMethod();
-            if (method?.GetCustomAttributes(typeof(TestMethodAttribute), true)?.Any() ?? false)
+            if ((method?.GetCustomAttributes(typeof(TestMethodAttribute), true)?.Length ?? 0) > 0)
             {
                 methodBase = method;
                 break;

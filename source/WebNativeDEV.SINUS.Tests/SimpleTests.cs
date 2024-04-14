@@ -27,7 +27,7 @@ public class SimpleTests : TestBase
         TestBaseSingletonContainer.TestBaseUsageStatisticsManager.Register(this);
 
         // Arrange
-        ITimeProvider provider = new MockTimeProvider();
+        var provider = new MockTimeProvider();
 
         // Act
         var actual = provider.GetCurrentSeconds();

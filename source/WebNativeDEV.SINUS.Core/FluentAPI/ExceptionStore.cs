@@ -16,19 +16,13 @@ using WebNativeDEV.SINUS.Core.MsTest;
 /// <summary>
 /// The exception store.
 /// </summary>
-internal class ExceptionStore : IExceptionStore
+/// <remarks>
+/// Initializes a new instance of the <see cref="ExceptionStore"/> class.
+/// </remarks>
+/// <param name="scope">Dependency container.</param>
+internal class ExceptionStore(TestBaseScopeContainer scope) : IExceptionStore
 {
-    private readonly List<ExceptionStoreItem> list = new();
-    private readonly TestBaseScopeContainer scope;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ExceptionStore"/> class.
-    /// </summary>
-    /// <param name="scope">Dependency container.</param>
-    public ExceptionStore(TestBaseScopeContainer scope)
-    {
-        this.scope = scope;
-    }
+    private readonly List<ExceptionStoreItem> list = [];
 
     /// <inheritdoc/>
     public int Count => this.list.Count;
@@ -43,7 +37,7 @@ internal class ExceptionStore : IExceptionStore
 
         if (exception is AggregateException aggException)
         {
-            this.scope.EventBus.Publish(this, new ExceptionChangedEventBusEventArgs(item));
+            scope.EventBus.Publish(this, new ExceptionChangedEventBusEventArgs(item));
 
             foreach (var e in aggException.InnerExceptions)
             {
@@ -54,11 +48,11 @@ internal class ExceptionStore : IExceptionStore
         }
 
         this.list.Add(item);
-        this.scope.EventBus.Publish(this, new ExceptionChangedEventBusEventArgs(item));
+        scope.EventBus.Publish(this, new ExceptionChangedEventBusEventArgs(item));
     }
 
     /// <inheritdoc/>
-    public bool Any() => this.list.Any();
+    public bool Any() => this.list.Count != 0;
 
     /// <inheritdoc/>
     public int CountOfType<T>()
@@ -79,7 +73,7 @@ internal class ExceptionStore : IExceptionStore
         this.list.ForEach(item =>
         {
             item.IsCheckedInThenClause = true;
-            this.scope.EventBus.Publish(this, new ExceptionChangedEventBusEventArgs(item));
+            scope.EventBus.Publish(this, new ExceptionChangedEventBusEventArgs(item));
         });
     }
 
@@ -92,7 +86,7 @@ internal class ExceptionStore : IExceptionStore
             if (item.Exception is T)
             {
                 item.IsCheckedInThenClause = true;
-                this.scope.EventBus.Publish(this, new ExceptionChangedEventBusEventArgs(item));
+                scope.EventBus.Publish(this, new ExceptionChangedEventBusEventArgs(item));
             }
         });
     }

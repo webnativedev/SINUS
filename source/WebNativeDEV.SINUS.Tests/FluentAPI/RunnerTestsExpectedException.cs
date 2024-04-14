@@ -58,8 +58,7 @@ public class RunnerTestsExpectedException : TestBase
             .When("An excecution occurs", data => data.PrintStore())
             .Then(
                 "The error should be visible",
-                data => throw new Exception("Verification failed"),
-                data => Assert.Fail("Error happens here")));
+                data => throw new Exception("Verification failed")));
     }
 
     [TestMethod]

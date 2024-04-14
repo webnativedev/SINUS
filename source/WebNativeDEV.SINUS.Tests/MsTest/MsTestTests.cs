@@ -35,9 +35,9 @@ public class MsTestTests : TestBase
             })
             .Then(
                 "all data should be not null",
-                data => Assert.IsNotNull(data["logsDir"]),
-                data => Assert.IsNotNull(data["runDir"]),
-                data => Assert.IsNotNull(data["testName"]))
+                data => data["logsDir"].Should().NotBeNull(),
+                data => data["runDir"].Should().NotBeNull(),
+                data => data["testName"].Should().NotBeNull())
             .DebugPrint());
     }
 }

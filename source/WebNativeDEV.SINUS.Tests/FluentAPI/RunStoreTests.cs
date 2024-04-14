@@ -21,13 +21,13 @@ using WebNativeDEV.SINUS.MsTest;
 public class RunStoreTests : TestBase
 {
     public static IEnumerable<object?[]> ValidValues
-    => new[]
-    {
-        new object?[] { 1, "IntTest" },
-        new object?[] { "str", "StringTest" },
-        new object?[] { new object(), "ObjectTest" },
-        new object?[] { new DateTime(2023, 1, 1, 1, 1, 1, 1, 1, DateTimeKind.Utc), "DateTimeTest" },
-    };
+    =>
+    [
+        [1, "IntTest"],
+        ["str", "StringTest"],
+        [new object(), "ObjectTest"],
+        [new DateTime(2023, 1, 1, 1, 1, 1, 1, 1, DateTimeKind.Utc), "DateTimeTest"],
+    ];
 
     /// <summary>
     /// Dynamic Data Display Name calculator proxying to TestNamingConventionManager.

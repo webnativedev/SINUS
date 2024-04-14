@@ -99,7 +99,9 @@ public abstract class AbstractTestBaseStrategy : ITestBaseStrategy
                 Environment.CurrentManagedThreadId);
             if (scope.ExpectedOutcome != TestOutcome.Inconclusive && shouldThrow)
             {
+                #pragma warning disable FAA0003 // Replace MSTests assertion with Fluent Assertions equivalent
                 Assert.Inconclusive($"The test result is evaluated as inconclusive for test '{scope.TestName}', because it was rated 'only-prepared' when seeing no 'When'-part.");
+                #pragma warning restore FAA0003 // Replace MSTests assertion with Fluent Assertions equivalent
             }
 
             return;
@@ -117,7 +119,9 @@ public abstract class AbstractTestBaseStrategy : ITestBaseStrategy
 
             if (scope.ExpectedOutcome != TestOutcome.Failure && shouldThrow)
             {
+                #pragma warning disable FAA0003 // Replace MSTests assertion with Fluent Assertions equivalent
                 Assert.Fail($"The test result is evaluated as failed for test '{scope.TestName}', because exceptions occured. Count: {scope.Exceptions.Count}; Types: {scope.Exceptions.GetContentAsString()}");
+                #pragma warning restore FAA0003 // Replace MSTests assertion with Fluent Assertions equivalent
             }
 
             return;

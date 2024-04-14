@@ -21,7 +21,7 @@ public class SimpleBrowserTests : TestBase
 {
     private const string SimpleViewTitle = "SINUS TestSystem";
     private readonly (string?, string?) simpleView = ("SimpleView", "/simpleView");
-    private readonly BrowserFactoryOptions optionEdge = new BrowserFactoryOptions(true, true, SupportedWebDriver.Edge);
+    private readonly BrowserFactoryOptions optionEdge = new (true, true, SupportedWebDriver.Edge);
 
     [TestMethod]
     public void Given_AWebsite_When_CreatingScreenshot_Then_NoExceptionShouldOccur()
@@ -33,10 +33,9 @@ public class SimpleBrowserTests : TestBase
     [TestMethod]
     public void Given_AWebsiteInEdge_When_CreatingScreenshot_Then_NoExceptionShouldOccur()
     => this.Test(r => r
-        .GivenASystemAndABrowserAtDefaultEndpoint<Program>(this.simpleView, optionEdge)
+        .GivenASystemAndABrowserAtDefaultEndpoint<Program>(this.simpleView, this.optionEdge)
         .When("making a screenshot", (browser, data) => browser.TakeScreenshot())
         .ThenNoError()).Should().BeSuccessful();
-
 
     [TestMethod]
     public void Given_AWebsiteOnRandomEndpoint_When_CreatingScreenshot_Then_NoExceptionShouldOccur()
@@ -52,11 +51,10 @@ public class SimpleBrowserTests : TestBase
             .When("storing the title", (browser, data) => data.StoreActual(browser?.Title))
             .Then("it should equal to the real title", (browser, data) => data.Should().ActualBe(SimpleViewTitle)));
 
-
     [TestMethod]
     public void Given_AWebsiteInEdge_When_StoringTheTitle_Then_ItShouldBeCorrect()
         => this.Test(r => r
-            .GivenASystemAndABrowserAtDefaultEndpoint<Program>(this.simpleView, optionEdge)
+            .GivenASystemAndABrowserAtDefaultEndpoint<Program>(this.simpleView, this.optionEdge)
             .When("storing the title", (browser, data) => data.StoreActual(browser?.Title))
             .Then("it should equal to the real title", (browser, data) => data.Should().ActualBe(SimpleViewTitle)));
 
@@ -79,7 +77,7 @@ public class SimpleBrowserTests : TestBase
                     WebDriver = SupportedWebDriver.Chrome,
                 })
             .When("storing the title", (browser, data) => data.StoreActual(browser?.Title))
-            .Then("it should equal to the real title", (browser, data) => Assert.IsNotNull(data.ReadActual<string>())));
+            .Then("it should equal to the real title", (browser, data) => data.ReadActual<string>().Should().NotBeNull()));
 
     [TestMethod]
     public void Given_ABlankWebsiteInEdgeNotHeadless_When_StoringTheTitle_Then_ItShouldNotBeNull()
@@ -93,21 +91,21 @@ public class SimpleBrowserTests : TestBase
                     WebDriver = SupportedWebDriver.Edge,
                 })
             .When("storing the title", (browser, data) => data.StoreActual(browser?.Title))
-            .Then("it should equal to the real title", (browser, data) => Assert.IsNotNull(data.ReadActual<string>())));
+            .Then("it should equal to the real title", (browser, data) => data.ReadActual<string>().Should().NotBeNull()));
 
     [TestMethod]
     public void Given_ABlankWebsite_When_StoringTheTitle_Then_ItShouldNotBeNull()
         => this.Test(r => r
             .GivenABrowserAt(("empty page", "about:blank"))
             .When("storing the title", (browser, data) => data.StoreActual(browser?.Title))
-            .Then("it should equal to the real title", (browser, data) => Assert.IsNotNull(data.ReadActual<string>())));
+            .Then("it should equal to the real title", (browser, data) => data.ReadActual<string>().Should().NotBeNull()));
 
     [TestMethod]
     public void Given_ABlankWebsiteAsUri_When_StoringTheTitle_Then_ItShouldBeCorrect()
         => this.Test(r => r
             .GivenABrowserAt("empty page", new Uri("about:blank"))
             .When("storing the title", (browser, data) => data.StoreActual(browser?.Title))
-            .Then("it should equal to the real title", (browser, data) => Assert.IsNotNull(data.ReadActual<string>())));
+            .Then("it should equal to the real title", (browser, data) => data.ReadActual<string>().Should().NotBeNull()));
 
     [TestMethod]
     public void Given_AWebsite_When_CallingPrintUsageStatistic_Then_ItShouldReturnOneLeakingBecauseDisposeCalledAfterwards()

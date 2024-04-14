@@ -13,18 +13,13 @@ using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 /// <summary>
 /// Fluent Assertions context for RunStore providing check methods.
 /// </summary>
-public class RunStoreAssertions :
-    ReferenceTypeAssertions<IRunStore, RunStoreAssertions>
+/// <remarks>
+/// Initializes a new instance of the <see cref="RunStoreAssertions"/> class.
+/// </remarks>
+/// <param name="instance">The instance to operate on.</param>
+public class RunStoreAssertions(IRunStore instance) :
+    ReferenceTypeAssertions<IRunStore, RunStoreAssertions>(instance)
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="RunStoreAssertions"/> class.
-    /// </summary>
-    /// <param name="instance">The instance to operate on.</param>
-    public RunStoreAssertions(IRunStore instance)
-        : base(instance)
-    {
-    }
-
     /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
     protected override string Identifier => "runStore";
@@ -48,7 +43,7 @@ public class RunStoreAssertions :
         Execute.Assertion
          .BecauseOf(because, becauseArgs)
          .ForCondition(
-            (actual == null && expected == null) ||
+            (actual == null && object.Equals(expected, default(T))) ||
             (expected?.Equals(actual) ?? false))
          .FailWith(
             "Expected '{0}', but Actual '{1}'",

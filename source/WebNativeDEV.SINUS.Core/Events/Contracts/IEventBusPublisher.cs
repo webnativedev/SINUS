@@ -6,8 +6,6 @@ namespace WebNativeDEV.SINUS.Core.Events.Contracts;
 
 using WebNativeDEV.SINUS.Core.Events.EventArguments;
 
-#pragma warning disable CA2109 // Check visible event handler
-
 /// <summary>
 /// Interface for the event bus.
 /// </summary>
@@ -22,5 +20,3 @@ public interface IEventBusPublisher
     void Publish<TEventBusEventArgs>(object sender, TEventBusEventArgs e)
         where TEventBusEventArgs : EventBusEventArgs;
 }
-
-#pragma warning restore CA2109 // Check visible event handler

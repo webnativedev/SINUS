@@ -2,9 +2,9 @@
 // Copyright (c) Daniel Kienböck. All Rights Reserved. Licensed under the MIT License. See LICENSE in the project root for license information.
 // </copyright>
 
-using WebNativeDEV.SINUS.Core.FluentAPI.Model;
-
 namespace WebNativeDEV.SINUS.Core.FluentAPI.Contracts.Runner;
+
+using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 
 /// <summary>
 /// Represents in the given-when-then sequence the then part.

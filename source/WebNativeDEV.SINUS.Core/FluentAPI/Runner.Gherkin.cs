@@ -4,6 +4,7 @@
 
 namespace WebNativeDEV.SINUS.Core.FluentAPI;
 
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
@@ -191,10 +192,7 @@ internal sealed partial class Runner
                 description: description,
                 action: () =>
                 {
-                    if (this.scope.Exceptions.Any())
-                    {
-                        Assert.Fail("Exception was not thrown.");
-                    }
+                    this.scope.Exceptions.Count.Should().Be(0);
                 });
 
     /// <inheritdoc/>
@@ -203,10 +201,7 @@ internal sealed partial class Runner
                 runCategory: RunCategory.Then,
                 action: () =>
                 {
-                    if (this.scope.Exceptions.Any())
-                    {
-                        Assert.Fail("Exception was not thrown.");
-                    }
+                    this.scope.Exceptions.Count.Should().Be(0);
                 });
 
     /// <inheritdoc/>
@@ -215,18 +210,8 @@ internal sealed partial class Runner
                 runCategory: RunCategory.Then,
                 action: () =>
                 {
-                    if (this.scope.Exceptions.Count == 1)
-                    {
-                        this.scope.Exceptions.SetAllChecked();
-                    }
-                    else if (this.scope.Exceptions.Count == 0)
-                    {
-                        Assert.Fail("Expected exception was not thrown.");
-                    }
-                    else
-                    {
-                        Assert.Fail("Expected exception was not thrown, but multiple times.");
-                    }
+                    this.scope.Exceptions.Count.Should().Be(1);
+                    this.scope.Exceptions.SetAllChecked();
                 });
 
     /// <inheritdoc/>
@@ -236,18 +221,8 @@ internal sealed partial class Runner
                 description: description,
                 action: () =>
                 {
-                    if (this.scope.Exceptions.Count == 1)
-                    {
-                        this.scope.Exceptions.SetAllChecked();
-                    }
-                    else if (this.scope.Exceptions.Count == 0)
-                    {
-                        Assert.Fail("Expected exception was not thrown.");
-                    }
-                    else
-                    {
-                        Assert.Fail("Expected exception was not thrown, but multiple times.");
-                    }
+                    this.scope.Exceptions.Count.Should().Be(1);
+                    this.scope.Exceptions.SetAllChecked();
                 });
 
     /// <inheritdoc/>
@@ -257,20 +232,8 @@ internal sealed partial class Runner
                 runCategory: RunCategory.Then,
                 action: () =>
                 {
-                    var count = this.scope.Exceptions.CountOfType<T>();
-
-                    if (count == 1)
-                    {
-                        this.scope.Exceptions.SetAllCheckedOfType<T>();
-                    }
-                    else if (count == 0)
-                    {
-                        Assert.Fail("Expected exception was not thrown.");
-                    }
-                    else
-                    {
-                        Assert.Fail("Expected exception was not thrown, but multiple times.");
-                    }
+                    this.scope.Exceptions.CountOfType<T>().Should().Be(1);
+                    this.scope.Exceptions.SetAllCheckedOfType<T>();
                 });
 
     /// <inheritdoc/>

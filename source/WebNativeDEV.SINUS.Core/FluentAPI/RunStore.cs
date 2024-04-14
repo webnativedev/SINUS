@@ -19,21 +19,14 @@ using WebNativeDEV.SINUS.Core.MsTest;
 /// <summary>
 /// Represents the store that is used in test runners.
 /// </summary>
-internal sealed class RunStore : IRunStore
+/// <remarks>
+/// Initializes a new instance of the <see cref="RunStore"/> class.
+/// </remarks>
+/// <param name="scope">The scoped dependencies.</param>
+internal sealed class RunStore(TestBaseScopeContainer scope) : IRunStore
 {
     private readonly ConcurrentDictionary<string, object?> store = new();
-    private readonly ILogger logger;
-    private readonly TestBaseScopeContainer scope;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="RunStore"/> class.
-    /// </summary>
-    /// <param name="scope">The scoped dependencies.</param>
-    public RunStore(TestBaseScopeContainer scope)
-    {
-        this.logger = TestBaseSingletonContainer.CreateLogger<RunStore>();
-        this.scope = scope;
-    }
+    private readonly ILogger logger = TestBaseSingletonContainer.CreateLogger<RunStore>();
 
     /// <inheritdoc/>
     public string KeyActual => "actual";
@@ -42,7 +35,7 @@ internal sealed class RunStore : IRunStore
     public string KeySut => "SystemUnderTest";
 
     /// <inheritdoc/>
-    public string? TestName => this.scope?.TestName;
+    public string? TestName => scope?.TestName;
 
     /// <summary>
     /// Gets or sets the actual value.
@@ -87,7 +80,7 @@ internal sealed class RunStore : IRunStore
         var oldValue = !containsKey ? null : this.store[key];
         this.store[key] = item;
 
-        this.scope.EventBus?.Publish(this, new RunStoreDataStoredEventBusEventArgs(key, item, !containsKey, oldValue));
+        scope.EventBus?.Publish(this, new RunStoreDataStoredEventBusEventArgs(key, item, !containsKey, oldValue));
 
         return this;
     }
@@ -102,7 +95,7 @@ internal sealed class RunStore : IRunStore
     public IRunStore StoreLog(string log)
     {
         string keyTime = DateTime.Now.ToString("HH:mm:ss.ffffff", CultureInfo.InvariantCulture);
-        string uniqueGen = Guid.NewGuid().ToString("N").Substring(0, 8);
+        string uniqueGen = Guid.NewGuid().ToString("N")[..8];
         string key = $"{keyTime}_{uniqueGen}";
         return this.Store(key, log);
     }
@@ -174,12 +167,12 @@ internal sealed class RunStore : IRunStore
     /// <inheritdoc/>
     public object? ReadObject(string key)
     {
-        if (!this.store.ContainsKey(key))
+        if (!this.store.TryGetValue(key, out object? value))
         {
             return null;
         }
 
-        return this.store[key];
+        return value;
     }
 
     /// <inheritdoc/>
