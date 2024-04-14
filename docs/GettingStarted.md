@@ -24,3 +24,36 @@
 * Consider using a memory leak analysis tool or directly a supporting nuget package.
   * (no own experience yet:) https://www.jetbrains.com/dotmemory/unit/ | https://www.nuget.org/packages/JetBrains.DotMemoryUnit/
   * Optional: SINUS supports you in finding memory leaks for browser and spinned up system-under-test-instances. Additionally zombie chrome processes can be observed and also the test results folder for the amount of log folders.
+
+```
+// <copyright file="SimpleBrowserTests.cs" company="WebNativeDEV">
+// Copyright (c) Daniel Kienböck. All Rights Reserved. Licensed under the MIT License. See LICENSE in the project root for license information.
+// </copyright>
+
+namespace WebNativeDEV.SINUS.Tests;
+
+using FluentAssertions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using WebNativeDEV.SINUS.Core.Assertions;
+using WebNativeDEV.SINUS.Core.MsTest;
+using WebNativeDEV.SINUS.Core.UITesting.Model;
+using WebNativeDEV.SINUS.Core.Utils;
+using WebNativeDEV.SINUS.MsTest;
+using WebNativeDEV.SINUS.SystemUnderTest;
+
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'Type_or_Member'.
+#pragma warning disable SA1600 // Elements should be documented
+
+[TestClass]
+public class SimpleBrowserTests : TestBase
+{
+    [TestMethod]
+    public void Given_ABlankWebsite_When_StoringTheTitle_Then_ItShouldNotBeNull()
+        => this.Test(r => r
+            .GivenABrowserAt(("empty page", "about:blank"))
+            .When("storing the title", (browser, data) => data.StoreActual(browser?.Title))
+            .Then("it should equal to the real title", (browser, data) => Assert.IsNotNull(data.ReadActual<string>())));
+}
+```
+
+Consider that the project's unit test project demonstrate all capabilities.

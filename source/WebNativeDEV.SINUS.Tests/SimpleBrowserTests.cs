@@ -21,6 +21,7 @@ public class SimpleBrowserTests : TestBase
 {
     private const string SimpleViewTitle = "SINUS TestSystem";
     private readonly (string?, string?) simpleView = ("SimpleView", "/simpleView");
+    private readonly BrowserFactoryOptions optionEdge = new BrowserFactoryOptions(true, true, SupportedWebDriver.Edge);
 
     [TestMethod]
     public void Given_AWebsite_When_CreatingScreenshot_Then_NoExceptionShouldOccur()
@@ -28,6 +29,14 @@ public class SimpleBrowserTests : TestBase
             .GivenASystemAndABrowserAtDefaultEndpoint<Program>(this.simpleView)
             .When("making a screenshot", (browser, data) => browser.TakeScreenshot())
             .ThenNoError()).Should().BeSuccessful();
+
+    [TestMethod]
+    public void Given_AWebsiteInEdge_When_CreatingScreenshot_Then_NoExceptionShouldOccur()
+    => this.Test(r => r
+        .GivenASystemAndABrowserAtDefaultEndpoint<Program>(this.simpleView, optionEdge)
+        .When("making a screenshot", (browser, data) => browser.TakeScreenshot())
+        .ThenNoError()).Should().BeSuccessful();
+
 
     [TestMethod]
     public void Given_AWebsiteOnRandomEndpoint_When_CreatingScreenshot_Then_NoExceptionShouldOccur()
@@ -43,6 +52,14 @@ public class SimpleBrowserTests : TestBase
             .When("storing the title", (browser, data) => data.StoreActual(browser?.Title))
             .Then("it should equal to the real title", (browser, data) => data.Should().ActualBe(SimpleViewTitle)));
 
+
+    [TestMethod]
+    public void Given_AWebsiteInEdge_When_StoringTheTitle_Then_ItShouldBeCorrect()
+        => this.Test(r => r
+            .GivenASystemAndABrowserAtDefaultEndpoint<Program>(this.simpleView, optionEdge)
+            .When("storing the title", (browser, data) => data.StoreActual(browser?.Title))
+            .Then("it should equal to the real title", (browser, data) => data.Should().ActualBe(SimpleViewTitle)));
+
     [TestMethod]
     public void Given_AWebsiteOnRandomEndpoint_When_StoringTheTitle_Then_ItShouldBeCorrect()
         => this.Test(r => r
@@ -51,7 +68,7 @@ public class SimpleBrowserTests : TestBase
             .Then("it should equal to the real title", (browser, data) => data.Should().ActualBe(SimpleViewTitle)));
 
     [TestMethod]
-    public void Given_ABlankWebsiteNotHeadless_When_StoringTheTitle_Then_ItShouldNotBeNull()
+    public void Given_ABlankWebsiteInChromeNotHeadless_When_StoringTheTitle_Then_ItShouldNotBeNull()
         => this.Test(r => r
             .GivenABrowserAt(
                 ("empty page", "about:blank"),
@@ -59,6 +76,21 @@ public class SimpleBrowserTests : TestBase
                 {
                     Headless = false,
                     IgnoreSslErrors = false,
+                    WebDriver = SupportedWebDriver.Chrome,
+                })
+            .When("storing the title", (browser, data) => data.StoreActual(browser?.Title))
+            .Then("it should equal to the real title", (browser, data) => Assert.IsNotNull(data.ReadActual<string>())));
+
+    [TestMethod]
+    public void Given_ABlankWebsiteInEdgeNotHeadless_When_StoringTheTitle_Then_ItShouldNotBeNull()
+        => this.Test(r => r
+            .GivenABrowserAt(
+                ("empty page", "about:blank"),
+                new BrowserFactoryOptions()
+                {
+                    Headless = false,
+                    IgnoreSslErrors = false,
+                    WebDriver = SupportedWebDriver.Edge,
                 })
             .When("storing the title", (browser, data) => data.StoreActual(browser?.Title))
             .Then("it should equal to the real title", (browser, data) => Assert.IsNotNull(data.ReadActual<string>())));

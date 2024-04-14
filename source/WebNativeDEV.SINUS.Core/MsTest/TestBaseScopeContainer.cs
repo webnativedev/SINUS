@@ -142,9 +142,14 @@ public class TestBaseScopeContainer
     internal ILoggerFactory LoggerFactory => TestBaseSingletonContainer.LoggerFactory;
 
     /// <summary>
-    /// Gets the web driver factory.
+    /// Gets the web driver factory chrome.
     /// </summary>
-    internal IWebDriverFactory WebDriverFactory => TestBaseSingletonContainer.WebDriverFactory;
+    internal IWebDriverFactory WebDriverFactoryChrome => TestBaseSingletonContainer.WebDriverFactoryChrome;
+
+    /// <summary>
+    /// Gets the web driver factory edge.
+    /// </summary>
+    internal IWebDriverFactory WebDriverFactoryEdge => TestBaseSingletonContainer.WebDriverFactoryEdge;
 
     /// <summary>
     /// Gets the browser factory.

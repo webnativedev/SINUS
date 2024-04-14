@@ -14,10 +14,12 @@ public class BrowserFactoryOptions
     /// </summary>
     /// <param name="headless">The headless option.</param>
     /// <param name="ignoreSslErrors">The ignore ssl option.</param>
-    public BrowserFactoryOptions(bool headless = true, bool ignoreSslErrors = true)
+    /// <param name="webDriver">The selected web driver to use.</param>
+    public BrowserFactoryOptions(bool headless = true, bool ignoreSslErrors = true, SupportedWebDriver webDriver = SupportedWebDriver.Chrome)
     {
         this.Headless = headless;
         this.IgnoreSslErrors = ignoreSslErrors;
+        this.WebDriver = webDriver;
     }
 
     /// <summary>
@@ -29,6 +31,11 @@ public class BrowserFactoryOptions
     /// Gets or sets a value indicating whether to ignore SSL errors in connection or not.
     /// </summary>
     public bool IgnoreSslErrors { get; set; }
+
+    /// <summary>
+    /// Gets or sets the selected web driver.
+    /// </summary>
+    public SupportedWebDriver WebDriver { get; set; }
 
     /// <summary>
     /// Prints the state of the options.

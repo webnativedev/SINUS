@@ -1,4 +1,4 @@
-﻿// <copyright file="ChromeWebDriverFactory.cs" company="WebNativeDEV">
+﻿// <copyright file="EdgeWebDriverFactory.cs" company="WebNativeDEV">
 // Copyright (c) Daniel Kienböck. All Rights Reserved. Licensed under the MIT License. See LICENSE in the project root for license information.
 // </copyright>
 
@@ -6,7 +6,7 @@ namespace WebNativeDEV.SINUS.Core.UITesting;
 
 using Microsoft.Extensions.Logging;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Edge;
 using System;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
 using WebNativeDEV.SINUS.Core.MsTest;
@@ -15,18 +15,18 @@ using WebNativeDEV.SINUS.Core.UITesting.Model;
 using WebNativeDEV.SINUS.MsTest;
 
 /// <summary>
-/// WebDriverFactory creating Chrome based web drivers.
+/// WebDriverFactory creating Edge based web drivers.
 /// </summary>
-internal sealed class ChromeWebDriverFactory : IWebDriverFactory
+internal sealed class EdgeWebDriverFactory : IWebDriverFactory
 {
     private readonly ILogger logger;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ChromeWebDriverFactory"/> class.
+    /// Initializes a new instance of the <see cref="EdgeWebDriverFactory"/> class.
     /// </summary>
-    public ChromeWebDriverFactory()
+    public EdgeWebDriverFactory()
     {
-        this.logger = TestBaseSingletonContainer.CreateLogger<ChromeWebDriverFactory>();
+        this.logger = TestBaseSingletonContainer.CreateLogger<EdgeWebDriverFactory>();
     }
 
     /// <inheritdoc/>
@@ -35,39 +35,38 @@ internal sealed class ChromeWebDriverFactory : IWebDriverFactory
         Ensure.NotNull(options, nameof(options));
         Ensure.NotNull(testBase, nameof(testBase));
 
-        this.logger.LogInformation("Create driver instance for chrome with options '{Options}'", options);
+        this.logger.LogInformation("Create driver instance for Edge with options '{Options}'", options);
 
 #pragma warning disable CA2000
-        ChromeDriverService service = ChromeDriverService.CreateDefaultService();
+        EdgeDriverService service = EdgeDriverService.CreateDefaultService();
         service.EnableVerboseLogging = true;
         service.EnableAppendLog = true;
         service.LogPath = Path.Combine(
             testBase.TestContext.TestRunResultsDirectory ?? ".",
-            $"chromedriverservices_{DateTime.Now:yyyy-MM-dd__HH-mm-ss-fffffff}.log");
+            $"edgedriverservices_{DateTime.Now:yyyy-MM-dd__HH-mm-ss-fffffff}.log");
 #pragma warning restore CA2000
 
-        this.logger.LogInformation("write chromedriverservice-logs to: {Path}", service.LogPath);
+        this.logger.LogInformation("write edgedriverservice-logs to: {Path}", service.LogPath);
 
-        var chromeOptions = new ChromeOptions
+        var edgeOptions = new EdgeOptions
         {
             AcceptInsecureCertificates = options.IgnoreSslErrors,
             PageLoadStrategy =
                 PageLoadStrategy.Eager, // wait until DomContentLoaded Event
         };
 
-        // https://chromium.googlesource.com/chromium/src/+/master/chrome/common/chrome_switches.cc
-        // https://www.selenium.dev/documentation/webdriver/browsers/chrome/#arguments
         if (options.IgnoreSslErrors)
         {
-            chromeOptions.AddArguments("--ignore-certificate-errors");
+            edgeOptions.AddArguments("--ignore-certificate-errors");
         }
 
         if (options.Headless)
         {
-            chromeOptions.AddArguments("--headless=chrome"); // or =new
+            edgeOptions.AddArgument("disable-gpu");
+            edgeOptions.AddArgument("headless");
         }
 
-        var driver = new ChromeDriver(service, chromeOptions);
+        var driver = new EdgeDriver(service, edgeOptions);
 
         driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(500);
 

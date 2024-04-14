@@ -33,7 +33,8 @@ public static class TestBaseSingletonContainer
                     });
                 });
 
-        WebDriverFactory = new ChromeWebDriverFactory();
+        WebDriverFactoryChrome = new ChromeWebDriverFactory();
+        WebDriverFactoryEdge = new EdgeWebDriverFactory();
         BrowserFactory = new BrowserFactory();
         ExecutionEngine = new ExecutionEngine();
         TestBaseUsageStatisticsManager = new TestBaseUsageStatisticsManager();
@@ -46,9 +47,14 @@ public static class TestBaseSingletonContainer
     public static ILoggerFactory LoggerFactory { get; set; }
 
     /// <summary>
-    /// Gets or sets the web driver factory.
+    /// Gets or sets the web driver factory chrome.
     /// </summary>
-    public static IWebDriverFactory WebDriverFactory { get; set; }
+    public static IWebDriverFactory WebDriverFactoryChrome { get; set; }
+
+    /// <summary>
+    /// Gets or sets the web driver factory edge.
+    /// </summary>
+    public static IWebDriverFactory WebDriverFactoryEdge { get; set; }
 
     /// <summary>
     /// Gets or sets the browser factory.
