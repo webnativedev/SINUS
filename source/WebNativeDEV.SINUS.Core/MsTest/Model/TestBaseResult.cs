@@ -13,29 +13,22 @@ using WebNativeDEV.SINUS.Core.MsTest.Contracts;
 /// <summary>
 /// Result of a test run.
 /// </summary>
-internal class TestBaseResult : ITestBaseResult
+/// <remarks>
+/// Initializes a new instance of the <see cref="TestBaseResult"/> class.
+/// </remarks>
+/// <param name="outcome">Execution result state.</param>
+/// <param name="scope">The instance to the dependency store.</param>
+/// <param name="exceptions">The exceptions if outcome fails.</param>
+internal class TestBaseResult(TestOutcome outcome, TestBaseScopeContainer scope, IList<Exception>? exceptions = null) : ITestBaseResult
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TestBaseResult"/> class.
-    /// </summary>
-    /// <param name="outcome">Execution result state.</param>
-    /// <param name="scope">The instance to the dependency store.</param>
-    /// <param name="exceptions">The exceptions if outcome fails.</param>
-    public TestBaseResult(TestOutcome outcome, TestBaseScopeContainer scope, IList<Exception>? exceptions = null)
-    {
-        this.Outcome = outcome;
-        this.Scope = scope;
-        this.Exceptions = exceptions;
-    }
+    /// <inheritdoc/>
+    public TestOutcome Outcome { get; } = outcome;
 
     /// <inheritdoc/>
-    public TestOutcome Outcome { get; }
-
-    /// <inheritdoc/>
-    public IList<Exception>? Exceptions { get; }
+    public IList<Exception>? Exceptions { get; } = exceptions;
 
     /// <summary>
     /// Gets the test base instance.
     /// </summary>
-    internal TestBaseScopeContainer Scope { get; }
+    internal TestBaseScopeContainer Scope { get; } = scope;
 }

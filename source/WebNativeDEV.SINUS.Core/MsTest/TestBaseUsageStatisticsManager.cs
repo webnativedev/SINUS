@@ -6,6 +6,7 @@ namespace WebNativeDEV.SINUS.Core.MsTest;
 
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using WebNativeDEV.SINUS.Core.MsTest.Contracts;
@@ -17,7 +18,7 @@ using WebNativeDEV.SINUS.MsTest;
 /// </summary>
 internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
 {
-    private readonly Dictionary<string, Dictionary<string, object>> usages = [];
+    private readonly ConcurrentDictionary<string, Dictionary<string, object>> usages = [];
 
     /// <inheritdoc/>
     public string AttributeBrowserCreated => "browser created";
@@ -73,14 +74,17 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
     {
         try
         {
-            this.usages.Add(scope.TestName, []);
-        }
-        catch (ArgumentException exc)
-        {
-            throw new InvalidDataException("test name already stored in usage manager, please rename your test", exc);
-        }
+            if (!this.usages.TryAdd(scope.TestName, []))
+            {
+                throw new InvalidDataException("test name already stored in usage manager, please rename your test");
+            }
 
-        this.usages[scope.TestName].Add("scope", scope);
+            this.usages[scope.TestName].Add("scope", scope);
+        }
+        catch (Exception outerExc)
+        {
+            throw new InvalidDataException("error registering usage information to statistics manager", outerExc);
+        }
 
         this.StoreAttribute<BusinessRequirementAttribute>(
             this.AttributeBusinessRequirement,

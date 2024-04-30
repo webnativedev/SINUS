@@ -194,6 +194,12 @@ internal sealed class ExecutionEngine : IExecutionEngine
                     {
                         foreach(Exception innerExc in aggregateException.InnerExceptions)
                         {
+                            this.logger.LogError(
+                                innerExc,
+                                "Inner-Exception detail in execution of {Category} - {ExcClass}: {ExcMessage}",
+                                parameter.RunCategory,
+                                innerExc.GetType().ToString(),
+                                innerExc.Message);
                             this.logger.LogError("Inner-Stacktrace:\n{StackTrace}", innerExc.StackTrace);
                         }
                     }

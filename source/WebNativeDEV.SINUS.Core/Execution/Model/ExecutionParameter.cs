@@ -39,12 +39,12 @@ internal class ExecutionParameter
     /// <summary>
     /// Gets the actions to execute.
     /// </summary>
-    public IList<Action<ExecutionSetupParameters>> SetupActions { get; } = new List<Action<ExecutionSetupParameters>>();
+    public IList<Action<ExecutionSetupParameters>> SetupActions { get; } = [];
 
     /// <summary>
     /// Gets the actions to execute.
     /// </summary>
-    public IList<Action> Actions { get; } = new List<Action>();
+    public IList<Action> Actions { get; } = [];
 
     /// <summary>
     /// Gets or sets the reference to the runner.
@@ -69,7 +69,7 @@ internal class ExecutionParameter
     /// <summary>
     /// Gets the arguments to hand-over in the creation of a system under test.
     /// </summary>
-    public IList<string> SutArgs { get; } = new List<string>();
+    public IList<string> SutArgs { get; } = [];
 
     /// <summary>
     /// Gets or sets an endpoint address for the system under test.
