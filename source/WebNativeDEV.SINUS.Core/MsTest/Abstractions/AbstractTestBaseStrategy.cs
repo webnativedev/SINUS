@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts.Runner;
 using WebNativeDEV.SINUS.Core.FluentAPI.Model;
+using WebNativeDEV.SINUS.Core.Logging;
 using WebNativeDEV.SINUS.Core.MsTest.Contracts;
 using WebNativeDEV.SINUS.Core.MsTest.Model;
 using WebNativeDEV.SINUS.MsTest;
@@ -95,7 +96,7 @@ public abstract class AbstractTestBaseStrategy : ITestBaseStrategy
             logger.LogWarning(
                 "The test result is evaluated as inconclusive for test '{TestName}', because it was rated 'only-prepared' when seeing no 'When'-part. (TaskId: {TaskId}, ThreadId: {ThreadId})",
                 scope.TestName,
-                Task.CurrentId?.ToString(CultureInfo.InvariantCulture) ?? "<null>",
+                Task.CurrentId?.ToString(CultureInfo.InvariantCulture) ?? LoggerConstants.NullString,
                 Environment.CurrentManagedThreadId);
             if (scope.ExpectedOutcome != TestOutcome.Inconclusive && shouldThrow)
             {
@@ -114,7 +115,7 @@ public abstract class AbstractTestBaseStrategy : ITestBaseStrategy
                 scope.TestName,
                 scope.Exceptions.Count,
                 scope.Exceptions.GetContentAsString(),
-                Task.CurrentId?.ToString(CultureInfo.InvariantCulture) ?? "<null>",
+                Task.CurrentId?.ToString(CultureInfo.InvariantCulture) ?? LoggerConstants.NullString,
                 Environment.CurrentManagedThreadId);
 
             if (scope.ExpectedOutcome != TestOutcome.Failure && shouldThrow)
@@ -131,7 +132,7 @@ public abstract class AbstractTestBaseStrategy : ITestBaseStrategy
             "The test result is evaluated as successful for test '{TestName}'. (Checked Exceptions: {CheckedExceptionCount}, TaskId: {TaskId}, ThreadId: {ThreadId})",
             scope.TestName,
             scope.Exceptions.Count,
-            Task.CurrentId?.ToString(CultureInfo.InvariantCulture) ?? "<null>",
+            Task.CurrentId?.ToString(CultureInfo.InvariantCulture) ?? LoggerConstants.NullString,
             Environment.CurrentManagedThreadId);
     }
 

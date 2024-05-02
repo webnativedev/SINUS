@@ -10,10 +10,12 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 using WebNativeDEV.SINUS.Core.FluentAPI.Events;
 using WebNativeDEV.SINUS.Core.FluentAPI.Model;
+using WebNativeDEV.SINUS.Core.Logging;
 using WebNativeDEV.SINUS.Core.MsTest;
 
 /// <summary>
@@ -217,9 +219,9 @@ internal sealed class RunStore(TestBaseScopeContainer scope) : IRunStore
     {
         this.logger.LogInformation(
             "| {Key}: {Value} (Type: {Type})",
-            key ?? "<null>",
-            value ?? "<null>",
-            value?.GetType()?.FullName ?? "<null>");
+            key ?? LoggerConstants.NullString,
+            value ?? LoggerConstants.NullString,
+            value?.GetType()?.FullName ?? LoggerConstants.NullString);
 
         return this;
     }
@@ -281,12 +283,12 @@ internal sealed class RunStore(TestBaseScopeContainer scope) : IRunStore
         var builder = new StringBuilder(10000);
 
         builder.AppendLine("Content dump:");
-        builder.AppendLine("+----------------------------");
+        builder.AppendLine(LoggerConstants.SeparationLine);
         builder.AppendLine(CultureInfo.InvariantCulture, $"| Count: {data.Keys.Count}");
-        builder.AppendLine("+----------------------------");
+        builder.AppendLine(LoggerConstants.SeparationLine);
 
         IEnumerable<KeyValuePair<string, string>> dataList = data
-            .Select(x => new KeyValuePair<string, string>(x.Key, x.Value?.ToString() ?? "<null>"))
+            .Select(x => new KeyValuePair<string, string>(x.Key, x.Value?.ToString() ?? LoggerConstants.NullString))
             .ToList();
 
         switch (order)
@@ -303,11 +305,11 @@ internal sealed class RunStore(TestBaseScopeContainer scope) : IRunStore
 
         foreach (var dataItem in dataList)
         {
-            string typeName = dataItem.Value?.GetType()?.FullName ?? "<null>";
+            string typeName = dataItem.Value?.GetType()?.FullName ?? LoggerConstants.NullString;
             builder.AppendLine(CultureInfo.InvariantCulture, $"| {dataItem.Key}: {dataItem.Value} (Type: {typeName})");
         }
 
-        builder.AppendLine("+----------------------------");
+        builder.AppendLine(LoggerConstants.SeparationLine);
 
         this.logger.LogInformation("{StoreContent}", builder.ToString());
 

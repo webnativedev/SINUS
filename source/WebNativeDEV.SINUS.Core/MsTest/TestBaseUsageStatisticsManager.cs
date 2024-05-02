@@ -9,6 +9,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using WebNativeDEV.SINUS.Core.Logging;
 using WebNativeDEV.SINUS.Core.MsTest.Contracts;
 using WebNativeDEV.SINUS.Core.Requirements;
 using WebNativeDEV.SINUS.MsTest;
@@ -145,8 +146,7 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
         }
 
         var usageLogger = TestBaseSingletonContainer.CreateLogger<TestBase>();
-        usageLogger.LogInformation("+--------------------------------");
-        usageLogger.LogInformation("| Tests: {Count}", data.Count);
+        usageLogger.LogInformation("{Sparator}\n| Tests: {Count}", LoggerConstants.SeparationLine, data.Count);
 
         foreach (var (title, browserCreated, browserDisposed, wafCreated, wafDisposed) in data)
         {
@@ -181,7 +181,7 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
             usageLogger.LogInformation("| ({BrowserInfo}|{WafInfo}) {Id}", browserInfo, wafInfo, title);
         }
 
-        usageLogger.LogInformation("+--------------------------------");
+        usageLogger.LogInformation(LoggerConstants.SeparationLine);
         usageLogger.LogInformation(" ");
 
         var scopes = this.usages.Select(x => x.Value.GetValueOrDefault("scope") as TestBaseScopeContainer);
@@ -267,7 +267,7 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
         }
 
         var usageLogger = TestBaseSingletonContainer.CreateLogger<TestBase>();
-        usageLogger.LogInformation("+--------------------------------");
+        usageLogger.LogInformation(LoggerConstants.SeparationLine);
         usageLogger.LogInformation("| Tests Including {Category}: {Count}", category, data.Count);
 
         foreach (var (title, _, disposed) in data)
@@ -278,7 +278,7 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
             usageLogger.LogInformation("| ({DisposedInfo}) {Id}", disposedInfo, title);
         }
 
-        usageLogger.LogInformation("+--------------------------------");
+        usageLogger.LogInformation(LoggerConstants.SeparationLine);
         usageLogger.LogInformation(" ");
     }
 
@@ -330,7 +330,7 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
         }
 
         var usageLogger = TestBaseSingletonContainer.CreateLogger<TestBase>();
-        usageLogger.LogInformation("+--------------------------------");
+        usageLogger.LogInformation(LoggerConstants.SeparationLine);
         usageLogger.LogInformation("| {Title} Requirements: {Count}", title, data.Count);
 
         foreach (var item in data)
@@ -342,7 +342,7 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
             }
         }
 
-        usageLogger.LogInformation("+--------------------------------");
+        usageLogger.LogInformation(LoggerConstants.SeparationLine);
         usageLogger.LogInformation(" ");
     }
 

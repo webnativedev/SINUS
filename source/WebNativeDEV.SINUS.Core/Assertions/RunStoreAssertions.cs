@@ -9,6 +9,7 @@ using FluentAssertions.Execution;
 using FluentAssertions.Primitives;
 using System.Diagnostics.CodeAnalysis;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
+using WebNativeDEV.SINUS.Core.Logging;
 
 /// <summary>
 /// Fluent Assertions context for RunStore providing check methods.
@@ -47,8 +48,8 @@ public class RunStoreAssertions(IRunStore instance) :
             (expected?.Equals(actual) ?? false))
          .FailWith(
             "Expected '{0}', but Actual '{1}'",
-            expected?.ToString() ?? "null",
-            actual?.ToString() ?? "null");
+            expected?.ToString() ?? LoggerConstants.NullString,
+            actual?.ToString() ?? LoggerConstants.NullString);
 
         return new AndConstraint<RunStoreAssertions>(this);
     }
@@ -64,7 +65,7 @@ public class RunStoreAssertions(IRunStore instance) :
         Execute.Assertion
          .BecauseOf(because, becauseArgs)
          .ForCondition(this.Subject.Actual == null)
-         .FailWith("Expected null, but Actual '{0}'", this.Subject.Actual ?? "null");
+         .FailWith("Expected null, but Actual '{0}'", this.Subject.Actual ?? LoggerConstants.NullString);
 
         return new AndConstraint<RunStoreAssertions>(this);
     }
@@ -80,7 +81,7 @@ public class RunStoreAssertions(IRunStore instance) :
         Execute.Assertion
          .BecauseOf(because, becauseArgs)
          .ForCondition(this.Subject.Actual != null)
-         .FailWith("Expected non-null, but Actual '{0}'", this.Subject.Actual ?? "null");
+         .FailWith("Expected non-null, but Actual '{0}'", this.Subject.Actual ?? LoggerConstants.NullString);
 
         return new AndConstraint<RunStoreAssertions>(this);
     }

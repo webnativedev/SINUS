@@ -54,4 +54,36 @@ public class RunStoreTests : TestBase
                 data => data.Should().ActualBeNotNull(),
                 data => data.ReadObject(data.KeyActual).Should().NotBeNull())
             .DebugPrint(RunStorePrintOrder.KeySorted, nameof(scenario), scenario));
+
+    [TestMethod]
+    [DynamicData(
+        nameof(ValidValues),
+        DynamicDataDisplayName = nameof(DefaultDataDisplayName))]
+    public void Given_ARunStore_When_AddingValues_Then_TheyShouldBeStoredAndDisplayedUnsorted(object? value, string scenario)
+        => this.Test(scenario, r => r
+            .Given()
+            .When(data => data.Actual = value)
+            .Then(
+                data => data.Actual.Should().NotBeNull(),
+                data => data.ReadActualObject().Should().NotBeNull(),
+                data => data[data.KeyActual].Should().NotBeNull(),
+                data => data.Should().ActualBeNotNull(),
+                data => data.ReadObject(data.KeyActual).Should().NotBeNull())
+            .DebugPrint(RunStorePrintOrder.Unsorted, nameof(scenario), scenario));
+
+    [TestMethod]
+    [DynamicData(
+        nameof(ValidValues),
+        DynamicDataDisplayName = nameof(DefaultDataDisplayName))]
+    public void Given_ARunStore_When_AddingValues_Then_TheyShouldBeStoredAndDisplayedSortedByValue(object? value, string scenario)
+        => this.Test(scenario, r => r
+            .Given()
+            .When(data => data.Actual = value)
+            .Then(
+                data => data.Actual.Should().NotBeNull(),
+                data => data.ReadActualObject().Should().NotBeNull(),
+                data => data[data.KeyActual].Should().NotBeNull(),
+                data => data.Should().ActualBeNotNull(),
+                data => data.ReadObject(data.KeyActual).Should().NotBeNull())
+            .DebugPrint(RunStorePrintOrder.ValueSorted, nameof(scenario), scenario));
 }

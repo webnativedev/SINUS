@@ -142,7 +142,6 @@ internal sealed class ExecutionEngine : IExecutionEngine
 
         var actionCount = actions.Count;
 
-        // I believe the warning is wrong, so I disabled it
         if (!parameter.RunActions || actionCount == 0)
         {
             string skipDescription = namings.GetReadableDescription(
@@ -182,27 +181,12 @@ internal sealed class ExecutionEngine : IExecutionEngine
                 }
                 catch (Exception exc)
                 {
-                    this.logger.LogError(
+                    this.logger.LogErrorRec(
                         exc,
                         "Exception occured in execution of {Category} - {ExcClass}: {ExcMessage}",
                         parameter.RunCategory,
                         exc.GetType().ToString(),
                         exc.Message);
-                    this.logger.LogError("Stacktrace:\n{StackTrace}", exc.StackTrace);
-
-                    if(exc is AggregateException aggregateException)
-                    {
-                        foreach(Exception innerExc in aggregateException.InnerExceptions)
-                        {
-                            this.logger.LogError(
-                                innerExc,
-                                "Inner-Exception detail in execution of {Category} - {ExcClass}: {ExcMessage}",
-                                parameter.RunCategory,
-                                innerExc.GetType().ToString(),
-                                innerExc.Message);
-                            this.logger.LogError("Inner-Stacktrace:\n{StackTrace}", innerExc.StackTrace);
-                        }
-                    }
 
                     returnValue.Exceptions.Add(exc);
                 }
@@ -250,7 +234,7 @@ internal sealed class ExecutionEngine : IExecutionEngine
             }
             catch (Exception exception)
             {
-                this.logger.LogError(
+                this.logger.LogErrorRec(
                     exception,
                     "Creating WebApplication failed\n{Exception}",
                     exception.Message);

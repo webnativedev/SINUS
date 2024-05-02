@@ -56,7 +56,7 @@ internal class StaticTesterContext : TestContext
     private void WriteLineImplementation(string? format, params object?[] args)
     {
         #pragma warning disable CA2254 // Vorlage muss ein statischer Ausdruck sein
-        this.logger.LogInformation($"StaticTestContext: {format ?? string.Empty}", args);
+        this.logger.LogInformation("StaticTestContext: " + (format ?? string.Empty), args);
         #pragma warning restore CA2254 // Vorlage muss ein statischer Ausdruck sein
     }
 }

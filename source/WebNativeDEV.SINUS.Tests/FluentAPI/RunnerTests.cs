@@ -30,7 +30,7 @@ public class RunnerTests : TestBase
     public void Given_ARunnerWithAnErrorInWhen_When_ExceptionIsThrown_Then_ThisErrorShouldBeVisible()
     {
         this.Test(r => r
-            .Given("An setup step with an error")
+            .Given("An setup step without an error")
             .When("An excecution occurs", data => throw new Exception("Execution failed"))
             .ThenShouldHaveFailedWith<Exception>());
     }
@@ -39,7 +39,7 @@ public class RunnerTests : TestBase
     public void Given_ARunnerWithAnErrorInWhen_When_ExceptionIsThrown_Then_ThisErrorShouldBeExpected()
     {
         this.Test(r => r
-            .Given("An setup step with an error")
+            .Given("An setup step without an error")
             .When("An excecution occurs", data => throw new Exception("Execution failed"))
             .ThenNoError()
             .ExpectFail());
@@ -49,7 +49,7 @@ public class RunnerTests : TestBase
     public void Given_ARunnerWithAnErrorInThen_When_ExceptionIsThrown_Then_ThisErrorShouldBeExpected()
     {
         this.Test(r => r
-            .Given("An setup step with an error")
+            .Given("An setup step without an error")
             .When("An excecution occurs", data => data.PrintStore())
             .Then("The error should be visible", data => throw new Exception("Verification failed"))
             .ExpectFail());
@@ -59,7 +59,7 @@ public class RunnerTests : TestBase
     public void Given_ARunnerWithAnErrorInThen2x_When_ExceptionIsThrown_Then_ThisErrorShouldBeExpected()
     {
         this.Test(r => r
-            .Given("An setup step with an error")
+            .Given("An setup step without an error")
             .When("An excecution occurs", data => data.PrintStore())
             .Then(
                 "The error should be visible",

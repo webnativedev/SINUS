@@ -7,6 +7,7 @@ namespace WebNativeDEV.SINUS.Tests;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebNativeDEV.SINUS.Core.Assertions;
+using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.Core.UITesting.Model;
 using WebNativeDEV.SINUS.Core.Utils;
@@ -177,7 +178,7 @@ public class SimpleBrowserTests : TestBase
                 data.Store("element active: " + (browser.FindActiveElement()?.Text ?? "<none>"));
             })
             .Then("no exception should be thrown")
-            .DebugPrint());
+            .DebugPrint(RunStorePrintOrder.KeySorted));
     }
 
     [TestMethod]

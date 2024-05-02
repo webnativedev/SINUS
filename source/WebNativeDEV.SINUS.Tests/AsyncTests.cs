@@ -15,6 +15,7 @@ using System.Runtime.InteropServices.ObjectiveC;
 using System.Threading;
 using WebNativeDEV.SINUS.Core.Assertions;
 using WebNativeDEV.SINUS.Core.FluentAPI.Model;
+using WebNativeDEV.SINUS.Core.Logging;
 using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.MsTest;
 
@@ -42,7 +43,7 @@ public class AsyncTests : TestBase
 
         public override string ToString()
         {
-            return this.Message ?? "Message: <null>";
+            return this.Message ?? $"Message: {LoggerConstants.NullString}";
         }
     }
 
@@ -52,7 +53,7 @@ public class AsyncTests : TestBase
 
         public override string ToString()
         {
-            return this.Message ?? "Message: <null>";
+            return this.Message ?? $"Message: {LoggerConstants.NullString}";
         }
     }
 
