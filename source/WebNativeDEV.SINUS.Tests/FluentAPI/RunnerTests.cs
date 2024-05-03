@@ -7,6 +7,7 @@ namespace WebNativeDEV.SINUS.Tests.FluentAPI;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 using WebNativeDEV.SINUS.Core.Requirements;
 using WebNativeDEV.SINUS.MsTest;
 
@@ -29,7 +30,7 @@ public class RunnerTests : TestBase
     public void Given_ARunnerWithAnErrorInWhen_When_ExceptionIsThrown_Then_ThisErrorShouldBeVisible()
     {
         this.Test(r => r
-            .Given("An setup step with an error")
+            .Given("An setup step without an error")
             .When("An excecution occurs", data => throw new Exception("Execution failed"))
             .ThenShouldHaveFailedWith<Exception>());
     }
@@ -38,7 +39,7 @@ public class RunnerTests : TestBase
     public void Given_ARunnerWithAnErrorInWhen_When_ExceptionIsThrown_Then_ThisErrorShouldBeExpected()
     {
         this.Test(r => r
-            .Given("An setup step with an error")
+            .Given("An setup step without an error")
             .When("An excecution occurs", data => throw new Exception("Execution failed"))
             .ThenNoError()
             .ExpectFail());
@@ -48,7 +49,7 @@ public class RunnerTests : TestBase
     public void Given_ARunnerWithAnErrorInThen_When_ExceptionIsThrown_Then_ThisErrorShouldBeExpected()
     {
         this.Test(r => r
-            .Given("An setup step with an error")
+            .Given("An setup step without an error")
             .When("An excecution occurs", data => data.PrintStore())
             .Then("The error should be visible", data => throw new Exception("Verification failed"))
             .ExpectFail());
@@ -58,7 +59,7 @@ public class RunnerTests : TestBase
     public void Given_ARunnerWithAnErrorInThen2x_When_ExceptionIsThrown_Then_ThisErrorShouldBeExpected()
     {
         this.Test(r => r
-            .Given("An setup step with an error")
+            .Given("An setup step without an error")
             .When("An excecution occurs", data => data.PrintStore())
             .Then(
                 "The error should be visible",
@@ -75,8 +76,7 @@ public class RunnerTests : TestBase
             .When("An excecution occurs", data => data.PrintStore())
             .Then(
                 "The error should be visible",
-                data => throw new Exception("Verification failed"),
-                data => Assert.Fail("Error happens here"))
+                data => throw new Exception("Verification failed"))
             .ExpectFail());
     }
 
@@ -140,31 +140,24 @@ public class RunnerTests : TestBase
             })
             .Then(
                 "All data could be read",
-                data => Assert.AreEqual(1.555d, data.Read<double>()),
-                data => Assert.AreEqual(2, data.Read<int>("key2")),
-                data => Assert.AreEqual("sut", data.ReadSut<string>()),
-                data => Assert.AreEqual("sut3", data.ReadActual<string>()),
-                data => Assert.AreEqual(5, data["key5"]))
+                data => data.Read<double>().Should().Be(1.555d),
+                data => data.Read<int>("key2").Should().Be(2),
+                data => data.ReadSut<string>().Should().Be("sut"),
+                data => data.ReadActual<string>().Should().Be("sut3"),
+                data => data["key5"].Should().Be(5))
             .DebugPrint());
     }
 
     [TestMethod]
     public void Given_ARunnerWithRunStore_When_StoringActualWithNoMethod_Then_NoError()
     {
-        try
-        {
-            this.Test(r => r
-                .Given("A RunStore")
-                .When(
-                    "saving some data with null as calculation function",
-                    data => data.StoreActual<string>(null!))
-                .ThenNoError("no error")
-                .DebugPrint());
-        }
-        catch
-        {
-            Assert.Fail("Exception thrown while storing null");
-        }
+        this.Test(r => r
+            .Given("A RunStore")
+            .When(
+                "saving some data with null as calculation function",
+                data => data.StoreActual<string>(null!))
+            .ThenNoError("no error")
+            .DebugPrint()).Outcome.Should().Be(TestOutcome.Success);
     }
 
     [TestMethod]

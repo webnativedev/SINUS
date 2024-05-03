@@ -133,7 +133,7 @@ public static class SinusUtils
             maxAgeOfProessInMinutes);
     }
 
-    private static IList<Process> GetChromeDriverProcesses(int maxAgeOfProessInMinutes)
+    private static List<Process> GetChromeDriverProcesses(int maxAgeOfProessInMinutes)
         => Process.GetProcesses().Where(
             x => x.ProcessName.Contains("chromedriver", StringComparison.InvariantCultureIgnoreCase)
             && x.StartTime < DateTime.Now.AddMinutes(-maxAgeOfProessInMinutes))

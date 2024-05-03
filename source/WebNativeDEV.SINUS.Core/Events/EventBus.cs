@@ -14,7 +14,7 @@ using WebNativeDEV.SINUS.Core.Events.EventArguments;
 /// </summary>
 internal class EventBus : IEventBus
 {
-    private readonly Dictionary<Type, List<Action<object, EventBusEventArgs>>> handlers = new();
+    private readonly Dictionary<Type, List<Action<object, EventBusEventArgs>>> handlers = [];
 
     /// <inheritdoc/>
     public void Publish<TEventBusEventArgs>(object sender, TEventBusEventArgs e)
@@ -37,7 +37,7 @@ internal class EventBus : IEventBus
     {
         if (!this.handlers.ContainsKey(typeof(TEventBusEventArgs)))
         {
-            this.handlers.Add(typeof(TEventBusEventArgs), new List<Action<object, EventBusEventArgs>>());
+            this.handlers.Add(typeof(TEventBusEventArgs), []);
         }
 
         this.handlers[typeof(TEventBusEventArgs)].Add(handler);

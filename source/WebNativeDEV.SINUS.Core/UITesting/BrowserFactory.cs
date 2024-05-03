@@ -5,6 +5,7 @@
 namespace WebNativeDEV.SINUS.Core.UITesting;
 
 using Microsoft.Extensions.Logging;
+using OpenQA.Selenium;
 using System.Diagnostics.CodeAnalysis;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
 using WebNativeDEV.SINUS.Core.MsTest;
@@ -43,7 +44,14 @@ internal sealed class BrowserFactory : IBrowserFactory, IDisposable
         scope = Ensure.NotNull(scope);
 
         this.logger.LogInformation("Create Browser requested for {Url}", url);
-        var driver = TestBaseSingletonContainer.WebDriverFactory.CreateWebDriver(
+
+        IWebDriverFactory factory = (options?.WebDriver ?? SupportedWebDriver.Chrome) switch {
+            SupportedWebDriver.Chrome => TestBaseSingletonContainer.WebDriverFactoryChrome,
+            SupportedWebDriver.Edge => TestBaseSingletonContainer.WebDriverFactoryEdge,
+            _ => TestBaseSingletonContainer.WebDriverFactoryChrome,
+        };
+
+        IWebDriver driver = factory.CreateWebDriver(
             options ?? new BrowserFactoryOptions()
             {
                 Headless = true,

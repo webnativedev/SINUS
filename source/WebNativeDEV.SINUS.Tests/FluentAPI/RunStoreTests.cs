@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using WebNativeDEV.SINUS.Core.Assertions;
+using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.MsTest;
 
@@ -20,13 +21,13 @@ using WebNativeDEV.SINUS.MsTest;
 public class RunStoreTests : TestBase
 {
     public static IEnumerable<object?[]> ValidValues
-    => new[]
-    {
-        new object?[] { 1, "IntTest" },
-        new object?[] { "str", "StringTest" },
-        new object?[] { new object(), "ObjectTest" },
-        new object?[] { new DateTime(2023, 1, 1, 1, 1, 1, 1, 1, DateTimeKind.Utc), "DateTimeTest" },
-    };
+    =>
+    [
+        [1, "IntTest"],
+        ["str", "StringTest"],
+        [new object(), "ObjectTest"],
+        [new DateTime(2023, 1, 1, 1, 1, 1, 1, 1, DateTimeKind.Utc), "DateTimeTest"],
+    ];
 
     /// <summary>
     /// Dynamic Data Display Name calculator proxying to TestNamingConventionManager.
@@ -52,5 +53,37 @@ public class RunStoreTests : TestBase
                 data => data[data.KeyActual].Should().NotBeNull(),
                 data => data.Should().ActualBeNotNull(),
                 data => data.ReadObject(data.KeyActual).Should().NotBeNull())
-            .DebugPrint(nameof(scenario), scenario));
+            .DebugPrint(RunStorePrintOrder.KeySorted, nameof(scenario), scenario));
+
+    [TestMethod]
+    [DynamicData(
+        nameof(ValidValues),
+        DynamicDataDisplayName = nameof(DefaultDataDisplayName))]
+    public void Given_ARunStore_When_AddingValues_Then_TheyShouldBeStoredAndDisplayedUnsorted(object? value, string scenario)
+        => this.Test(scenario, r => r
+            .Given()
+            .When(data => data.Actual = value)
+            .Then(
+                data => data.Actual.Should().NotBeNull(),
+                data => data.ReadActualObject().Should().NotBeNull(),
+                data => data[data.KeyActual].Should().NotBeNull(),
+                data => data.Should().ActualBeNotNull(),
+                data => data.ReadObject(data.KeyActual).Should().NotBeNull())
+            .DebugPrint(RunStorePrintOrder.Unsorted, nameof(scenario), scenario));
+
+    [TestMethod]
+    [DynamicData(
+        nameof(ValidValues),
+        DynamicDataDisplayName = nameof(DefaultDataDisplayName))]
+    public void Given_ARunStore_When_AddingValues_Then_TheyShouldBeStoredAndDisplayedSortedByValue(object? value, string scenario)
+        => this.Test(scenario, r => r
+            .Given()
+            .When(data => data.Actual = value)
+            .Then(
+                data => data.Actual.Should().NotBeNull(),
+                data => data.ReadActualObject().Should().NotBeNull(),
+                data => data[data.KeyActual].Should().NotBeNull(),
+                data => data.Should().ActualBeNotNull(),
+                data => data.ReadObject(data.KeyActual).Should().NotBeNull())
+            .DebugPrint(RunStorePrintOrder.ValueSorted, nameof(scenario), scenario));
 }

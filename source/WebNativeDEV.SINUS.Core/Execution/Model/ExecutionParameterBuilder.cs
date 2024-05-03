@@ -189,19 +189,19 @@ internal sealed class ExecutionParameterBuilder : ExecutionParameter
         };
 
         // Actual action
-        foreach (var a in this.Actions ?? new List<Action>())
+        foreach (var a in this.Actions ?? [])
         {
             parameters.Actions.Add(a);
         }
 
-        foreach (var sa in this.SetupActions ?? new List<Action<ExecutionSetupParameters>>())
+        foreach (var sa in this.SetupActions ?? [])
         {
             parameters.SetupActions.Add(sa);
         }
 
         parameters.RunActions = this.RunActions && (parameters.Actions.Any() || parameters.SetupActions.Any());
 
-        foreach (var arg in this.SutArgs ?? new List<string>())
+        foreach (var arg in this.SutArgs ?? [])
         {
             parameters.SutArgs.Add(arg);
         }

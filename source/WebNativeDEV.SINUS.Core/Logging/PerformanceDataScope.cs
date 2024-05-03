@@ -40,7 +40,7 @@ internal sealed class PerformanceDataScope : IDisposable
                 "{Prefix}{Description} (TaskId: {TaskId}, ThreadId: {ThreadId})",
                 this.prefix,
                 description ?? string.Empty,
-                Task.CurrentId?.ToString(CultureInfo.InvariantCulture) ?? "<null>",
+                Task.CurrentId?.ToString(CultureInfo.InvariantCulture) ?? LoggerConstants.NullString,
                 Environment.CurrentManagedThreadId);
         }
 
@@ -93,7 +93,7 @@ internal sealed class PerformanceDataScope : IDisposable
             prefixCalculated,
             actionsCount,
             description ?? string.Empty,
-            Task.CurrentId?.ToString(CultureInfo.InvariantCulture) ?? "<null>",
+            Task.CurrentId?.ToString(CultureInfo.InvariantCulture) ?? LoggerConstants.NullString,
             Environment.CurrentManagedThreadId);
     }
 
@@ -118,7 +118,7 @@ internal sealed class PerformanceDataScope : IDisposable
                     "{Prefix}" + MainMessageBody + " {Elapsed} ms (TaskId: {TaskId}, ThreadId: {ThreadId})",
                     this.prefix,
                     this.stopwatch.ElapsedMilliseconds,
-                    Task.CurrentId?.ToString(CultureInfo.InvariantCulture) ?? "<null>",
+                    Task.CurrentId?.ToString(CultureInfo.InvariantCulture) ?? LoggerConstants.NullString,
                     Environment.CurrentManagedThreadId);
             }
 

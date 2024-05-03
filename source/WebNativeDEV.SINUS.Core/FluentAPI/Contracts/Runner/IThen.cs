@@ -4,6 +4,8 @@
 
 namespace WebNativeDEV.SINUS.Core.FluentAPI.Contracts.Runner;
 
+using WebNativeDEV.SINUS.Core.FluentAPI.Model;
+
 /// <summary>
 /// Represents in the given-when-then sequence the then part.
 /// This interface allows to create a proper Fluent API.
@@ -21,8 +23,17 @@ public interface IThen : IDisposable
     /// <summary>
     /// Method that is used to write all debug information to the logger.
     /// </summary>
+    /// <param name="order">The field to order the data for printing.</param>
     /// <returns>An instance to the runner, so it can be disposed.</returns>
-    IThen DebugPrint();
+    IThen DebugPrint(RunStorePrintOrder order = RunStorePrintOrder.KeySorted);
+
+    /// <summary>
+    /// Method that is used to write all debug information and additional data to the logger.
+    /// </summary>
+    /// <param name="order">The field to order the data for printing.</param>
+    /// <param name="additionalData">Data that needs to be printed for information additionally.</param>
+    /// <returns>An instance to the runner, so it can be disposed.</returns>
+    IThen DebugPrint(RunStorePrintOrder order, (string, object?)[] additionalData);
 
     /// <summary>
     /// Method that is used to write all debug information and additional data to the logger.
@@ -30,6 +41,15 @@ public interface IThen : IDisposable
     /// <param name="additionalData">Data that needs to be printed for information additionally.</param>
     /// <returns>An instance to the runner, so it can be disposed.</returns>
     IThen DebugPrint((string, object?)[] additionalData);
+
+    /// <summary>
+    /// Method that is used to write all debug information and additional data to the logger.
+    /// </summary>
+    /// <param name="order">The field to order the data for printing.</param>
+    /// <param name="key">The key from a key-value pair to add in the debug printing.</param>
+    /// <param name="value">The value from a key-value pair to add in the debug printing.</param>
+    /// <returns>An instance to the runner, so it can be disposed.</returns>
+    IThen DebugPrint(RunStorePrintOrder order, string key, object? value);
 
     /// <summary>
     /// Method that is used to write all debug information and additional data to the logger.

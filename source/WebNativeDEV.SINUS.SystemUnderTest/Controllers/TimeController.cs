@@ -12,32 +12,25 @@ using WebNativeDEV.SINUS.SystemUnderTest.Services.Abstractions;
 /// <summary>
 /// Public controller that allows access to operations depending on time.
 /// </summary>
-[Route("api/[controller]")]
+/// <remarks>
+/// Initializes a new instance of the <see cref="TimeController"/> class.
+/// </remarks>
+/// <param name="timeProvider">Provider managing the external dependency to the clock.</param>
+/// <param name="logger">Logger created to write further information.</param>
+[Route("/time/")]
 [ApiController]
-public class TimeController : ControllerBase
+public class TimeController(ITimeProvider timeProvider, ILogger<TimeController> logger) : ControllerBase
 {
-    private readonly ITimeProvider timeProvider;
-    private readonly ILogger<TimeController> logger;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TimeController"/> class.
-    /// </summary>
-    /// <param name="timeProvider">Provider managing the external dependency to the clock.</param>
-    /// <param name="logger">Logger created to write further information.</param>
-    public TimeController(ITimeProvider timeProvider, ILogger<TimeController> logger)
-    {
-        this.timeProvider = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));
-        this.logger = logger;
-    }
+    private readonly ITimeProvider timeProvider = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));
 
     /// <summary>
     /// Calculates the square of an integer without further control of overflows.
     /// </summary>
     /// <returns>The integer result of the mathematical calculation.</returns>
-    [HttpGet("/time/sec")]
+    [HttpGet("sec")]
     public int GetSeconds()
     {
-        this.logger.LogInformation(
+        logger.LogInformation(
             "Check for seconds in provider {Provider} (TaskId: {TaskId}, ThreadId: {ThreadId})",
             this.timeProvider.ToString(),
             Task.CurrentId?.ToString(CultureInfo.InvariantCulture) ?? " <null>",

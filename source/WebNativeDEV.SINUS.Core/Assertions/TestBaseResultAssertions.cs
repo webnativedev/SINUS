@@ -14,18 +14,13 @@ using WebNativeDEV.SINUS.Core.MsTest.Contracts;
 /// <summary>
 /// Fluent Assertions context for TestBaseResult providing check methods.
 /// </summary>
-public class TestBaseResultAssertions :
-    ReferenceTypeAssertions<ITestBaseResult, TestBaseResultAssertions>
+/// <remarks>
+/// Initializes a new instance of the <see cref="TestBaseResultAssertions"/> class.
+/// </remarks>
+/// <param name="instance">The instance to operate on.</param>
+public class TestBaseResultAssertions(ITestBaseResult instance) :
+    ReferenceTypeAssertions<ITestBaseResult, TestBaseResultAssertions>(instance)
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TestBaseResultAssertions"/> class.
-    /// </summary>
-    /// <param name="instance">The instance to operate on.</param>
-    public TestBaseResultAssertions(ITestBaseResult instance)
-        : base(instance)
-    {
-    }
-
     /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
     protected override string Identifier => "testBaseResult";

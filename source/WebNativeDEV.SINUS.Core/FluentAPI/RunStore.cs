@@ -10,29 +10,25 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
 using WebNativeDEV.SINUS.Core.FluentAPI.Events;
+using WebNativeDEV.SINUS.Core.FluentAPI.Model;
+using WebNativeDEV.SINUS.Core.Logging;
 using WebNativeDEV.SINUS.Core.MsTest;
 
 /// <summary>
 /// Represents the store that is used in test runners.
 /// </summary>
-internal sealed class RunStore : IRunStore
+/// <remarks>
+/// Initializes a new instance of the <see cref="RunStore"/> class.
+/// </remarks>
+/// <param name="scope">The scoped dependencies.</param>
+internal sealed class RunStore(TestBaseScopeContainer scope) : IRunStore
 {
     private readonly ConcurrentDictionary<string, object?> store = new();
-    private readonly ILogger logger;
-    private readonly TestBaseScopeContainer scope;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="RunStore"/> class.
-    /// </summary>
-    /// <param name="scope">The scoped dependencies.</param>
-    public RunStore(TestBaseScopeContainer scope)
-    {
-        this.logger = TestBaseSingletonContainer.CreateLogger<RunStore>();
-        this.scope = scope;
-    }
+    private readonly ILogger logger = TestBaseSingletonContainer.CreateLogger<RunStore>();
 
     /// <inheritdoc/>
     public string KeyActual => "actual";
@@ -41,7 +37,7 @@ internal sealed class RunStore : IRunStore
     public string KeySut => "SystemUnderTest";
 
     /// <inheritdoc/>
-    public string? TestName => this.scope?.TestName;
+    public string? TestName => scope?.TestName;
 
     /// <summary>
     /// Gets or sets the actual value.
@@ -86,7 +82,7 @@ internal sealed class RunStore : IRunStore
         var oldValue = !containsKey ? null : this.store[key];
         this.store[key] = item;
 
-        this.scope.EventBus?.Publish(this, new RunStoreDataStoredEventBusEventArgs(key, item, !containsKey, oldValue));
+        scope.EventBus?.Publish(this, new RunStoreDataStoredEventBusEventArgs(key, item, !containsKey, oldValue));
 
         return this;
     }
@@ -95,6 +91,15 @@ internal sealed class RunStore : IRunStore
     public IRunStore Store(object? item)
     {
         return this.Store(Guid.NewGuid().ToString(), item);
+    }
+
+    /// <inheritdoc/>
+    public IRunStore StoreLog(string log)
+    {
+        string keyTime = DateTime.Now.ToString("HH:mm:ss.ffffff", CultureInfo.InvariantCulture);
+        string uniqueGen = Guid.NewGuid().ToString("N")[..8];
+        string key = $"{keyTime}_{uniqueGen}";
+        return this.Store(key, log);
     }
 
     /// <summary>
@@ -164,12 +169,12 @@ internal sealed class RunStore : IRunStore
     /// <inheritdoc/>
     public object? ReadObject(string key)
     {
-        if (!this.store.ContainsKey(key))
+        if (!this.store.TryGetValue(key, out object? value))
         {
             return null;
         }
 
-        return this.store[key];
+        return value;
     }
 
     /// <inheritdoc/>
@@ -199,11 +204,10 @@ internal sealed class RunStore : IRunStore
     /// <summary>
     /// Prints the content to the logger.
     /// </summary>
+    /// <param name="order">The field to order the data for printing.</param>
     /// <returns>The RunStore for a fluent api.</returns>
-    public IRunStore PrintStore()
-    {
-        return this.Print(this.store);
-    }
+    public IRunStore PrintStore(RunStorePrintOrder order = RunStorePrintOrder.KeySorted)
+        => this.PrintImplementation(this.store, order);
 
     /// <summary>
     /// Prints the content to the logger.
@@ -215,9 +219,9 @@ internal sealed class RunStore : IRunStore
     {
         this.logger.LogInformation(
             "| {Key}: {Value} (Type: {Type})",
-            key ?? "<null>",
-            value ?? "<null>",
-            value?.GetType()?.FullName ?? "<null>");
+            key ?? LoggerConstants.NullString,
+            value ?? LoggerConstants.NullString,
+            value?.GetType()?.FullName ?? LoggerConstants.NullString);
 
         return this;
     }
@@ -272,30 +276,40 @@ internal sealed class RunStore : IRunStore
     /// Prints the content to the logger.
     /// </summary>
     /// <param name="data">The key/value pair to print.</param>
+    /// <param name="order">The field to order the data for printing.</param>
     /// <returns>The RunStore for a fluent api.</returns>
-    private IRunStore Print(IDictionary<string, object?> data)
+    private RunStore PrintImplementation(IDictionary<string, object?> data, RunStorePrintOrder order)
     {
         var builder = new StringBuilder(10000);
 
         builder.AppendLine("Content dump:");
-        builder.AppendLine("+----------------------------");
+        builder.AppendLine(LoggerConstants.SeparationLine);
         builder.AppendLine(CultureInfo.InvariantCulture, $"| Count: {data.Keys.Count}");
-        builder.AppendLine("+----------------------------");
+        builder.AppendLine(LoggerConstants.SeparationLine);
 
-        var keys = data.Keys.ToList();
-        foreach (var key in keys)
+        IEnumerable<KeyValuePair<string, string>> dataList = data
+            .Select(x => new KeyValuePair<string, string>(x.Key, x.Value?.ToString() ?? LoggerConstants.NullString))
+            .ToList();
+
+        switch (order)
         {
-            string value = "<null>";
-            if (data.TryGetValue(key, out var rawValue))
-            {
-                value = rawValue?.ToString() ?? "<null>";
-            }
-
-            string typeName = value.GetType().FullName ?? "<null>";
-            builder.AppendLine(CultureInfo.InvariantCulture, $"| {key}: {value} (Type: {typeName})");
+            case RunStorePrintOrder.Unsorted:
+                break;
+            case RunStorePrintOrder.KeySorted:
+                dataList = dataList.OrderBy(dataItem => dataItem.Key);
+                break;
+            case RunStorePrintOrder.ValueSorted:
+                dataList = dataList.OrderBy(dataItem => dataItem.Value);
+                break;
         }
 
-        builder.AppendLine("+----------------------------");
+        foreach (var dataItem in dataList)
+        {
+            string typeName = dataItem.Value?.GetType()?.FullName ?? LoggerConstants.NullString;
+            builder.AppendLine(CultureInfo.InvariantCulture, $"| {dataItem.Key}: {dataItem.Value} (Type: {typeName})");
+        }
+
+        builder.AppendLine(LoggerConstants.SeparationLine);
 
         this.logger.LogInformation("{StoreContent}", builder.ToString());
 

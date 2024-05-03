@@ -10,6 +10,7 @@ using OpenQA.Selenium.Support.UI;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
+using WebNativeDEV.SINUS.Core.Logging;
 using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 
@@ -39,7 +40,7 @@ internal sealed class Browser : IBrowser
         this.Logger = TestBaseSingletonContainer.CreateLogger<Browser>();
         this.Logger.LogInformation(
             "Broswer object created {DriverName} - logger: {LoggerName} - content: {ContentFolder}",
-            driver?.GetType()?.ToString() ?? "null",
+            driver?.GetType()?.ToString() ?? LoggerConstants.NullString,
             this.Logger.GetType().ToString(),
             contentFolder);
 
@@ -71,7 +72,7 @@ internal sealed class Browser : IBrowser
     {
         get
         {
-            this.Logger.LogInformation("Title requested {Title}", this.driver?.Title ?? "null");
+            this.Logger.LogInformation("Title requested {Title}", this.driver?.Title ?? LoggerConstants.NullString);
             return this.driver?.Title;
         }
     }
@@ -81,7 +82,7 @@ internal sealed class Browser : IBrowser
     {
         get
         {
-            this.Logger.LogInformation("Url requested {Url}", this.driver?.Url ?? "null");
+            this.Logger.LogInformation("Url requested {Url}", this.driver?.Url ?? LoggerConstants.NullString);
             return new Uri(this.driver?.Url ?? throw new InvalidOperationException("no Url available"));
         }
     }
@@ -91,7 +92,7 @@ internal sealed class Browser : IBrowser
     {
         get
         {
-            this.Logger.LogInformation("PageSource requested {Source}", this.driver?.PageSource ?? "null");
+            this.Logger.LogInformation("PageSource requested {Source}", this.driver?.PageSource ?? LoggerConstants.NullString);
             return this.driver?.PageSource;
         }
     }
@@ -107,7 +108,7 @@ internal sealed class Browser : IBrowser
     /// <inheritdoc/>
     public object? GetBaseObject()
     {
-        this.Logger.LogInformation("Driver requested {Driver}", this.driver?.GetType()?.ToString() ?? "null");
+        this.Logger.LogInformation("Driver requested {Driver}", this.driver?.GetType()?.ToString() ?? LoggerConstants.NullString);
         return this.driver;
     }
 
@@ -142,7 +143,7 @@ internal sealed class Browser : IBrowser
     /// <inheritdoc/>
     public IBrowser NavigateTo(Uri url)
     {
-        this.Logger.LogInformation("Navigate to {Url}", url?.ToString() ?? "null");
+        this.Logger.LogInformation("Navigate to {Url}", url?.ToString() ?? LoggerConstants.NullString);
 
         this.driver?.Navigate()?.GoToUrl(url);
         return this;
@@ -166,7 +167,7 @@ internal sealed class Browser : IBrowser
 
         (this.driver as IJavaScriptExecutor)?.ExecuteScript(
             js,
-            content?.Select(x => x.GetBaseObject()) ?? Array.Empty<object>());
+            content?.Select(x => x.GetBaseObject()) ?? []);
         return this;
     }
 
@@ -181,7 +182,7 @@ internal sealed class Browser : IBrowser
         this.Logger.LogInformation("Screenshot filename resolved to {Filename}", resolvedFilename);
 
         Screenshot? screenshot = (this.driver as ITakesScreenshot)?.GetScreenshot();
-        screenshot?.SaveAsFile(resolvedFilename, ScreenshotImageFormat.Png);
+        screenshot?.SaveAsFile(resolvedFilename);
         return this;
     }
 

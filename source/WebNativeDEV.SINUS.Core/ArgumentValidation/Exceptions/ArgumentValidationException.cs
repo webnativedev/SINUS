@@ -6,6 +6,7 @@ namespace WebNativeDEV.SINUS.Core.ArgumentValidation.Exceptions;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using WebNativeDEV.SINUS.Core.Logging;
 
 /// <summary>
 /// Exception in case an argument is not valid.
@@ -19,7 +20,7 @@ public class ArgumentValidationException : Exception
     /// <param name="item">The item validated.</param>
     /// <param name="name">The argument name.</param>
     public ArgumentValidationException(string validationMethod, object? item, string? name)
-        : base($"Validation Exception: {validationMethod} for {name ?? "unknown"} with value {item ?? "<null>"}")
+        : base($"Validation Exception: {validationMethod} for {name ?? "unknown"} with value {item ?? LoggerConstants.NullString}")
     {
     }
 

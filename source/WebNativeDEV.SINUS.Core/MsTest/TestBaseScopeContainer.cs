@@ -53,16 +53,14 @@ public class TestBaseScopeContainer
         foreach (var frame in stackTrace.GetFrames())
         {
             var method = frame.GetMethod();
-            if (method?.GetCustomAttributes(typeof(TestMethodAttribute), true)?.Any() ?? false)
+            if ((method?.GetCustomAttributes(typeof(TestMethodAttribute), true)?.Length ?? 0) > 0)
             {
                 methodBase = method;
                 break;
             }
         }
 
-        this.Method = methodBase
-            ?? throw new InvalidOperationException("test method could not be evaluated");
-
+        this.Method = methodBase;
         this.Runner = new Runner(this);
 
         this.TestBaseUsageStatisticsManager.Register(this);
@@ -101,7 +99,7 @@ public class TestBaseScopeContainer
     /// <summary>
     /// Gets the reflection object for the method.
     /// </summary>
-    public MethodBase Method { get; private set; }
+    public MethodBase? Method { get; private set; }
 
     /// <summary>
     /// Gets a reference to the test base.
@@ -144,9 +142,14 @@ public class TestBaseScopeContainer
     internal ILoggerFactory LoggerFactory => TestBaseSingletonContainer.LoggerFactory;
 
     /// <summary>
-    /// Gets the web driver factory.
+    /// Gets the web driver factory chrome.
     /// </summary>
-    internal IWebDriverFactory WebDriverFactory => TestBaseSingletonContainer.WebDriverFactory;
+    internal IWebDriverFactory WebDriverFactoryChrome => TestBaseSingletonContainer.WebDriverFactoryChrome;
+
+    /// <summary>
+    /// Gets the web driver factory edge.
+    /// </summary>
+    internal IWebDriverFactory WebDriverFactoryEdge => TestBaseSingletonContainer.WebDriverFactoryEdge;
 
     /// <summary>
     /// Gets the browser factory.

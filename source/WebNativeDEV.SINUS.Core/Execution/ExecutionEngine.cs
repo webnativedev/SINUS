@@ -130,15 +130,15 @@ internal sealed class ExecutionEngine : IExecutionEngine
         parameter = Ensure.NotNull(parameter);
         var namings = Ensure.NotNull(parameter.Namings);
 
-        List<Action> actions = new();
-        actions.AddRange(
-            parameter.SetupActions.Select<Action<ExecutionSetupParameters>, Action>(
+        List<Action> actions =
+        [
+            .. parameter.SetupActions.Select<Action<ExecutionSetupParameters>, Action>(
                 action => () => action?.Invoke(new ExecutionSetupParameters()
                 {
                     Endpoint = returnValue.SutEndpoint,
-                })));
-
-        actions.AddRange(parameter.Actions);
+                })),
+            .. parameter.Actions,
+        ];
 
         var actionCount = actions.Count;
 
@@ -181,13 +181,13 @@ internal sealed class ExecutionEngine : IExecutionEngine
                 }
                 catch (Exception exc)
                 {
-                    this.logger.LogError(
+                    this.logger.LogErrorRec(
                         exc,
                         "Exception occured in execution of {Category} - {ExcClass}: {ExcMessage}",
                         parameter.RunCategory,
                         exc.GetType().ToString(),
                         exc.Message);
-                    this.logger.LogError("Stacktrace:\n{StackTrace}", exc.StackTrace);
+
                     returnValue.Exceptions.Add(exc);
                 }
 
@@ -234,7 +234,7 @@ internal sealed class ExecutionEngine : IExecutionEngine
             }
             catch (Exception exception)
             {
-                this.logger.LogError(
+                this.logger.LogErrorRec(
                     exception,
                     "Creating WebApplication failed\n{Exception}",
                     exception.Message);

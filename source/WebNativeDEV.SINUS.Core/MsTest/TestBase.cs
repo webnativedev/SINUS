@@ -82,7 +82,7 @@ public abstract class TestBase
         }
         catch (Exception exc)
         {
-            return new TestBaseResult(TestOutcome.Failure, scope, new List<Exception> { exc });
+            return new TestBaseResult(TestOutcome.Failure, scope, [exc]);
         }
 
 #pragma warning restore CA1031 // don't catch general exceptions

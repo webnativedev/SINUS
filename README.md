@@ -16,7 +16,7 @@ Dependencies:
 * NSubstitute
 * Selenium
 
-![Example Screenshot](/docs/sinus-screenshot.png "Example Screenshot")
+![Example Screenshot](./docs/sinus-screenshot.png "Example Screenshot")
 
 There are hard dependencies in SINUS to C#, newest .NET-Versions, MS-Test and Selenium (including partly Chrome) using BaseClasses and pre-defined patterns.
 SINUS focuses on a Given-When-Then approach of writing tests (BDT - Behaviour Driven Testing) to provide human readable descriptions with few effort.
@@ -108,4 +108,4 @@ The test result is evaluated as successful for test 'Given_ATestSystem_When_Stor
 By reducing the complexity you are not able to use all of the features Selenium has.
 Nevertheless, the most common features are supported and covered by SINUS in a nicely shaped API that guides you through the test case and will add logging so that errors can be found simpler without any effort on the test-developer side.
 
-[Getting Started](./docs/GettingStarted.md) | [Strategy](./docs/TestStrategy.md) | [Considerations](./docs/Considerations.md)
+[Getting Started](./docs/GettingStarted.md) | [Templates](./docs/template.md) | [Strategy](./docs/TestStrategy.md) | [Considerations](./docs/Considerations.md)

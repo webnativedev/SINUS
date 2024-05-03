@@ -10,29 +10,22 @@ using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 /// <summary>
 /// Stores the captured exceptions and rates them.
 /// </summary>
-internal class ExceptionStoreItem
+/// <remarks>
+/// Initializes a new instance of the <see cref="ExceptionStoreItem"/> class.
+/// </remarks>
+/// <param name="runCategory">Section where exception was thrown.</param>
+/// <param name="exception">Exception thrown.</param>
+internal class ExceptionStoreItem(RunCategory runCategory, Exception exception)
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ExceptionStoreItem"/> class.
-    /// </summary>
-    /// <param name="runCategory">Section where exception was thrown.</param>
-    /// <param name="exception">Exception thrown.</param>
-    public ExceptionStoreItem(RunCategory runCategory, Exception exception)
-    {
-        this.RunCategory = runCategory;
-        this.Exception = exception;
-        this.IsCheckedInThenClause = false;
-    }
-
     /// <summary>
     /// Gets or sets the run category.
     /// </summary>
-    public RunCategory RunCategory { get; set; }
+    public RunCategory RunCategory { get; set; } = runCategory;
 
     /// <summary>
     /// Gets or sets the exception to be thrown.
     /// </summary>
-    public Exception Exception { get; set; }
+    public Exception Exception { get; set; } = exception;
 
     /// <summary>
     /// Gets or sets a value indicating whether the exception is checked (=expected by unit test).

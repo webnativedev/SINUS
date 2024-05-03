@@ -1,4 +1,4 @@
-// <copyright file="ViewController.cs" company="WebNativeDEV">
+// <copyright file="SimpleViewController.cs" company="WebNativeDEV">
 // Copyright (c) Daniel Kienböck. All Rights Reserved. Licensed under the MIT License. See LICENSE in the project root for license information.
 // </copyright>
 
@@ -10,27 +10,22 @@ using System.Globalization;
 /// <summary>
 /// Represents the view controller that is responsible to deliver html code.
 /// </summary>
+/// <remarks>
+/// Initializes a new instance of the <see cref="SimpleViewController"/> class.
+/// </remarks>
+/// <param name="logger">Dependency injected logger instance.</param>
 [ApiController]
-[Route("[controller]")]
+[Route("/simpleView")]
 [Produces("text/html")]
-public class ViewController : ControllerBase
+public class SimpleViewController(ILogger<SimpleViewController> logger) : ControllerBase
 {
-    private readonly ILogger<ViewController> logger;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ViewController"/> class.
-    /// </summary>
-    /// <param name="logger">Dependency injected logger instance.</param>
-    public ViewController(ILogger<ViewController> logger)
-    {
-        this.logger = logger;
-    }
+    private readonly ILogger<SimpleViewController> logger = logger;
 
     /// <summary>
     /// This function returns most basic hello world webpage content.
     /// </summary>
     /// <returns>The HTML content as string with content type html.</returns>
-    [HttpGet("/simpleView")]
+    [HttpGet("")]
     [Produces("text/html")]
     public ContentResult Get()
     {

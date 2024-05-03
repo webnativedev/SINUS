@@ -6,8 +6,10 @@ namespace WebNativeDEV.SINUS.Core.MsTest;
 
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using WebNativeDEV.SINUS.Core.Logging;
 using WebNativeDEV.SINUS.Core.MsTest.Contracts;
 using WebNativeDEV.SINUS.Core.Requirements;
 using WebNativeDEV.SINUS.MsTest;
@@ -17,7 +19,7 @@ using WebNativeDEV.SINUS.MsTest;
 /// </summary>
 internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
 {
-    private readonly Dictionary<string, Dictionary<string, object>> usages = new();
+    private readonly ConcurrentDictionary<string, Dictionary<string, object>> usages = [];
 
     /// <inheritdoc/>
     public string AttributeBrowserCreated => "browser created";
@@ -73,14 +75,17 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
     {
         try
         {
-            this.usages.Add(scope.TestName, new Dictionary<string, object>());
-        }
-        catch (ArgumentException exc)
-        {
-            throw new InvalidDataException("test name already stored in usage manager, please rename your test", exc);
-        }
+            if (!this.usages.TryAdd(scope.TestName, []))
+            {
+                throw new InvalidDataException("test name already stored in usage manager, please rename your test");
+            }
 
-        this.usages[scope.TestName].Add("scope", scope);
+            this.usages[scope.TestName].Add("scope", scope);
+        }
+        catch (Exception outerExc)
+        {
+            throw new InvalidDataException("error registering usage information to statistics manager", outerExc);
+        }
 
         this.StoreAttribute<BusinessRequirementAttribute>(
             this.AttributeBusinessRequirement,
@@ -135,14 +140,13 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
                           WafCreated: x.Value.ContainsKey(this.AttributeWafCreated),
                           WafDisposed: x.Value.ContainsKey(this.AttributeWafDisposed)))
             .ToList();
-        if (!data.Any())
+        if (data.Count == 0)
         {
             return;
         }
 
         var usageLogger = TestBaseSingletonContainer.CreateLogger<TestBase>();
-        usageLogger.LogInformation("+--------------------------------");
-        usageLogger.LogInformation("| Tests: {Count}", data.Count);
+        usageLogger.LogInformation("{Sparator}\n| Tests: {Count}", LoggerConstants.SeparationLine, data.Count);
 
         foreach (var (title, browserCreated, browserDisposed, wafCreated, wafDisposed) in data)
         {
@@ -177,8 +181,7 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
             usageLogger.LogInformation("| ({BrowserInfo}|{WafInfo}) {Id}", browserInfo, wafInfo, title);
         }
 
-        usageLogger.LogInformation("+--------------------------------");
-        usageLogger.LogInformation(" ");
+        usageLogger.LogInformation("{SeparationLine}", LoggerConstants.SeparationLineWithNewLine);
 
         var scopes = this.usages.Select(x => x.Value.GetValueOrDefault("scope") as TestBaseScopeContainer);
         var grouping = scopes
@@ -257,14 +260,13 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
 
     private static void PrintSpecificStatistic(List<(string Title, bool Created, bool Disposed)> data, string category)
     {
-        if (!data.Any())
+        if (data.Count == 0)
         {
             return;
         }
 
         var usageLogger = TestBaseSingletonContainer.CreateLogger<TestBase>();
-        usageLogger.LogInformation("+--------------------------------");
-        usageLogger.LogInformation("| Tests Including {Category}: {Count}", category, data.Count);
+        usageLogger.LogInformation("{SeparationLine}| Tests Including {Category}: {Count}", LoggerConstants.SeparationLineWithNewLine, category, data.Count);
 
         foreach (var (title, _, disposed) in data)
         {
@@ -274,8 +276,7 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
             usageLogger.LogInformation("| ({DisposedInfo}) {Id}", disposedInfo, title);
         }
 
-        usageLogger.LogInformation("+--------------------------------");
-        usageLogger.LogInformation(" ");
+        usageLogger.LogInformation("{SeparationLine}", LoggerConstants.SeparationLineWithNewLine);
     }
 
     private void PrintRequirements(string? filter, string methodKey, string classKey, string title)
@@ -320,14 +321,13 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
                 Count = group.Count(),
             })
             .ToList();
-        if (!data.Any())
+        if (data.Count == 0)
         {
             return;
         }
 
         var usageLogger = TestBaseSingletonContainer.CreateLogger<TestBase>();
-        usageLogger.LogInformation("+--------------------------------");
-        usageLogger.LogInformation("| {Title} Requirements: {Count}", title, data.Count);
+        usageLogger.LogInformation("{SeparationLine}| {Title} Requirements: {Count}", LoggerConstants.SeparationLineWithNewLine, title, data.Count);
 
         foreach (var item in data)
         {
@@ -338,8 +338,7 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
             }
         }
 
-        usageLogger.LogInformation("+--------------------------------");
-        usageLogger.LogInformation(" ");
+        usageLogger.LogInformation("{SeparationLine}", LoggerConstants.SeparationLineWithNewLine);
     }
 
     private void StoreAttribute<T>(string key, TestBaseScopeContainer scope, Action<T, List<object>> action)
@@ -347,7 +346,7 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
     {
         var result = new List<object>();
 
-        foreach (var attribute in scope.Method.GetCustomAttributes(typeof(T), true))
+        foreach (var attribute in scope.Method?.GetCustomAttributes(typeof(T), true) ?? [])
         {
             if (attribute is T baAttr)
             {
@@ -355,7 +354,7 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
             }
         }
 
-        if (result.Any())
+        if (result.Count > 0)
         {
             this.usages[scope.TestName].Add(key, result);
         }
@@ -366,7 +365,7 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
     {
         var result = new List<object>();
 
-        foreach (var attribute in scope.Method?.DeclaringType?.GetCustomAttributes(typeof(T), true) ?? Array.Empty<object>())
+        foreach (var attribute in scope.Method?.DeclaringType?.GetCustomAttributes(typeof(T), true) ?? [])
         {
             if (attribute is T baAttr)
             {
@@ -374,7 +373,7 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
             }
         }
 
-        if (result.Any())
+        if (result.Count > 0)
         {
             this.usages[scope.TestName].Add(key, result);
         }

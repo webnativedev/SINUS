@@ -105,11 +105,7 @@ internal sealed class SinusWebApplicationFactory<TEntryPoint> : WebApplicationFa
             return this.customHost;
         }
 
-        if (builder == null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
-
+        ArgumentNullException.ThrowIfNull(builder);
         var dummyHost = builder.Build();
 
         builder.ConfigureWebHost(webHostBuilder =>

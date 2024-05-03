@@ -7,28 +7,28 @@ namespace WebNativeDEV.SINUS.Core.UITesting.Model;
 /// <summary>
 /// Represents all settings that can be configured from outside.
 /// </summary>
-public class BrowserFactoryOptions
+/// <remarks>
+/// Initializes a new instance of the <see cref="BrowserFactoryOptions"/> class.
+/// </remarks>
+/// <param name="headless">The headless option.</param>
+/// <param name="ignoreSslErrors">The ignore ssl option.</param>
+/// <param name="webDriver">The selected web driver to use.</param>
+public class BrowserFactoryOptions(bool headless = true, bool ignoreSslErrors = true, SupportedWebDriver webDriver = SupportedWebDriver.Chrome)
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="BrowserFactoryOptions"/> class.
-    /// </summary>
-    /// <param name="headless">The headless option.</param>
-    /// <param name="ignoreSslErrors">The ignore ssl option.</param>
-    public BrowserFactoryOptions(bool headless = true, bool ignoreSslErrors = true)
-    {
-        this.Headless = headless;
-        this.IgnoreSslErrors = ignoreSslErrors;
-    }
-
     /// <summary>
     /// Gets or sets a value indicating whether to start as Headless or not.
     /// </summary>
-    public bool Headless { get; set; }
+    public bool Headless { get; set; } = headless;
 
     /// <summary>
     /// Gets or sets a value indicating whether to ignore SSL errors in connection or not.
     /// </summary>
-    public bool IgnoreSslErrors { get; set; }
+    public bool IgnoreSslErrors { get; set; } = ignoreSslErrors;
+
+    /// <summary>
+    /// Gets or sets the selected web driver.
+    /// </summary>
+    public SupportedWebDriver WebDriver { get; set; } = webDriver;
 
     /// <summary>
     /// Prints the state of the options.
@@ -36,6 +36,6 @@ public class BrowserFactoryOptions
     /// <returns>A plain text string with the full state.</returns>
     public override string ToString()
     {
-        return $"Headless: {this.Headless}, IgnoreSslErrors: {this.IgnoreSslErrors}";
+        return $"Headless: {this.Headless}, IgnoreSslErrors: {this.IgnoreSslErrors}, Driver: {this.WebDriver}";
     }
 }

@@ -9,22 +9,18 @@ using FluentAssertions.Execution;
 using FluentAssertions.Primitives;
 using System.Diagnostics.CodeAnalysis;
 using WebNativeDEV.SINUS.Core.FluentAPI.Contracts;
+using WebNativeDEV.SINUS.Core.Logging;
 
 /// <summary>
 /// Fluent Assertions context for RunStore providing check methods.
 /// </summary>
-public class RunStoreAssertions :
-    ReferenceTypeAssertions<IRunStore, RunStoreAssertions>
+/// <remarks>
+/// Initializes a new instance of the <see cref="RunStoreAssertions"/> class.
+/// </remarks>
+/// <param name="instance">The instance to operate on.</param>
+public class RunStoreAssertions(IRunStore instance) :
+    ReferenceTypeAssertions<IRunStore, RunStoreAssertions>(instance)
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="RunStoreAssertions"/> class.
-    /// </summary>
-    /// <param name="instance">The instance to operate on.</param>
-    public RunStoreAssertions(IRunStore instance)
-        : base(instance)
-    {
-    }
-
     /// <inheritdoc/>
     [ExcludeFromCodeCoverage]
     protected override string Identifier => "runStore";
@@ -48,12 +44,12 @@ public class RunStoreAssertions :
         Execute.Assertion
          .BecauseOf(because, becauseArgs)
          .ForCondition(
-            (actual == null && expected == null) ||
+            (actual == null && object.Equals(expected, default(T))) ||
             (expected?.Equals(actual) ?? false))
          .FailWith(
             "Expected '{0}', but Actual '{1}'",
-            expected?.ToString() ?? "null",
-            actual?.ToString() ?? "null");
+            expected?.ToString() ?? LoggerConstants.NullString,
+            actual?.ToString() ?? LoggerConstants.NullString);
 
         return new AndConstraint<RunStoreAssertions>(this);
     }
@@ -69,7 +65,7 @@ public class RunStoreAssertions :
         Execute.Assertion
          .BecauseOf(because, becauseArgs)
          .ForCondition(this.Subject.Actual == null)
-         .FailWith("Expected null, but Actual '{0}'", this.Subject.Actual ?? "null");
+         .FailWith("Expected null, but Actual '{0}'", this.Subject.Actual ?? LoggerConstants.NullString);
 
         return new AndConstraint<RunStoreAssertions>(this);
     }
@@ -85,7 +81,7 @@ public class RunStoreAssertions :
         Execute.Assertion
          .BecauseOf(because, becauseArgs)
          .ForCondition(this.Subject.Actual != null)
-         .FailWith("Expected non-null, but Actual '{0}'", this.Subject.Actual ?? "null");
+         .FailWith("Expected non-null, but Actual '{0}'", this.Subject.Actual ?? LoggerConstants.NullString);
 
         return new AndConstraint<RunStoreAssertions>(this);
     }

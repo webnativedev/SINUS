@@ -30,7 +30,8 @@ public partial class Program
     [ExcludeFromCodeCoverage(Justification = "framework bootstrap code, no logic included")]
     private static void Main(string[] args)
     {
-        args ??= Array.Empty<string>();
+        args ??= [];
+        const string separationLine = "    +-----------------------------";
 
         var shouldMock = args.Contains("--ExecutionMode=Mock");
 
@@ -46,7 +47,7 @@ public partial class Program
                 .ToList();
         var shouldStartWithError = externalArgs.Contains("start-with-exception");
 
-        Console.WriteLine("    +-----------------------------");
+        Console.WriteLine(separationLine);
         var taskId = Task.CurrentId?.ToString(CultureInfo.InvariantCulture) ?? " <null>";
         Console.WriteLine($"    | Start: (TaskId: {taskId}, ThreadId: {Environment.CurrentManagedThreadId})");
         Console.WriteLine("    |      Args: ");
@@ -55,7 +56,7 @@ public partial class Program
         Console.WriteLine("    |      Start Failing: " + (shouldStartWithError ? "activated" : "deactivated"));
         Console.WriteLine("    |      ExternalArgs: ");
         externalArgs.ToList().ForEach(x => Console.WriteLine($"    |          * {x}"));
-        Console.WriteLine("    +-----------------------------");
+        Console.WriteLine(separationLine);
 
         var builder = WebApplication.CreateBuilder(args);
 
@@ -99,13 +100,13 @@ public partial class Program
 
         app.Run();
 
-        Console.WriteLine("    +-----------------------------");
+        Console.WriteLine(separationLine);
         taskId = Task.CurrentId?.ToString(CultureInfo.InvariantCulture) ?? " <null>";
         Console.WriteLine($"    | Shutdown: (TaskId: {taskId}, ThreadId: {Environment.CurrentManagedThreadId})");
         Console.WriteLine("    |      Args: ");
         args.ToList().ForEach(x => Console.WriteLine($"    |          * {x}"));
         shouldMock = args.Contains("--ExecutionMode=Mock");
         Console.WriteLine("    |      Mocking: " + (shouldMock ? "activated" : "deactivated"));
-        Console.WriteLine("    +-----------------------------");
+        Console.WriteLine(separationLine);
     }
 }

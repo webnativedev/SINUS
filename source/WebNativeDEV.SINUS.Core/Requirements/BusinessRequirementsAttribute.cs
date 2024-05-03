@@ -9,27 +9,21 @@ using System;
 /// <summary>
 /// Attribute to describe business requirements.
 /// </summary>
+/// <remarks>
+/// Initializes a new instance of the <see cref="BusinessRequirementsAttribute"/> class.
+/// </remarks>
+/// <param name="capability">The main capability.</param>
+/// <param name="requirements">The requirements related to provide the capability.</param>
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-public sealed class BusinessRequirementsAttribute : Attribute
+public sealed class BusinessRequirementsAttribute(string capability, params string[] requirements) : Attribute
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="BusinessRequirementsAttribute"/> class.
-    /// </summary>
-    /// <param name="capability">The main capability.</param>
-    /// <param name="requirements">The requirements related to provide the capability.</param>
-    public BusinessRequirementsAttribute(string capability, params string[] requirements)
-    {
-        this.Capability = capability;
-        this.Requirements = requirements;
-    }
-
     /// <summary>
     /// Gets the capability.
     /// </summary>
-    public string Capability { get; }
+    public string Capability { get; } = capability;
 
     /// <summary>
     /// Gets the description of the requirement.
     /// </summary>
-    public string[] Requirements { get; }
+    public string[] Requirements { get; } = requirements;
 }

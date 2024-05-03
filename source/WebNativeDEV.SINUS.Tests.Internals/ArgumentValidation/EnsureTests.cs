@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
 using WebNativeDEV.SINUS.Core.ArgumentValidation.Exceptions;
+using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.Core.Requirements;
 using WebNativeDEV.SINUS.MsTest;
@@ -28,14 +29,13 @@ using WebNativeDEV.SINUS.MsTest;
 public class EnsureTests : TestBase
 {
     public static IEnumerable<object?[]> ValidValues
-        => new[]
-        {
-            new object?[] { "test", "TestString" },
-            new object?[] { new int?(5), "NullableTestInt5" },
-            new object?[] { 1, "IntOne" },
-            new object?[] { 2.3, "DoubleTwoPointThree" },
-            new object?[] { new DateTime(2023, 1, 1, 1, 1, 1, 1, 1, DateTimeKind.Utc), "DateTimeTest" },
-        };
+        => [
+            ["test", "TestString"],
+            [new int?(5), "NullableTestInt5"],
+            [1, "IntOne"],
+            [2.3, "DoubleTwoPointThree"],
+            [new DateTime(2023, 1, 1, 1, 1, 1, 1, 1, DateTimeKind.Utc), "DateTimeTest"],
+        ];
 
     /// <summary>
     /// Dynamic Data Display Name calculator proxying to TestNamingConventionManager.
@@ -89,4 +89,18 @@ public class EnsureTests : TestBase
                    data => Nullable.GetUnderlyingType(data["checkedValue"]?.GetType() ?? typeof(int))
                                 .Should().BeNull())
             .DebugPrint("scenario", scenario));
+
+    [TestMethod]
+    [DynamicData(
+        nameof(ValidValues),
+        DynamicDataDisplayName = nameof(DefaultDataDisplayName))]
+    public void Given_AValue_When_CallingArgumentValidationNotNullWithValues_Then_ResultShouldBeSame(object? value, string scenario)
+        => this.Test(scenario, r => r
+            .Given(data => data["value"] = value)
+             .When(data => data["checkedValue"] = Ensure.NotNull(data["value"]))
+             .Then(
+                   data => data["value"].Should().Be(value),
+                   data => data["checkedValue"].Should().Be(value),
+                   data => data["value"].Should().BeEquivalentTo(data["checkedValue"]))
+            .DebugPrint(RunStorePrintOrder.KeySorted, "scenario", scenario));
 }

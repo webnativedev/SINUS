@@ -7,6 +7,7 @@ namespace WebNativeDEV.SINUS.Tests;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebNativeDEV.SINUS.Core.Assertions;
+using WebNativeDEV.SINUS.Core.FluentAPI;
 using WebNativeDEV.SINUS.Core.MsTest;
 using WebNativeDEV.SINUS.MsTest;
 using WebNativeDEV.SINUS.SystemUnderTest;
@@ -26,7 +27,7 @@ public class SimpleTests : TestBase
         TestBaseSingletonContainer.TestBaseUsageStatisticsManager.Register(this);
 
         // Arrange
-        ITimeProvider provider = new MockTimeProvider();
+        var provider = new MockTimeProvider();
 
         // Act
         var actual = provider.GetCurrentSeconds();

@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 /// <summary>
 /// Calculation Controller.
 /// </summary>
-[Route("api/[controller]")]
+[Route("/calc/")]
 [ApiController]
 public class CalcController : ControllerBase
 {
@@ -18,6 +18,6 @@ public class CalcController : ControllerBase
     /// </summary>
     /// <param name="a">Number that should be squared.</param>
     /// <returns>The integer result of the mathematical calculation.</returns>
-    [HttpGet("/calc/{a}")]
+    [HttpGet("{a}")]
     public int CalculateSquare(int a) => a * a;
 }

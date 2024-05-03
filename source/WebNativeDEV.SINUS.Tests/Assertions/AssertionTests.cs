@@ -7,6 +7,7 @@ namespace WebNativeDEV.SINUS.Tests.Assertions;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebNativeDEV.SINUS.Core.Assertions;
+using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 using WebNativeDEV.SINUS.Core.Requirements;
 using WebNativeDEV.SINUS.MsTest;
 
@@ -88,4 +89,18 @@ public class AssertionTests : TestBase
             .Given(data => data.StoreActual(null))
             .When(data => data.Should().ActualBe<string>("test"))
             .ThenShouldHaveFailed());
+
+    [TestMethod]
+    public void Given_FluentAssertions_When_PrintStore_Then_NoError()
+        => this.Test(r => r
+            .Given("a simple setup")
+            .When(data => data.PrintStore())
+            .ThenNoError()).Should().BeSuccessful();
+
+    [TestMethod]
+    public void Given_FluentAssertions_When_PrintStoreUnsorted_Then_NoError()
+        => this.Test(r => r
+            .Given("a simple setup")
+            .When(data => data.PrintStore(RunStorePrintOrder.Unsorted))
+            .ThenNoError()).Should().BeSuccessful();
 }
