@@ -56,7 +56,11 @@ internal class StaticTesterContext : TestContext
     private void WriteLineImplementation(string? format, params object?[] args)
     {
         #pragma warning disable CA2254 // Vorlage muss ein statischer Ausdruck sein
+        #pragma warning disable IDE0079 // Unnötige Unterdrückung entfernen
+        #pragma warning disable S2629 // Don't use string concatenation in logging message templates.
         this.logger.LogInformation("StaticTestContext: " + (format ?? string.Empty), args);
-        #pragma warning restore CA2254 // Vorlage muss ein statischer Ausdruck sein
+        #pragma warning restore S2629
+        #pragma warning restore CA2254
+        #pragma warning restore IDE0079
     }
 }

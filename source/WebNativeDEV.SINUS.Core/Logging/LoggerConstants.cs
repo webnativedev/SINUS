@@ -28,4 +28,14 @@ public static class LoggerConstants
     /// None string.
     /// </summary>
     public const string NoneString = "<none>";
+
+    /// <summary>
+    /// Gets a new line sign.
+    /// </summary>
+    public static string NewLine => Environment.NewLine;
+
+    /// <summary>
+    /// Gets a separation and a new line sign.
+    /// </summary>
+    public static string SeparationLineWithNewLine => SeparationLine + Environment.NewLine;
 }

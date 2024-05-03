@@ -10,18 +10,13 @@ using WebNativeDEV.SINUS.Core.UITesting.Contracts;
 /// <summary>
 /// Class that represents a UI element inside a Browser.
 /// </summary>
-internal sealed class Content : IContent
+/// <remarks>
+/// Initializes a new instance of the <see cref="Content"/> class.
+/// </remarks>
+/// <param name="webElement">The basic selenium element to wrap.</param>
+internal sealed class Content(IWebElement webElement) : IContent
 {
-    private readonly IWebElement webElement;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Content"/> class.
-    /// </summary>
-    /// <param name="webElement">The basic selenium element to wrap.</param>
-    public Content(IWebElement webElement)
-    {
-        this.webElement = webElement;
-    }
+    private readonly IWebElement webElement = webElement;
 
     /// <inheritdoc/>
     public string TagName

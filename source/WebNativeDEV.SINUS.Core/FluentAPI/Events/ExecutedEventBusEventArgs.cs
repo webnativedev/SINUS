@@ -9,20 +9,14 @@ using WebNativeDEV.SINUS.Core.Execution.Contracts;
 /// <summary>
 /// Event Arg for execution event.
 /// </summary>
-public class ExecutedEventBusEventArgs : EventBusEventArgs
+/// <remarks>
+/// Initializes a new instance of the <see cref="ExecutedEventBusEventArgs"/> class.
+/// </remarks>
+/// <param name="output">The output of the execution.</param>
+public class ExecutedEventBusEventArgs(IExecutionOutput output) : EventBusEventArgs()
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ExecutedEventBusEventArgs"/> class.
-    /// </summary>
-    /// <param name="output">The output of the execution.</param>
-    public ExecutedEventBusEventArgs(IExecutionOutput output)
-        : base()
-    {
-        this.Output = output;
-    }
-
     /// <summary>
     /// Gets the Execution output.
     /// </summary>
-    public IExecutionOutput Output { get; }
+    public IExecutionOutput Output { get; } = output;
 }

@@ -181,8 +181,7 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
             usageLogger.LogInformation("| ({BrowserInfo}|{WafInfo}) {Id}", browserInfo, wafInfo, title);
         }
 
-        usageLogger.LogInformation(LoggerConstants.SeparationLine);
-        usageLogger.LogInformation(" ");
+        usageLogger.LogInformation("{SeparationLine}", LoggerConstants.SeparationLineWithNewLine);
 
         var scopes = this.usages.Select(x => x.Value.GetValueOrDefault("scope") as TestBaseScopeContainer);
         var grouping = scopes
@@ -267,8 +266,7 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
         }
 
         var usageLogger = TestBaseSingletonContainer.CreateLogger<TestBase>();
-        usageLogger.LogInformation(LoggerConstants.SeparationLine);
-        usageLogger.LogInformation("| Tests Including {Category}: {Count}", category, data.Count);
+        usageLogger.LogInformation("{SeparationLine}| Tests Including {Category}: {Count}", LoggerConstants.SeparationLineWithNewLine, category, data.Count);
 
         foreach (var (title, _, disposed) in data)
         {
@@ -278,8 +276,7 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
             usageLogger.LogInformation("| ({DisposedInfo}) {Id}", disposedInfo, title);
         }
 
-        usageLogger.LogInformation(LoggerConstants.SeparationLine);
-        usageLogger.LogInformation(" ");
+        usageLogger.LogInformation("{SeparationLine}", LoggerConstants.SeparationLineWithNewLine);
     }
 
     private void PrintRequirements(string? filter, string methodKey, string classKey, string title)
@@ -330,8 +327,7 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
         }
 
         var usageLogger = TestBaseSingletonContainer.CreateLogger<TestBase>();
-        usageLogger.LogInformation(LoggerConstants.SeparationLine);
-        usageLogger.LogInformation("| {Title} Requirements: {Count}", title, data.Count);
+        usageLogger.LogInformation("{SeparationLine}| {Title} Requirements: {Count}", LoggerConstants.SeparationLineWithNewLine, title, data.Count);
 
         foreach (var item in data)
         {
@@ -342,8 +338,7 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
             }
         }
 
-        usageLogger.LogInformation(LoggerConstants.SeparationLine);
-        usageLogger.LogInformation(" ");
+        usageLogger.LogInformation("{SeparationLine}", LoggerConstants.SeparationLineWithNewLine);
     }
 
     private void StoreAttribute<T>(string key, TestBaseScopeContainer scope, Action<T, List<object>> action)

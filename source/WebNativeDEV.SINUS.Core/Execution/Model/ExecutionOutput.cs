@@ -19,7 +19,7 @@ internal sealed class ExecutionOutput : IExecutionOutput
     /// <summary>
     /// Gets the exceptions that were raised during execution.
     /// </summary>
-    public IList<Exception> Exceptions { get; } = new List<Exception>();
+    public IList<Exception> Exceptions { get; } = [];
 
     /// <summary>
     /// Gets or sets the HttpClient created for the execution.

@@ -103,5 +103,4 @@ public class AssertionTests : TestBase
             .Given("a simple setup")
             .When(data => data.PrintStore(RunStorePrintOrder.Unsorted))
             .ThenNoError()).Should().BeSuccessful();
-
 }

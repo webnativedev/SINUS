@@ -89,4 +89,18 @@ public class EnsureTests : TestBase
                    data => Nullable.GetUnderlyingType(data["checkedValue"]?.GetType() ?? typeof(int))
                                 .Should().BeNull())
             .DebugPrint("scenario", scenario));
+
+    [TestMethod]
+    [DynamicData(
+        nameof(ValidValues),
+        DynamicDataDisplayName = nameof(DefaultDataDisplayName))]
+    public void Given_AValue_When_CallingArgumentValidationNotNullWithValues_Then_ResultShouldBeSame(object? value, string scenario)
+        => this.Test(scenario, r => r
+            .Given(data => data["value"] = value)
+             .When(data => data["checkedValue"] = Ensure.NotNull(data["value"]))
+             .Then(
+                   data => data["value"].Should().Be(value),
+                   data => data["checkedValue"].Should().Be(value),
+                   data => data["value"].Should().BeEquivalentTo(data["checkedValue"]))
+            .DebugPrint(RunStorePrintOrder.KeySorted, "scenario", scenario));
 }

@@ -9,27 +9,21 @@ using System;
 /// <summary>
 /// An attribute that represents technical requirements that need to be implemented.
 /// </summary>
+/// <remarks>
+/// Initializes a new instance of the <see cref="TechnicalRequirementsAttribute"/> class.
+/// </remarks>
+/// <param name="capability">The main capability.</param>
+/// <param name="requirements">A description that shows the purpose.</param>
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-public sealed class TechnicalRequirementsAttribute : Attribute
+public sealed class TechnicalRequirementsAttribute(string capability, params string[] requirements) : Attribute
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TechnicalRequirementsAttribute"/> class.
-    /// </summary>
-    /// <param name="capability">The main capability.</param>
-    /// <param name="requirements">A description that shows the purpose.</param>
-    public TechnicalRequirementsAttribute(string capability, params string[] requirements)
-    {
-        this.Capability = capability;
-        this.Requirements = requirements;
-    }
-
     /// <summary>
     /// Gets the name of the main capability.
     /// </summary>
-    public string Capability { get; }
+    public string Capability { get; } = capability;
 
     /// <summary>
     /// Gets the requirements that show what is needed to enable the capability.
     /// </summary>
-    public string[] Requirements { get; }
+    public string[] Requirements { get; } = requirements;
 }

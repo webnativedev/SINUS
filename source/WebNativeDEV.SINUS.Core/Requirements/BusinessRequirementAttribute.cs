@@ -9,20 +9,15 @@ using System;
 /// <summary>
 /// Attribute to describe business requirements.
 /// </summary>
+/// <remarks>
+/// Initializes a new instance of the <see cref="BusinessRequirementAttribute"/> class.
+/// </remarks>
+/// <param name="description">The requirement description.</param>
 [AttributeUsage(AttributeTargets.Method)]
-public sealed class BusinessRequirementAttribute : Attribute
+public sealed class BusinessRequirementAttribute(params string[] description) : Attribute
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="BusinessRequirementAttribute"/> class.
-    /// </summary>
-    /// <param name="description">The requirement description.</param>
-    public BusinessRequirementAttribute(params string[] description)
-    {
-        this.Description = description;
-    }
-
     /// <summary>
     /// Gets the description of the requirement.
     /// </summary>
-    public string[] Description { get; }
+    public string[] Description { get; } = description;
 }

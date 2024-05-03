@@ -9,20 +9,15 @@ using System;
 /// <summary>
 /// An attribute that represents a technical requirement that needs to be implemented.
 /// </summary>
+/// <remarks>
+/// Initializes a new instance of the <see cref="TechnicalRequirementAttribute"/> class.
+/// </remarks>
+/// <param name="description">A description that shows the purpose.</param>
 [AttributeUsage(AttributeTargets.Method)]
-public sealed class TechnicalRequirementAttribute : Attribute
+public sealed class TechnicalRequirementAttribute(params string[] description) : Attribute
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TechnicalRequirementAttribute"/> class.
-    /// </summary>
-    /// <param name="description">A description that shows the purpose.</param>
-    public TechnicalRequirementAttribute(params string[] description)
-    {
-        this.Description = description;
-    }
-
     /// <summary>
     /// Gets the description of the requirement.
     /// </summary>
-    public string[] Description { get; }
+    public string[] Description { get; } = description;
 }
