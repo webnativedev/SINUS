@@ -6,12 +6,14 @@ namespace WebNativeDEV.SINUS.Core.MsTest.Context;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OpenQA.Selenium.DevTools.V122.Target;
 using System.Collections;
+using System.Globalization;
 
 /// <summary>
 /// Test context for static tester emulating an ms-test injected context.
 /// </summary>
-internal class StaticTesterContext : TestContext
+public class StaticTesterContext : TestContext
 {
     private readonly IDictionary properties = new Dictionary<object, object>();
     private readonly ILogger logger;
@@ -19,12 +21,16 @@ internal class StaticTesterContext : TestContext
     /// <summary>
     /// Initializes a new instance of the <see cref="StaticTesterContext"/> class.
     /// </summary>
-    public StaticTesterContext()
+    /// <param name="testName">Name of the test.</param>
+    /// <param name="className">Name of the related class (full qualified).</param>
+    /// <param name="testRunResultsDir">Folder name of the test result.</param>
+    /// <param name="testRunDir">Folder name of the test to run in.</param>
+    private StaticTesterContext(string? testName, string className, string testRunResultsDir, string testRunDir)
     {
-        this.properties.Add(nameof(this.TestName), "Given_StaticTest_When_Executed_Then_UniqueExecutionStarts-" + Guid.NewGuid().ToString());
-        this.properties.Add(nameof(this.FullyQualifiedTestClassName), "StaticTests");
-        this.properties.Add(nameof(this.TestRunResultsDirectory), ".");
-        this.properties.Add(nameof(this.TestRunDirectory), ".");
+        this.properties.Add(nameof(this.TestName), testName);
+        this.properties.Add(nameof(this.FullyQualifiedTestClassName), className);
+        this.properties.Add(nameof(this.TestRunResultsDirectory), testRunResultsDir);
+        this.properties.Add(nameof(this.TestRunDirectory), testRunDir);
         this.logger = TestBaseSingletonContainer.CreateLogger<StaticTester>();
     }
 
@@ -32,6 +38,46 @@ internal class StaticTesterContext : TestContext
     /// Gets the properties.
     /// </summary>
     public override IDictionary Properties => this.properties;
+
+    /// <summary>
+    /// Factory method to create a context.
+    /// </summary>
+    /// <param name="testName">Name of the test.</param>
+    /// <param name="className">Name of the related class (full qualified).</param>
+    /// <param name="addUniqueSuffix">If used multiple times set this to true to distinguish executions.</param>
+    /// <param name="testRunResultsDir">Folder name of the test result.</param>
+    /// <param name="testRunDir">Folder name of the test to run in.</param>
+    /// <returns>An instance of a static tester context.</returns>
+    public static StaticTesterContext CreateStaticTest(string? testName = "Given_StaticTest_When_Executed_Then_UniqueExecutionStarts-", string className = "(StaticTests)", bool addUniqueSuffix = true, string testRunResultsDir = ".", string testRunDir = ".")
+    {
+        return new StaticTesterContext(
+            testName + (addUniqueSuffix
+                ? Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture)
+                : string.Empty),
+            className,
+            testRunResultsDir,
+            testRunDir);
+    }
+
+    /// <summary>
+    /// Factory method to create a context specifically for maintenance.
+    /// </summary>
+    /// <param name="testName">Name of the test.</param>
+    /// <param name="className">Name of the related class (full qualified).</param>
+    /// <param name="addUniqueSuffix">If used multiple times set this to true to distinguish executions.</param>
+    /// <param name="testRunResultsDir">Folder name of the test result.</param>
+    /// <param name="testRunDir">Folder name of the test to run in.</param>
+    /// <returns>An instance of a static tester context.</returns>
+    public static StaticTesterContext CreateMaintenance(string? testName = "Maintenance_StaticTest_When_Executed_Then_UniqueExecutionStarts-", string className = "(StaticTests)", bool addUniqueSuffix = true, string testRunResultsDir = ".", string testRunDir = ".")
+    {
+        return new StaticTesterContext(
+            testName + (addUniqueSuffix
+                ? Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture)
+                : string.Empty),
+            className,
+            testRunResultsDir,
+            testRunDir);
+    }
 
     /// <inheritdoc />
     public override void AddResultFile(string fileName)
@@ -55,12 +101,12 @@ internal class StaticTesterContext : TestContext
 
     private void WriteLineImplementation(string? format, params object?[] args)
     {
-        #pragma warning disable CA2254 // Vorlage muss ein statischer Ausdruck sein
-        #pragma warning disable IDE0079 // Unnötige Unterdrückung entfernen
-        #pragma warning disable S2629 // Don't use string concatenation in logging message templates.
+#pragma warning disable CA2254 // Vorlage muss ein statischer Ausdruck sein
+#pragma warning disable IDE0079 // Unnötige Unterdrückung entfernen
+#pragma warning disable S2629 // Don't use string concatenation in logging message templates.
         this.logger.LogInformation("StaticTestContext: " + (format ?? string.Empty), args);
-        #pragma warning restore S2629
-        #pragma warning restore CA2254
-        #pragma warning restore IDE0079
+#pragma warning restore S2629
+#pragma warning restore CA2254
+#pragma warning restore IDE0079
     }
 }

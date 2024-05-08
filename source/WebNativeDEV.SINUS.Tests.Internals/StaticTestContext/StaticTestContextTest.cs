@@ -27,7 +27,7 @@ public class StaticTestContextTest : TestBase
     public void Given_StaticTestContext_When_CreatingAContext_Then_AllActionsShouldRunWithoutException()
     {
         // arrange
-        var context = new StaticTesterContext();
+        var context = StaticTesterContext.CreateStaticTest();
 
         // act
         Action action = () =>

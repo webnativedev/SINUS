@@ -175,10 +175,10 @@ internal sealed class Browser : IBrowser
     public IBrowser TakeScreenshot(string? filename = null)
     {
         this.Logger.LogInformation("Take Screenshot requested");
-        string resolvedFilename = filename ??
+        string resolvedFilename = Path.GetFullPath(filename ??
             Path.Combine(
                 this.contentFolder,
-                $"Screenshot_{DateTime.Now:yyyy-MM-dd__HH-mm-ss-fffffff}.png");
+                $"Screenshot_{DateTime.Now:yyyy-MM-dd__HH-mm-ss-fffffff}.png"));
         this.Logger.LogInformation("Screenshot filename resolved to {Filename}", resolvedFilename);
 
         Screenshot? screenshot = (this.driver as ITakesScreenshot)?.GetScreenshot();

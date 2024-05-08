@@ -21,7 +21,7 @@ public static class LogErrorExtension
     /// Example: "User {User} logged in from {Address}".</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
     public static void LogErrorRec(this ILogger logger, Exception? exception, string? message, params object?[] args)
-        => LogErrorRec(logger, exception, string.Empty, message, args, null);
+        => LogErrorRecPrefixed(logger: logger, exception: exception, prefix: string.Empty, message: message, args: args);
 
     /// <summary>
     /// Formats and writes an error log message.
@@ -32,9 +32,9 @@ public static class LogErrorExtension
     /// <param name="message">Format string of the log message in message template format.
     /// Example: "User {User} logged in from {Address}".</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
-    public static void LogErrorRec(this ILogger logger, Exception? exception, string prefix, string? message, params object?[] args)
+    private static void LogErrorRecPrefixed(this ILogger logger, Exception? exception, string prefix, string? message, params object?[] args)
     {
-        #pragma warning disable CA2254 // Vorlage muss ein statischer Ausdruck sein
+#pragma warning disable CA2254 // Vorlage muss ein statischer Ausdruck sein
         logger.LogError(exception, message, args);
         LogErrorStackTrace(logger, exception, prefix);
 
@@ -42,10 +42,10 @@ public static class LogErrorExtension
         {
             foreach (Exception innerExc in aggregateException.InnerExceptions)
             {
-                LogErrorRec(logger, innerExc, "Inner-", message, args);
+                LogErrorRecPrefixed(logger, innerExc, "Inner-", message, args);
             }
         }
-        #pragma warning restore CA2254
+#pragma warning restore CA2254
     }
 
     /// <summary>
@@ -54,7 +54,7 @@ public static class LogErrorExtension
     /// <param name="logger">The Microsoft.Extensions.Logging.ILogger to write to.</param>
     /// <param name="exception">The exception to log.</param>
     /// <param name="prefix">The prefix to differentiate entries.</param>
-    public static void LogErrorStackTrace(this ILogger logger, Exception? exception, string prefix = "")
+    private static void LogErrorStackTrace(this ILogger logger, Exception? exception, string prefix = "")
     {
         logger.LogError("{Prefix}Stacktrace:\n{StackTrace}", prefix, exception?.StackTrace ?? string.Empty);
     }

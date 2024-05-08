@@ -6,6 +6,7 @@ namespace WebNativeDEV.SINUS.Core.Utils;
 
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -45,14 +46,16 @@ public static class SinusUtils
 
         // assumption that each Run has a run-directory below
         // the main TestResults folder (as standard)
-        int count = Directory.GetDirectories(Path.Combine(Ensure.NotNull(testBase).TestContext.TestRunDirectory ?? ".", "..")).Length;
+        string path = Path.Combine(Ensure.NotNull(testBase).TestContext.TestRunDirectory ?? ".", "..");
+        int count = Directory.GetDirectories(path).Length;
 
         if (count >= max)
         {
+            logger.LogError("Foldercount: {Count} / max:{Max} for {Path}", count, max, path);
             throw new InvalidOperationException($"too many result folders; <{max} wanted, but are {count}");
         }
 
-        logger.LogInformation("Foldercount: {Count} / max:{Max}", count, max);
+        logger.LogInformation("Foldercount: {Count} / max:{Max} for {Path}", count, max, path);
     }
 
     /// <summary>
@@ -131,6 +134,30 @@ public static class SinusUtils
             "Kill Process: {Count} processes older than {AgeInMin} min killed",
             processes.Count,
             maxAgeOfProessInMinutes);
+    }
+
+    /// <summary>
+    /// Runs an action if at least one visual studio instance is running.
+    /// </summary>
+    /// <param name="action">The action to run.</param>
+    public static void RunOnlyInsideVisualStudio(Action action)
+    {
+        if(Process.GetProcessesByName("devenv").Length > 0)
+        {
+            action?.Invoke();
+        }
+    }
+
+    /// <summary>
+    /// Runs an action if at least one visual studio instance is running.
+    /// </summary>
+    /// <param name="action">The action to run.</param>
+    public static void RunOnlyInsideDebugSession(Action action)
+    {
+        if (Debugger.IsAttached)
+        {
+            action?.Invoke();
+        }
     }
 
     private static List<Process> GetChromeDriverProcesses(int maxAgeOfProessInMinutes)

@@ -17,8 +17,15 @@ public interface IThen : IDisposable
     /// to the log.
     /// </summary>
     /// <param name="action">Pass in your debug code here.</param>
+    /// <param name="shouldRun">Debug code will be run if true.</param>
     /// <returns>An instance to the runner, so it can be disposed.</returns>
-    IThen Debug(Action<IRunStore>? action = null);
+    IThen Debug(Action<IRunStore>? action = null, bool shouldRun = true);
+
+    /// <summary>
+    /// Method that can be used to emulate a break point if debugger is attached.
+    /// </summary>
+    /// <returns>An instance to the runner, so it can be disposed.</returns>
+    IThen DebugBreak();
 
     /// <summary>
     /// Method that is used to write all debug information to the logger.

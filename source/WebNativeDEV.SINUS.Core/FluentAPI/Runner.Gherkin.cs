@@ -7,6 +7,7 @@ namespace WebNativeDEV.SINUS.Core.FluentAPI;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Diagnostics;
 using WebNativeDEV.SINUS.Core.ArgumentValidation;
 using WebNativeDEV.SINUS.Core.Events.EventArguments;
 using WebNativeDEV.SINUS.Core.Execution;
@@ -237,16 +238,25 @@ internal sealed partial class Runner
                 });
 
     /// <inheritdoc/>
-    public IThen Debug(Action<IBrowser, IRunStore>? action = null)
+    public IThen Debug(Action<IBrowser, IRunStore>? action = null, bool shouldRun = true)
         => this.RunAction(
                 runCategory: RunCategory.Debug,
-                action: this.InvokeAction(action));
+                action: this.InvokeAction(action),
+                runActions: shouldRun);
 
     /// <inheritdoc/>
-    public IThen Debug(Action<IRunStore>? action = null)
+    public IThen Debug(Action<IRunStore>? action = null, bool shouldRun = true)
         => this.RunAction(
                 runCategory: RunCategory.Debug,
-                action: this.InvokeAction(action));
+                action: this.InvokeAction(action),
+                runActions: shouldRun);
+
+    /// <inheritdoc/>
+    public IThen DebugBreak()
+        => this.RunAction(
+                runCategory: RunCategory.Debug,
+                action: this.InvokeAction((data) => Debugger.Break()),
+                runActions: Debugger.IsAttached);
 
     /// <inheritdoc/>
     public IThen DebugPrint(RunStorePrintOrder order = RunStorePrintOrder.KeySorted)

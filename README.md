@@ -16,7 +16,7 @@ Dependencies:
 * NSubstitute
 * Selenium
 
-![Example Screenshot](./docs/sinus-screenshot.png "Example Screenshot")
+![Example Screenshot](https://raw.githubusercontent.com/webnativedev/SINUS/main/docs/sinus-screenshot.png "Example Screenshot")
 
 There are hard dependencies in SINUS to C#, newest .NET-Versions, MS-Test and Selenium (including partly Chrome) using BaseClasses and pre-defined patterns.
 SINUS focuses on a Given-When-Then approach of writing tests (BDT - Behaviour Driven Testing) to provide human readable descriptions with few effort.

@@ -16,6 +16,16 @@ namespace WebNativeDEV.SINUS.Core.UITesting.Model;
 public class BrowserFactoryOptions(bool headless = true, bool ignoreSslErrors = true, SupportedWebDriver webDriver = SupportedWebDriver.Chrome)
 {
     /// <summary>
+    /// Gets a visible chrome instance.
+    /// </summary>
+    public static BrowserFactoryOptions VisibleChrome { get; } = new BrowserFactoryOptions(headless: false, webDriver: SupportedWebDriver.Chrome);
+
+    /// <summary>
+    /// Gets a headless chrome instance.
+    /// </summary>
+    public static BrowserFactoryOptions HeadlessChrome { get; } = new BrowserFactoryOptions(headless: true, webDriver: SupportedWebDriver.Chrome);
+
+    /// <summary>
     /// Gets or sets a value indicating whether to start as Headless or not.
     /// </summary>
     public bool Headless { get; set; } = headless;

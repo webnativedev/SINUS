@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebNativeDEV.SINUS.SystemUn
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebNativeDEV.SINUS.Tests.Internals", "WebNativeDEV.SINUS.Tests.Internals\WebNativeDEV.SINUS.Tests.Internals.csproj", "{B95D40C3-5E90-45B6-B3C3-FCDE48CA391B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebNativeDEV.SINUS.TestConsole", "WebNativeDEV.SINUS.TestConsole\WebNativeDEV.SINUS.TestConsole.csproj", "{16B40348-A153-4A04-A453-7F9BFED0C122}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebNativeDEV.SINUS.TestConsole", "WebNativeDEV.SINUS.TestConsole\WebNativeDEV.SINUS.TestConsole.csproj", "{16B40348-A153-4A04-A453-7F9BFED0C122}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebNativeDEV.SINUS.StaticTests", "WebNativeDEV.SINUS.StaticTests\WebNativeDEV.SINUS.StaticTests.csproj", "{CDD3A682-9A9E-4D00-AEA5-295284BB6020}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{16B40348-A153-4A04-A453-7F9BFED0C122}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{16B40348-A153-4A04-A453-7F9BFED0C122}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{16B40348-A153-4A04-A453-7F9BFED0C122}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDD3A682-9A9E-4D00-AEA5-295284BB6020}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDD3A682-9A9E-4D00-AEA5-295284BB6020}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDD3A682-9A9E-4D00-AEA5-295284BB6020}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDD3A682-9A9E-4D00-AEA5-295284BB6020}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

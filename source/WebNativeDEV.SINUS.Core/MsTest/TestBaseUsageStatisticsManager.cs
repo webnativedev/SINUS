@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using WebNativeDEV.SINUS.Core.Logging;
 using WebNativeDEV.SINUS.Core.MsTest.Contracts;
@@ -20,6 +21,7 @@ using WebNativeDEV.SINUS.MsTest;
 internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
 {
     private readonly ConcurrentDictionary<string, Dictionary<string, object>> usages = [];
+    private readonly object usagesRegisterLocker = new();
 
     /// <inheritdoc/>
     public string AttributeBrowserCreated => "browser created";
@@ -67,6 +69,7 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
     /// <inheritdoc/>
     public TestBaseScopeContainer Register(TestBase testBase, string? scenario = null)
     {
+        // the register overload is called inside this constructor
         return new TestBaseScopeContainer(testBase, scenario);
     }
 
@@ -75,12 +78,16 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
     {
         try
         {
-            if (!this.usages.TryAdd(scope.TestName, []))
+            lock (this.usagesRegisterLocker)
             {
-                throw new InvalidDataException("test name already stored in usage manager, please rename your test");
-            }
+                if (!this.usages.TryAdd(scope.TestName, []))
+                {
+                    throw new InvalidDataException("test name already stored in usage manager, please rename your test");
+                }
 
-            this.usages[scope.TestName].Add("scope", scope);
+                this.usages[scope.TestName].Add("scope", scope);
+                this.usages[scope.TestName].Add("registerId", this.usages.Count);
+            }
         }
         catch (Exception outerExc)
         {
@@ -135,10 +142,12 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
         var data = this.usages
             .Where(x => filter == null || x.Key == filter)
             .Select(x => (Title: x.Key,
+                          RunId: (x.Value.GetValueOrDefault("registerId", -1) as int?) ?? -1,
                           BrowserCreated: x.Value.ContainsKey(this.AttributeBrowserCreated),
                           BrowserDisposed: x.Value.ContainsKey(this.AttributeBrowserDisposed),
                           WafCreated: x.Value.ContainsKey(this.AttributeWafCreated),
                           WafDisposed: x.Value.ContainsKey(this.AttributeWafDisposed)))
+            .OrderBy(x => x.RunId)
             .ToList();
         if (data.Count == 0)
         {
@@ -148,7 +157,7 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
         var usageLogger = TestBaseSingletonContainer.CreateLogger<TestBase>();
         usageLogger.LogInformation("{Sparator}\n| Tests: {Count}", LoggerConstants.SeparationLine, data.Count);
 
-        foreach (var (title, browserCreated, browserDisposed, wafCreated, wafDisposed) in data)
+        foreach (var (title, runId, browserCreated, browserDisposed, wafCreated, wafDisposed) in data)
         {
             string browserInfo;
             if (!browserCreated && !browserDisposed)
@@ -178,7 +187,7 @@ internal class TestBaseUsageStatisticsManager : ITestBaseUsageStatisticsManager
                 wafInfo = "w:err";
             }
 
-            usageLogger.LogInformation("| ({BrowserInfo}|{WafInfo}) {Id}", browserInfo, wafInfo, title);
+            usageLogger.LogInformation("| ({BrowserInfo}|{WafInfo}) {RunId}: {Id}", browserInfo, wafInfo, runId.ToString("000", CultureInfo.InvariantCulture), title);
         }
 
         usageLogger.LogInformation("{SeparationLine}", LoggerConstants.SeparationLineWithNewLine);

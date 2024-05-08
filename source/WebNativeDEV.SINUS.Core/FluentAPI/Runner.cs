@@ -141,6 +141,7 @@ internal sealed partial class Runner : IRunnerSystemAndBrowser,
     private Runner RunAction(
             RunCategory runCategory,
             Action? action,
+            bool runActions = true,
             string? description = null)
     {
         return this.Run(
@@ -148,7 +149,7 @@ internal sealed partial class Runner : IRunnerSystemAndBrowser,
                 this.scope,
                 runCategory)
             .AddDescription(description)
-            .AddRunActions(true)
+            .AddRunActions(runActions)
             .AddSetupActions(null)
             .AddActions(action, null)
             .AddCreateSut(false)
