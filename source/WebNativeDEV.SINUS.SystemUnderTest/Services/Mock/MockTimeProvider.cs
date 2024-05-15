@@ -6,6 +6,8 @@ namespace WebNativeDEV.SINUS.SystemUnderTest.Services.Mock;
 
 using WebNativeDEV.SINUS.SystemUnderTest.Services.Abstractions;
 
+#pragma warning disable SA1000 // Keywords should be spaced correctly
+
 /// <summary>
 /// Mocked provider for the external dependency clock.
 /// </summary>

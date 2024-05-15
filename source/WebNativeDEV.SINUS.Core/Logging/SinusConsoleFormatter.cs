@@ -98,7 +98,7 @@ internal class SinusConsoleFormatter : ConsoleFormatter, IDisposable
             }
 
             textWriter.WriteLine($"    {line}");
-            if(line != LoggerConstants.SeparationLine && line != LoggerConstants.IndentedSeparationLine)
+            if (line != LoggerConstants.SeparationLine && line != LoggerConstants.IndentedSeparationLine)
             {
                 first = false;
             }

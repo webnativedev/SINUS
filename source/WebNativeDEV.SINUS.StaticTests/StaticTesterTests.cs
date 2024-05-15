@@ -1,6 +1,7 @@
 using FluentAssertions;
 using System.Diagnostics;
 using System.Globalization;
+using System.Reflection;
 using WebNativeDEV.SINUS.Core.Assertions;
 using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 using WebNativeDEV.SINUS.Core.MsTest;
@@ -17,6 +18,22 @@ namespace WebNativeDEV.SINUS.StaticTests
         /// Gets or sets the TestContext injected by the framework.
         /// </summary>
         public TestContext TestContext { get; set; } = null!;
+        public static IEnumerable<object?[]> ValidValues
+        =>
+        [
+            ["Standard"],
+            ["Other"],
+        ];
+
+        /// <summary>
+        /// Dynamic Data Display Name calculator proxying to TestNamingConventionManager.
+        /// This works when the test naming conventions are met.
+        /// </summary>
+        /// <param name="methodInfo">The method to work on.</param>
+        /// <param name="data">The arguments, but with the convention that the last object contains the testname.</param>
+        /// <returns>A calculated name of the test.</returns>
+        public static string DefaultDataDisplayName(MethodInfo methodInfo, object[] data)
+            => TestNamingConventionManager.DynamicDataDisplayNameAddValueFromLastArgument(methodInfo, data);
 
         [TestMethod]
         public void Given_EmptyPage_When_MakingAWebsiteWithJavascript_Then_ThePageCodeShouldBeProperlyExecutedV1()
@@ -64,8 +81,11 @@ namespace WebNativeDEV.SINUS.StaticTests
             ).Should().BeSuccessful();
 
         [TestMethod]
-        public void Given_EmptyPage_When_MakingAWebsiteWithJavascript_Then_ThePageCodeShouldBeProperlyExecutedV3()
-            => StaticTester.Test(runner => runner
+        [DynamicData(
+            nameof(ValidValues),
+            DynamicDataDisplayName = nameof(DefaultDataDisplayName))]
+        public void Given_EmptyPage_When_MakingAWebsiteWithJavascript_Then_ThePageCodeShouldBeProperlyExecutedV3(string scenario)
+            => StaticTester.Test(scenario, runner => runner
                 .GivenABrowserAt(("empty page", "about:blank"), BrowserFactoryOptions.HeadlessChrome)
                 .When((browser, data) =>
                 {

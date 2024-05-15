@@ -147,7 +147,7 @@ public static class SinusUtils
     [ExcludeFromCodeCoverage]
     public static void RunOnlyInsideVisualStudio(Action action)
     {
-        if(Process.GetProcessesByName("devenv").Length > 0)
+        if (Process.GetProcessesByName("devenv").Length > 0)
         {
             action?.Invoke();
         }

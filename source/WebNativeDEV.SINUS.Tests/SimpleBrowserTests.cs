@@ -16,7 +16,7 @@ using WebNativeDEV.SINUS.SystemUnderTest;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'Type_or_Member'.
 #pragma warning disable SA1600 // Elements should be documented
-#pragma warning disable SA1000 // new should be followed by blank
+#pragma warning disable SA1000
 
 [TestClass]
 public class SimpleBrowserTests : TestBase
