@@ -252,6 +252,13 @@ internal sealed partial class Runner
                 runActions: shouldRun);
 
     /// <inheritdoc/>
+    public IThen Debug(Action? action = null, bool shouldRun = true)
+        => this.RunAction(
+                runCategory: RunCategory.Debug,
+                action: this.InvokeAction(action),
+                runActions: shouldRun);
+
+    /// <inheritdoc/>
     public IThen DebugBreak()
         => this.RunAction(
                 runCategory: RunCategory.Debug,

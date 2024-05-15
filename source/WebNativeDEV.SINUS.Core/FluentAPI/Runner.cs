@@ -268,6 +268,18 @@ internal sealed partial class Runner : IRunnerSystemAndBrowser,
         return pureAction;
     }
 
+#pragma warning disable CA1822 // mark as static
+    private Action? InvokeAction(Action? action)
+#pragma warning restore CA1822
+    {
+        if (action == null)
+        {
+            return null;
+        }
+
+        return () => action.Invoke();
+    }
+
     private Action? InvokeAction(Action<IRunStore>? action)
     {
         if (action == null)

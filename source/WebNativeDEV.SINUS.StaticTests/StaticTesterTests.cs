@@ -60,7 +60,25 @@ namespace WebNativeDEV.SINUS.StaticTests
                     (browser, data) => browser.Title.Should().Be("Test"),
                     (browser, data) => browser.FindElements("//body").First().GetCssValue("backgroundColor").Replace(" ", "", true, CultureInfo.InvariantCulture).Should().Be("rgba(255, 128, 0, 1)".Replace(" ", ""))
                 )
-                .Debug(data => Debugger.Break(), Debugger.IsAttached)
+                .Debug(() => Debugger.Break(), Debugger.IsAttached)
+            ).Should().BeSuccessful();
+
+        [TestMethod]
+        public void Given_EmptyPage_When_MakingAWebsiteWithJavascript_Then_ThePageCodeShouldBeProperlyExecutedV3()
+            => StaticTester.Test(runner => runner
+                .GivenABrowserAt(("empty page", "about:blank"), BrowserFactoryOptions.HeadlessChrome)
+                .When((browser, data) =>
+                {
+                    browser.ExecuteScript("""document.write('<html><head><title>Test</title></head><body><button id="testbutton" onclick="document.getElementsByTagName(\'body\')[0].style.backgroundColor=\'rgba(255,128,0,1)\'">Action</button></body></html>');""");
+                    browser.FindElement("testbutton").Click();
+                })
+                .Then(
+                    (browser, data) => browser.Title.Should().Be("Test"),
+                    (browser, data) => browser.FindElements("//body").First().GetCssValue("backgroundColor").Replace(" ", "", true, CultureInfo.InvariantCulture).Should().Be("rgba(255, 128, 0, 1)".Replace(" ", ""))
+                )
+                .Debug( () => SinusUtils.RunOnlyInsideDebugSession(
+                            () => SinusUtils.RunOnlyInsideVisualStudio(
+                                () => Debugger.Break())))
             ).Should().BeSuccessful();
 
         /// <summary>

@@ -31,6 +31,12 @@ public abstract class AbstractTestBaseStrategy : ITestBaseStrategy
         return this.TestImplementation(testBase, scenario, action);
     }
 
+    /// <inheritdoc/>
+    public virtual ITestBaseResult Maintenance(TestBase testBase, Action action)
+    {
+        return this.MaintenanceImplementation(testBase, action);
+    }
+
     /// <summary>
     /// Creates a runner and uses the action to execute the test (real implementation).
     /// </summary>
@@ -55,6 +61,19 @@ public abstract class AbstractTestBaseStrategy : ITestBaseStrategy
     }
 
     /// <summary>
+    /// Creates a runner and uses the action to execute the maintenance action. (real implementation).
+    /// </summary>
+    /// <param name="testBase">Reference to the class containing the test.</param>
+    /// <param name="action">The action to execute.</param>
+    /// <returns>The current object for usage as Fluent API.</returns>
+    protected virtual ITestBaseResult MaintenanceImplementation(TestBase testBase, Action action)
+    {
+        var scope = new TestBaseScopeContainer(testBase, null);
+        this.RunAction(action);
+        return this.CreateTestBaseResult(scope);
+    }
+
+    /// <summary>
     /// Runs the actual action.
     /// </summary>
     /// <param name="scope">Object that points to all dependencies related to a test.</param>
@@ -62,6 +81,15 @@ public abstract class AbstractTestBaseStrategy : ITestBaseStrategy
     protected virtual void RunAction(TestBaseScopeContainer scope, Action<IRunnerSystemAndBrowser> action)
     {
         Ensure.NotNull(action).Invoke(Ensure.NotNull(scope).Runner);
+    }
+
+    /// <summary>
+    /// Runs the actual action.
+    /// </summary>
+    /// <param name="action">The action to execute.</param>
+    protected virtual void RunAction(Action action)
+    {
+        Ensure.NotNull(action).Invoke();
     }
 
     /// <summary>
@@ -100,9 +128,9 @@ public abstract class AbstractTestBaseStrategy : ITestBaseStrategy
                 Environment.CurrentManagedThreadId);
             if (scope.ExpectedOutcome != TestOutcome.Inconclusive && shouldThrow)
             {
-                #pragma warning disable FAA0003 // Replace MSTests assertion with Fluent Assertions equivalent
+#pragma warning disable FAA0003 // Replace MSTests assertion with Fluent Assertions equivalent
                 Assert.Inconclusive($"The test result is evaluated as inconclusive for test '{scope.TestName}', because it was rated 'only-prepared' when seeing no 'When'-part.");
-                #pragma warning restore FAA0003 // Replace MSTests assertion with Fluent Assertions equivalent
+#pragma warning restore FAA0003 // Replace MSTests assertion with Fluent Assertions equivalent
             }
 
             return;
@@ -120,9 +148,9 @@ public abstract class AbstractTestBaseStrategy : ITestBaseStrategy
 
             if (scope.ExpectedOutcome != TestOutcome.Failure && shouldThrow)
             {
-                #pragma warning disable FAA0003 // Replace MSTests assertion with Fluent Assertions equivalent
+#pragma warning disable FAA0003 // Replace MSTests assertion with Fluent Assertions equivalent
                 Assert.Fail($"The test result is evaluated as failed for test '{scope.TestName}', because exceptions occured. Count: {scope.Exceptions.Count}; Types: {scope.Exceptions.GetContentAsString()}");
-                #pragma warning restore FAA0003 // Replace MSTests assertion with Fluent Assertions equivalent
+#pragma warning restore FAA0003 // Replace MSTests assertion with Fluent Assertions equivalent
             }
 
             return;

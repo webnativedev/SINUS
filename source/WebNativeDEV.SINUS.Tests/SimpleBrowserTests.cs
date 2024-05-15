@@ -16,13 +16,14 @@ using WebNativeDEV.SINUS.SystemUnderTest;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'Type_or_Member'.
 #pragma warning disable SA1600 // Elements should be documented
+#pragma warning disable SA1000 // new should be followed by blank
 
 [TestClass]
 public class SimpleBrowserTests : TestBase
 {
     private const string SimpleViewTitle = "SINUS TestSystem";
     private readonly (string?, string?) simpleView = ("SimpleView", "/simpleView");
-    private readonly BrowserFactoryOptions optionEdge = new (true, true, SupportedWebDriver.Edge);
+    private readonly BrowserFactoryOptions optionEdge = new(true, true, SupportedWebDriver.Edge);
 
     [TestMethod]
     public void Given_AWebsite_When_CreatingScreenshot_Then_NoExceptionShouldOccur()
@@ -202,5 +203,13 @@ public class SimpleBrowserTests : TestBase
             .GivenASystemAndABrowserAtRandomEndpoint<Program>("SimpleView", "/simpleView")
             .When((browser, data) => data.StoreActual(browser.Title))
             .Then((browser, data) => data.Should().ActualBe("SINUS TestSystem"))
+            .DebugPrint());
+
+    [TestMethod]
+    public void Given_ATestSystem_When_RunningABrowser_Then_ProcessKillShouldWork()
+        => this.Test(r => r
+            .GivenABrowserAt("empty page", new Uri("about:blank"))
+            .When("kill chrome", (browser, data) => data.Actual = SinusUtils.KillChromeZombieProcesses(0))
+            .Then("it should be 1", (browser, data) => data.Actual.Should().Be(1))
             .DebugPrint());
 }

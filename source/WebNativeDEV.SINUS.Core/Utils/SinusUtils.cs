@@ -120,7 +120,8 @@ public static class SinusUtils
     /// Kills zombie processes older as defined parameter.
     /// </summary>
     /// <param name="maxAgeOfProessInMinutes">Max age for old a process should be to identify it as zombie.</param>
-    public static void KillChromeZombieProcesses(int maxAgeOfProessInMinutes)
+    /// <returns>The count of killed processes.</returns>
+    public static int KillChromeZombieProcesses(int maxAgeOfProessInMinutes)
     {
         var logger = TestBaseSingletonContainer.CreateLogger<TestBase>();
 
@@ -134,6 +135,8 @@ public static class SinusUtils
             "Kill Process: {Count} processes older than {AgeInMin} min killed",
             processes.Count,
             maxAgeOfProessInMinutes);
+
+        return processes.Count;
     }
 
     /// <summary>

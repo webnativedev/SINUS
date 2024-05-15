@@ -25,4 +25,12 @@ public interface ITestBaseStrategy
     /// <param name="action">The action to execute.</param>
     /// <returns>The current object for usage as Fluent API.</returns>
     ITestBaseResult Test(TestBase testBase, string? scenario, Action<IRunnerSystemAndBrowser> action);
+
+    /// <summary>
+    /// Creates a runner and uses the action to execute a maintenance task.
+    /// </summary>
+    /// <param name="testBase">Reference to the class containing the test.</param>
+    /// <param name="action">The action to execute.</param>
+    /// <returns>The current object for usage as Fluent API.</returns>
+    ITestBaseResult Maintenance(TestBase testBase, Action action);
 }
