@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebNativeDEV.SINUS.Core.Assertions;
 using WebNativeDEV.SINUS.Core.FluentAPI.Model;
 using WebNativeDEV.SINUS.Core.Requirements;
+using WebNativeDEV.SINUS.Core.Utils;
 using WebNativeDEV.SINUS.MsTest;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member 'Type_or_Member'.
@@ -82,6 +83,38 @@ public class AssertionTests : TestBase
             .Given(data => data.StoreActual("test"))
             .When(data => data.Should().ActualBe<string>(null!))
             .ThenShouldHaveFailed());
+
+    [TestMethod]
+    public void Given_FluentAssertions_When_CheckActualAfterMethodStoreWithNonNull_Then_CheckForNullAndLenGreater10WithActualBe()
+        => this.Test(r => r
+            .Given(data => data.StoreActual("test"))
+            .When(data =>
+            {
+                throw new AggregateException(
+                    Actions.Safe(() => data.Should().ActualBe<string>(null!)) ?? throw new InvalidDataException("should have thrown 1"),
+                    Actions.Safe(() => data.ReadActual<string>().Length.Should().BeGreaterThan(10)) ?? throw new InvalidDataException("should have thrown 2"));
+            })
+            .ThenShouldHaveFailed(2));
+
+    [TestMethod]
+    public void Given_FluentAssertions_When_CheckActualAfterMethodStoreWithNonNull_Then_CheckForNullAndLenGreater10WithActualBeV2()
+        => this.Test(r => r
+            .Given(data => data.StoreActual("test"))
+            .When(data =>
+            {
+                throw new AggregateException(
+                    Actions.Safe(
+                        () => data.Should().ActualBe<string>(null!),
+                        () => data.ReadActual<string>().Length.Should().BeGreaterThan(10)));
+            })
+            .ThenShouldHaveFailed(2));
+
+    [TestMethod]
+    public void Given_FluentAssertions_When_CheckActualAfterMethodStoreWithNonNull_Then_ValueCheckShouldNotThrow()
+        => this.Test(r => r
+            .Given(data => data.StoreActual("test"))
+            .When(data => Actions.Safe(() => data.Should().ActualBe<string>("test")).Should().BeNull())
+            .ThenNoError());
 
     [TestMethod]
     public void Given_FluentAssertions_When_CheckActualAfterMethodStoreWithNull_Then_CheckForNotNullWithActualBe()

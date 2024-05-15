@@ -68,11 +68,12 @@ public interface IWhen
     /// Allows to define the Then-Action in a Given-When-Then sequence after
     /// we expect that when fails.
     /// </summary>
+    /// <param name="countExceptions">Count of exceptions expected.</param>
     /// <returns>
     /// An object that will point to the runner.
     /// The interface helps to reduce the set of options to only the appropriate in the sequence.
     /// </returns>
-    IThen ThenShouldHaveFailed();
+    IThen ThenShouldHaveFailed(int countExceptions = 1);
 
     /// <summary>
     /// Allows to define the Then-Action in a Given-When-Then sequence after

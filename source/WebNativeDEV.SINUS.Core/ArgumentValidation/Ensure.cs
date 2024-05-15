@@ -3,6 +3,7 @@
 // </copyright>
 
 namespace WebNativeDEV.SINUS.Core.ArgumentValidation;
+
 using WebNativeDEV.SINUS.Core.ArgumentValidation.Exceptions;
 
 /// <summary>

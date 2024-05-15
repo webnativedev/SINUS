@@ -206,12 +206,12 @@ internal sealed partial class Runner
                 });
 
     /// <inheritdoc/>
-    public IThen ThenShouldHaveFailed()
+    public IThen ThenShouldHaveFailed(int countExceptions = 1)
         => this.RunAction(
                 runCategory: RunCategory.Then,
                 action: () =>
                 {
-                    this.scope.Exceptions.Count.Should().Be(1);
+                    this.scope.Exceptions.Count.Should().Be(countExceptions);
                     this.scope.Exceptions.SetAllChecked();
                 });
 

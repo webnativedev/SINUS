@@ -10,6 +10,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -143,6 +144,7 @@ public static class SinusUtils
     /// Runs an action if at least one visual studio instance is running.
     /// </summary>
     /// <param name="action">The action to run.</param>
+    [ExcludeFromCodeCoverage]
     public static void RunOnlyInsideVisualStudio(Action action)
     {
         if(Process.GetProcessesByName("devenv").Length > 0)
@@ -155,6 +157,7 @@ public static class SinusUtils
     /// Runs an action if at least one visual studio instance is running.
     /// </summary>
     /// <param name="action">The action to run.</param>
+    [ExcludeFromCodeCoverage]
     public static void RunOnlyInsideDebugSession(Action action)
     {
         if (Debugger.IsAttached)
